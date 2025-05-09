@@ -1,0 +1,2303 @@
+{
+    "harvester_miner_01": {
+        "mbx.stats.fortune": [2, 4],
+        "mbx.stats.luck": [1, 3],
+        "mbx.stats.intelligence": [2, 5],
+        "mbx.stats.strength": [3, 6]
+    },
+    "harvester_miner_10": {
+        "mbx.stats.fortune": [6, 10],
+        "mbx.stats.luck": [4, 7],
+        "mbx.stats.intelligence": [8, 15],
+        "mbx.stats.strength": [12, 20]
+    },
+    "harvester_miner_20": {
+        "mbx.stats.fortune": [15, 25],
+        "mbx.stats.luck": [10, 18],
+        "mbx.stats.intelligence": [20, 35],
+        "mbx.stats.strength": [25, 40]
+    },
+    "harvester_miner_40": {
+        "mbx.stats.fortune": [35, 50],
+        "mbx.stats.luck": [25, 40],
+        "mbx.stats.intelligence": [55, 80],
+        "mbx.stats.strength": [65, 90]
+    },
+    "harvester_miner_60": {
+        "mbx.stats.fortune": [55, 75],
+        "mbx.stats.luck": [38, 55],
+        "mbx.stats.intelligence": [65, 90],
+        "mbx.stats.strength": [75, 100]
+    },
+    "harvester_miner_80": {
+        "mbx.stats.fortune": [70, 90],
+        "mbx.stats.luck": [48, 65],
+        "mbx.stats.intelligence": [95, 130],
+        "mbx.stats.strength": [110, 150]
+    },
+    "harvester_lumberjack_01": {
+        "mbx.stats.fortune": [2, 4],
+        "mbx.stats.luck": [1, 3],
+        "mbx.stats.intelligence": [2, 5],
+        "mbx.stats.strength": [3, 6]
+    },
+    "harvester_lumberjack_10": {
+        "mbx.stats.fortune": [6, 10],
+        "mbx.stats.luck": [4, 7],
+        "mbx.stats.intelligence": [8, 15],
+        "mbx.stats.strength": [12, 20]
+    },
+    "harvester_lumberjack_20": {
+        "mbx.stats.fortune": [15, 25],
+        "mbx.stats.luck": [10, 18],
+        "mbx.stats.intelligence": [20, 35],
+        "mbx.stats.strength": [25, 40]
+    },
+    "harvester_lumberjack_30": {
+        "mbx.stats.fortune": [35, 50],
+        "mbx.stats.luck": [25, 40],
+        "mbx.stats.intelligence": [55, 80],
+        "mbx.stats.strength": [65, 90]
+    },
+    "harvester_lumberjack_60": {
+        "mbx.stats.fortune": [55, 75],
+        "mbx.stats.luck": [38, 55],
+        "mbx.stats.intelligence": [65, 90],
+        "mbx.stats.strength": [75, 100]
+    },
+    "harvester_lumberjack_80": {
+        "mbx.stats.fortune": [70, 90],
+        "mbx.stats.luck": [48, 65],
+        "mbx.stats.intelligence": [95, 130],
+        "mbx.stats.strength": [110, 150]
+    },
+    "harvester_honey": {
+        "mbx.stats.fortune": [70, 120]
+    },
+    "staff_infection": {
+        "mbx.stats.intelligence": [10, 15]
+    },
+    "cactus_sword": {
+        "mbx.stats.strength": [10, 15]
+    },
+    "harvester_alchemist_01": {
+        "mbx.stats.fortune": [3, 5],
+        "mbx.stats.wisdom": [3, 5]
+    },
+    "harvester_alchemist_10": {
+        "mbx.stats.fortune": [8, 16],
+        "mbx.stats.wisdom": [8, 16]
+    },
+    "harvester_alchemist_20": {
+        "mbx.stats.fortune": [20, 40],
+        "mbx.stats.wisdom": [22, 36]
+    },
+    "harvester_alchemist_40": {
+        "mbx.stats.fortune": [42, 72],
+        "mbx.stats.wisdom": [42, 64]
+    },
+    "harvester_alchemist_60": {
+        "mbx.stats.fortune": [80, 120],
+        "mbx.stats.wisdom": [72, 96]
+    },
+    "harvester_alchemist_80": {
+        "mbx.stats.fortune": [140, 200],
+        "mbx.stats.wisdom": [110, 160]
+    },
+    "bow_bowhemian_rhapsody": {
+        "mbx.stats.agility": [1, 3]
+    },
+    "harvester_bamboo": {
+        "mbx.stats.fortune": [5, 10],
+        "mbx.stats.wisdom": [5, 10],
+        "mbx.stats.luck": [15, 20]
+    },
+    "harvester_beetroot": {
+        "mbx.stats.fortune": [5, 10],
+        "mbx.stats.wisdom": [5, 10],
+        "mbx.stats.luck": [15, 20]
+    },
+    "harvester_cactus": {
+        "mbx.stats.fortune": [5, 10],
+        "mbx.stats.wisdom": [5, 10],
+        "mbx.stats.luck": [15, 20]
+    },
+    "harvester_carrot": {
+        "mbx.stats.fortune": [5, 10],
+        "mbx.stats.wisdom": [5, 10],
+        "mbx.stats.luck": [15, 20]
+    },
+    "harvester_cocoa": {
+        "mbx.stats.fortune": [5, 10],
+        "mbx.stats.wisdom": [5, 10],
+        "mbx.stats.luck": [15, 20]
+    },
+    "harvester_kelp": {
+        "mbx.stats.fortune": [5, 10],
+        "mbx.stats.wisdom": [5, 10],
+        "mbx.stats.luck": [15, 20]
+    },
+    "harvester_melon": {
+        "mbx.stats.fortune": [5, 10],
+        "mbx.stats.wisdom": [5, 10],
+        "mbx.stats.luck": [15, 20]
+    },
+    "harvester_nether_wart": {
+        "mbx.stats.fortune": [5, 10],
+        "mbx.stats.wisdom": [5, 10],
+        "mbx.stats.luck": [15, 20]
+    },
+    "harvester_potato": {
+        "mbx.stats.fortune": [5, 10],
+        "mbx.stats.wisdom": [5, 10],
+        "mbx.stats.luck": [15, 20]
+    },
+    "harvester_pumpkin": {
+        "mbx.stats.fortune": [5, 10],
+        "mbx.stats.wisdom": [5, 10],
+        "mbx.stats.luck": [15, 20]
+    },
+    "harvester_sugar_cane": {
+        "mbx.stats.fortune": [5, 10],
+        "mbx.stats.wisdom": [5, 10],
+        "mbx.stats.luck": [15, 20]
+    },
+    "harvester_wheat": {
+        "mbx.stats.fortune": [5, 10],
+        "mbx.stats.wisdom": [5, 10],
+        "mbx.stats.luck": [15, 20]
+    },
+    "vein_axe_cake": {
+        "mbx.stats.fortune": [5, 10],
+        "mbx.stats.luck": [5, 15]
+    },
+    "vein_axe_chop": {
+        "mbx.stats.wisdom": [30, 40]
+    },
+    "harvester_bamboo_chopper": {
+        "mbx.stats.fortune": [20, 40],
+        "mbx.stats.wisdom": [15, 30],
+        "mbx.stats.luck": [40, 60]
+    },
+    "harvester_beetroot_reaper": {
+        "mbx.stats.fortune": [20, 40],
+        "mbx.stats.wisdom": [15, 30],
+        "mbx.stats.luck": [40, 60]
+    },
+    "harvester_cactus_chopper": {
+        "mbx.stats.fortune": [20, 40],
+        "mbx.stats.wisdom": [15, 30],
+        "mbx.stats.luck": [40, 60]
+    },
+    "harvester_carrot_reaper": {
+        "mbx.stats.fortune": [20, 40],
+        "mbx.stats.wisdom": [15, 30],
+        "mbx.stats.luck": [40, 60]
+    },
+    "harvester_cocoa_chopper": {
+        "mbx.stats.fortune": [20, 40],
+        "mbx.stats.wisdom": [15, 30],
+        "mbx.stats.luck": [40, 60]
+    },
+    "harvester_kelp_reaper": {
+        "mbx.stats.fortune": [20, 40],
+        "mbx.stats.wisdom": [15, 30],
+        "mbx.stats.luck": [40, 60]
+    },
+    "harvester_melon_chopper": {
+        "mbx.stats.fortune": [20, 40],
+        "mbx.stats.wisdom": [15, 30],
+        "mbx.stats.luck": [40, 60]
+    },
+    "harvester_nether_wart_reaper": {
+        "mbx.stats.fortune": [20, 40],
+        "mbx.stats.wisdom": [15, 30],
+        "mbx.stats.luck": [40, 60]
+    },
+    "harvester_potato_reaper": {
+        "mbx.stats.fortune": [20, 40],
+        "mbx.stats.wisdom": [15, 30],
+        "mbx.stats.luck": [40, 60]
+    },
+    "harvester_pumpkin_chopper": {
+        "mbx.stats.fortune": [20, 40],
+        "mbx.stats.wisdom": [15, 30],
+        "mbx.stats.luck": [40, 60]
+    },
+    "harvester_sugar_cane_reaper": {
+        "mbx.stats.fortune": [20, 40],
+        "mbx.stats.wisdom": [15, 30],
+        "mbx.stats.luck": [40, 60]
+    },
+    "harvester_sweet_berries": {
+        "mbx.stats.fortune": [20, 40],
+        "mbx.stats.wisdom": [15, 30],
+        "mbx.stats.luck": [40, 60]
+    },
+    "harvester_wheat_reaper": {
+        "mbx.stats.fortune": [20, 40],
+        "mbx.stats.wisdom": [15, 30],
+        "mbx.stats.luck": [40, 60]
+    },
+    "harvester_hoely": {
+        "mbx.stats.fortune": [10, 25],
+        "mbx.stats.wisdom": [25, 40],
+        "mbx.stats.luck": [5, 20]
+    },
+    "bow_rainbox": {
+        "mbx.stats.wisdom": [50, 100]
+    },
+    "bow_bowtato": {
+        "mbx.stats.strength": [25, 50]
+    },
+    "bow_cupids_catapult": {
+        "mbx.stats.intelligence": [10, 30]
+    },
+    "vein_axe_fortune": {
+        "mbx.stats.fortune": [40, 60]
+    },
+    "vein_axe_mushroom": {
+        "mbx.stats.fortune": [20, 30],
+        "mbx.stats.wisdom": [20, 30]
+    },
+    "vein_axe_nether": {
+        "mbx.stats.fortune": [20, 30],
+        "mbx.stats.wisdom": [20, 30]
+    },
+    "harvester_algamble": {
+        "mbx.stats.fortune": [-150, 150],
+        "mbx.stats.wisdom": [70, 100],
+        "mbx.stats.luck": [-200, 200]
+    },
+    "harvester_bamboozle": {
+        "mbx.stats.fortune": [-60, 60],
+        "mbx.stats.wisdom": [50, 50],
+        "mbx.stats.luck": [-50, 50]
+    },
+    "harvester_bing_hoe": {
+        "mbx.stats.fortune": [25, 40],
+        "mbx.stats.wisdom": [20, 35]
+    },
+    "harvester_lucky_choppee": {
+        "mbx.stats.fortune": [25, 50],
+        "mbx.stats.wisdom": [15, 40],
+        "mbx.stats.luck": [30, 60]
+    },
+    "harvester_seacker": {
+        "mbx.stats.fortune": [40, 60],
+        "mbx.stats.wisdom": [25, 50],
+        "mbx.stats.luck": [30, 50]
+    },
+    "harvester_bamboom": {
+        "mbx.stats.fortune": [70, 100],
+        "mbx.stats.wisdom": [70, 100],
+        "mbx.stats.luck": [60, 80]
+    },
+    "harvester_chopnroll": {
+        "mbx.stats.fortune": [60, 80],
+        "mbx.stats.wisdom": [50, 75],
+        "mbx.stats.luck": [50, 150]
+    },
+    "harvester_cobalt_hoe": {
+        "mbx.stats.fortune": [30, 50],
+        "mbx.stats.wisdom": [25, 40],
+        "mbx.stats.luck": [30, 50]
+    },
+    "harvester_berry_slicer": {
+        "mbx.stats.fortune": [70, 100],
+        "mbx.stats.wisdom": [70, 100],
+        "mbx.stats.luck": [60, 80]
+    },
+    "harvester_valhallaxe": {
+        "mbx.stats.fortune": [50, 80],
+        "mbx.stats.wisdom": [100, 150],
+        "mbx.stats.luck": [40, 60]
+    },
+    "vein_axe_relax": {
+        "mbx.stats.wisdom": [60, 80]
+    },
+    "harvester_royal_axe": {
+        "mbx.stats.fortune": [80, 120],
+        "mbx.stats.wisdom": [80, 140],
+        "mbx.stats.luck": [70, 120]
+    },
+    "harvester_royal_hoe": {
+        "mbx.stats.fortune": [80, 120],
+        "mbx.stats.wisdom": [80, 140],
+        "mbx.stats.luck": [70, 120]
+    },
+    "bow_string_cheese": {
+        "mbx.stats.wisdom": [50, 100]
+    },
+    "musket_banana_blaster": {
+        "mbx.stats.luck": [5, 10]
+    },
+    "bow_of_butter": {
+        "mbx.stats.strength": [10, 20]
+    },
+    "dagger_spoon_stabber": {
+        "mbx.stats.luck": [10, 20]
+    },
+    "musket_noodle_nuisance": {
+        "mbx.stats.strength": [20, 50]
+    },
+    "musket_soda_sprayer": {
+        "mbx.stats.luck": [20, 45]
+    },
+    "staff_carrot_whack": {
+        "mbx.stats.strength": [40, 80]
+    },
+    "staff_pizza_paddle": {
+        "mbx.stats.strength": [35, 55]
+    },
+    "staff_candy_cane_cruncher": {
+        "mbx.stats.luck": [50, 90]
+    },
+    "dagger_daggerine": {
+        "mbx.stats.luck": [65, 80]
+    },
+    "harvester_fisherman_01" : {
+        "mbx.stats.fortune": [2, 4],
+        "mbx.stats.luck": [1, 3],
+        "mbx.stats.agility": [4, 8]
+    },
+    "harvester_fisherman_10" : {
+        "mbx.stats.fortune": [6, 10],
+        "mbx.stats.luck": [4, 7],
+        "mbx.stats.agility": [8, 16]
+    },
+    "harvester_fisherman_20" : {
+        "mbx.stats.fortune": [15, 25],
+        "mbx.stats.luck": [10, 18],
+        "mbx.stats.agility": [20, 32]
+    },
+    "harvester_fisherman_40" : {
+        "mbx.stats.fortune": [35, 50],
+        "mbx.stats.luck": [25, 40],
+        "mbx.stats.agility": [40, 70]
+    },
+    "harvester_fisherman_60" : {
+        "mbx.stats.fortune": [55, 75],
+        "mbx.stats.luck": [38, 55],
+        "mbx.stats.agility": [80, 110]
+    },
+    "harvester_fisherman_80" : {
+        "mbx.stats.fortune": [70, 90],
+        "mbx.stats.luck": [48, 65],
+        "mbx.stats.agility": [120, 160]
+    },
+    "staff_fishy_rod" : {
+        "mbx.stats.luck": [50, 100]
+    },
+    "bow_sticky_situation" : {
+        "mbx.stats.agility": [10, 15]
+    },
+    "musket_featherweight_firearm" : {
+        "mbx.stats.agility": [15, 25]
+    },
+    "musket_candy_cannon" : {
+        "mbx.stats.luck": [10, 30]
+    },
+    "staff_traffic_stopper" : {
+        "mbx.stats.intelligence": [10, 20]
+    },
+    "necklace_bagouze_blue" : {
+        "mbx.stats.luck": [5, 8]
+    },
+    "necklace_bagouze_green" : {
+        "mbx.stats.luck": [5, 7]
+    },
+    "necklace_lily" : {
+        "mbx.stats.luck": [1, 4],
+        "mbx.stats.agility": [2, 5],
+        "mbx.stats.health": [5, 10]
+    },
+    "necklace_silver" : {
+        "mbx.stats.defense": [2, 5],
+        "mbx.stats.wisdom": [1, 4],
+        "mbx.stats.health": [1, 3]
+    },
+    "ring_improved" : {
+        "mbx.stats.intelligence": [3, 5],
+        "mbx.stats.health": [3, 7]
+    },
+    "ring_feather" : {
+        "mbx.stats.intelligence": [5,7]
+    },
+    "ring_lily" : {
+        "mbx.stats.intelligence": [5, 7]
+    },
+    "ring_stellar" : {
+        "mbx.stats.intelligence": [5, 7]
+    },
+    "ring_silver" : {
+        "mbx.stats.intelligence": [5, 7]
+    },
+    "ring_melon" : {
+        "mbx.stats.luck": [4, 6],
+        "mbx.stats.health": [7, 10]
+    },
+    "necklace_locker" : {
+        "mbx.stats.defense": [10, 15],
+        "mbx.stats.health": [5, 10]
+    },
+    "necklace_bagouze_pink" : {
+        "mbx.stats.agility": [7, 10]
+    },
+    "necklace_bagouze_yellow" : {
+        "mbx.stats.defense": [3, 12],
+        "mbx.stats.agility": [9, 19]
+    },
+    "necklace_bronze" : {
+        "mbx.stats.defense": [5, 10],
+        "mbx.stats.health": [5, 8]
+    },
+    "necklace_plant_blue" : {
+        "mbx.stats.luck": [5, 10],
+        "mbx.stats.agility": [5, 10]
+    },
+    "ring_agility" : {
+        "mbx.stats.agility": [4, 12]
+    },
+    "ring_fire_bronze" : {
+        "mbx.stats.intelligence": [5, 7]
+    },
+    "ring_intelligence" : {
+        "mbx.stats.health": [7, 10]
+    },
+    "ring_luck" : {
+        "mbx.stats.health": [7, 10]
+    },
+    "ring_plant_blue" : {
+        "mbx.stats.intelligence": [5, 7]
+    },
+    "ring_reinforced_bad" : {
+        "mbx.stats.strength": [5, 9]
+    },
+    "basic_luck_necklace" : {
+        "mbx.stats.luck": [1, 2],
+        "mbx.stats.health": [1, 2]
+    },
+    "basic_agility_necklace" : {
+        "mbx.stats.agility": [1, 2],
+        "mbx.stats.health": [1, 2]
+    },
+    "ring_intelligence_necklace" : {
+        "mbx.stats.intelligence": [1, 2],
+        "mbx.stats.health": [1, 2]
+    },
+    "banana_ring" : {
+        "mbx.stats.fortune": [2, 4],
+        "mbx.stats.wisdom": [2, 5],
+        "mbx.stats.luck": [-2, 0]
+    },
+    "basic_agility_ring" : {
+        "mbx.stats.agility": [2, 4],
+        "mbx.stats.health": [1, 2]
+    },
+    "basic_intelligence_ring" : {
+        "mbx.stats.intelligence": [2, 4],
+        "mbx.stats.health": [1, 2]
+    },
+    "basic_luck_ring" : {
+        "mbx.stats.luck": [2, 4],
+        "mbx.stats.health": [1, 2]
+    },
+    "necklace_beautiful_blue" : {
+        "mbx.stats.luck": [11, 15],
+        "mbx.stats.agility": [11, 15],
+        "mbx.stats.health": [11, 15]
+    },
+    "necklace_beautiful_green" : {
+        "mbx.stats.intelligence": [6, 20],
+        "mbx.stats.agility": [7, 24],
+        "mbx.stats.health": [6, 20]
+    },
+    "necklace_beautiful_orange" : {
+        "mbx.stats.agility": [11, 15],
+        "mbx.stats.strength": [11, 15]
+    },
+    "necklace_plant_pink" : {
+        "mbx.stats.fortune": [7, 10],
+        "mbx.stats.health": [16, 20]
+    },
+    "ring_fire_gold" : {
+        "mbx.stats.wisdom": [6, 10],
+        "mbx.stats.agility": [11, 15],
+        "mbx.stats.health": [21, 25]
+    },
+    "ring_fire_silver" : {
+        "mbx.stats.luck": [7, 10],
+        "mbx.stats.intelligence": [7, 10]
+    },
+    "ring_multigem_blue" : {
+        "mbx.stats.luck": [15, 20]
+    },
+    "ring_multigem_green" : {
+        "mbx.stats.agility": [10, 15]
+    },
+    "ring_multigem_red" : {
+        "mbx.stats.intelligence": [16, 20]
+    },
+    "ring_plant_pink" : {
+        "mbx.stats.intelligence": [10, 15],
+        "mbx.stats.health": [8, 12]
+    },
+    "ring_plant_purple" : {
+        "mbx.stats.luck": [11, 15]
+    },
+    "ring_reinforced" : {
+        "mbx.stats.health": [7, 15]
+    },
+    "ring_simple_bronze" : {
+        "mbx.stats.health": [16, 20]
+    },
+    "ring_tropical_blue" : {
+        "mbx.stats.wisdom": [20, 30]
+    },
+    "cactus_necklace" : {
+        "mbx.stats.agility": [-20, -10],
+        "mbx.stats.strength": [10, 15],
+        "mbx.stats.health": [10, 15]
+    },
+    "candle_necklace" : {
+        "mbx.stats.fortune": [6, 10],
+        "mbx.stats.wisdom": [10, 15],
+        "mbx.stats.luck": [-15, -5],
+        "mbx.stats.intelligence": [15, 20],
+        "mbx.stats.health": [10, 15]
+    },
+    "gentle_ninja_necklace" : {
+        "mbx.stats.wisdom": [-4, -2],
+        "mbx.stats.luck": [6, 9],
+        "mbx.stats.agility": [8, 12],
+        "mbx.stats.health": [6, 9]
+    },
+    "little_knight_necklace" : {
+        "mbx.stats.defense": [10, 16],
+        "mbx.stats.strength": [8, 10],
+        "mbx.stats.health": [12, 16]
+    },
+    "superdyno_purple_necklace" : {
+        "mbx.stats.defense": [3, 5],
+        "mbx.stats.wisdom": [4, 10],
+        "mbx.stats.agility": [5, 10],
+        "mbx.stats.health": [5, 10]
+    },
+    "babyshark_ring" : {
+        "mbx.stats.defense": [3, 5],
+        "mbx.stats.fortune": [2, 3],
+        "mbx.stats.strength": [4, 8],
+        "mbx.stats.health": [5, 10]
+    },
+    "cactus_ring" : {
+        "mbx.stats.agility": [-20, -10],
+        "mbx.stats.strength": [10, 15],
+        "mbx.stats.health": [10, 15]
+    },
+    "candle_ring" : {
+        "mbx.stats.fortune": [6, 10],
+        "mbx.stats.wisdom": [10, 15],
+        "mbx.stats.luck": [-15, -5],
+        "mbx.stats.intelligence": [15, 20],
+        "mbx.stats.health": [10, 15]
+    },
+    "gentle_ninja_ring" : {
+        "mbx.stats.wisdom": [-4, -2],
+        "mbx.stats.luck": [7, 10],
+        "mbx.stats.agility": [10, 15],
+        "mbx.stats.health": [7, 10]
+    },
+    "little_knight_ring" : {
+        "mbx.stats.defense": [10, 16],
+        "mbx.stats.strength": [8, 10],
+        "mbx.stats.health": [7, 10]
+    },
+    "superdyno_purple_ring" : {
+        "mbx.stats.defense": [6, 10],
+        "mbx.stats.wisdom": [8, 12],
+        "mbx.stats.agility": [10, 15],
+        "mbx.stats.health": [10, 15]
+    },
+    "necklace_agility" : {
+        "mbx.stats.luck": [11, 15],
+        "mbx.stats.agility": [13, 18],
+        "mbx.stats.health": [11, 15]
+    },
+    "necklace_beautiful_purple" : {
+        "mbx.stats.luck": [12, 25]
+    },
+    "necklace_big_gem_blue" : {
+        "mbx.stats.health": [30, 40]
+    },
+    "necklace_big_gem_green" : {
+        "mbx.stats.luck": [21, 30],
+        "mbx.stats.intelligence": [21, 30],
+        "mbx.stats.health": [31, 40]
+    },
+    "necklace_big_gem_pink" : {
+        "mbx.stats.wisdom": [13, 18],
+        "mbx.stats.strength": [26, 35],
+        "mbx.stats.health": [31, 40]
+    },
+    "necklace_creamy_black" : {
+        "mbx.stats.health": [41, 60]
+    },
+    "necklace_creamy_cream" : {
+        "mbx.stats.health": [21, 30]
+    },
+    "necklace_cute_blue" : {
+        "mbx.stats.intelligence": [21, 30],
+        "mbx.stats.health": [31, 40]
+    },
+    "necklace_gold" : {
+        "mbx.stats.health": [41, 60]
+    }
+    ,
+    "necklace_intelligence" : {
+        "mbx.stats.intelligence": [7, 24],
+        "mbx.stats.agility": [6, 20],
+        "mbx.stats.health": [6, 20]
+    },
+    "necklace_luck" : {
+        "mbx.stats.agility": [11, 15],
+        "mbx.stats.strength": [11, 15]
+    },
+    "necklace_plant_purple" : {
+        "mbx.stats.agility": [11, 15],
+        "mbx.stats.strength": [11, 15]
+    },
+    "necklace_salted" : {
+        "mbx.stats.wisdom": [21, 30],
+        "mbx.stats.luck": [-21, -40],
+        "mbx.stats.strength": [11, 30],
+        "mbx.stats.health": [31, 50]
+    },
+    "necklace_tropical_blue" : {
+        "mbx.stats.fortune": [15, 20],
+        "mbx.stats.wisdom": [7, 10],
+        "mbx.stats.luck": [25, 35],
+        "mbx.stats.health": [16, 20]
+    },
+    "necklace_tropical_purple" : {
+        "mbx.stats.wisdom": [13, 18],
+        "mbx.stats.luck": [11, 15],
+        "mbx.stats.strength": [11, 15],
+        "mbx.stats.health": [11, 15]
+    },
+    "ring_beautiful_orange" : {
+        "mbx.stats.strength": [16, 20],
+        "mbx.stats.health": [31, 40]
+    },
+    "ring_beautiful_purple" : {
+        "mbx.stats.wisdom": [8, 12],
+        "mbx.stats.luck": [16, 20],
+        "mbx.stats.strength": [16, 20],
+        "mbx.stats.health": [21, 25]
+    },
+    "ring_big_gem_green" : {
+        "mbx.stats.fortune": [6, 10],
+        "mbx.stats.wisdom": [6, 10],
+        "mbx.stats.agility": [19, 30],
+        "mbx.stats.health": [41, 50]
+    },
+    "ring_big_gem_pink" : {
+        "mbx.stats.wisdom": [8, 12],
+        "mbx.stats.agility": [21, 25]
+    },
+    "ring_eagle_bronze" : {
+        "mbx.stats.wisdom": [21, 25],
+        "mbx.stats.health": [31, 40]
+    },
+    "ring_eyed_pink" : {
+        "mbx.stats.fortune": [4, 5],
+        "mbx.stats.wisdom": [8, 12],
+        "mbx.stats.intelligence": [19, 24],
+        "mbx.stats.agility": [16, 20],
+        "mbx.stats.strength": [21, 30],
+        "mbx.stats.health": [21, 30]
+    },
+    "ring_simple_agility" : {
+        "mbx.stats.wisdom": [6, 10],
+        "mbx.stats.agility": [13, 20],
+        "mbx.stats.health": [21, 25]
+    },
+    "ring_simple_intelligence" : {
+        "mbx.stats.wisdom": [6, 10],
+        "mbx.stats.intelligence": [11, 15],
+        "mbx.stats.health": [21, 25]
+    },
+    "ring_simple_luck" : {
+        "mbx.stats.wisdom": [6, 10],
+        "mbx.stats.agility": [11, 15],
+        "mbx.stats.health": [21, 25]
+    },
+    "ring_simple_silver" : {
+        "mbx.stats.agility": [7, 10],
+        "mbx.stats.strength": [7, 10]
+    },
+    "ring_super_golden" : {
+        "mbx.stats.health": [25, 40]
+    },
+    "sring_tropical_purple" : {
+        "mbx.stats.strength": [16, 20],
+        "mbx.stats.health": [11, 15]
+    },
+    "ring_tropical_red" : {
+        "mbx.stats.health": [31, 40]
+    },
+    "golden_rune_necklace" : {
+        "mbx.stats.fortune": [15, 20],
+        "mbx.stats.intelligence": [5, 10]
+    },
+    "steampunk_necklace" : {
+        "mbx.stats.defense": [-15, -10],
+        "mbx.stats.fortune": [15, 20],
+        "mbx.stats.luck": [8, 12]
+    },
+    "superdyno_black_necklace" : {
+        "mbx.stats.defense": [8, 10],
+        "mbx.stats.fortune": [12, 22],
+        "mbx.stats.agility": [5, 8],
+        "mbx.stats.strength": [5, 10]
+    },
+    "golden_rune_ring" : {
+        "mbx.stats.fortune": [15, 20],
+        "mbx.stats.intelligence": [5, 10]
+    },
+    "steampunk_ring" : {
+        "mbx.stats.defense": [-15, -10],
+        "mbx.stats.fortune": [15, 20],
+        "mbx.stats.luck": [8, 12]
+    },
+    "superdyno_black_ring" : {
+        "mbx.stats.defense": [15, 20],
+        "mbx.stats.fortune": [2, 25],
+        "mbx.stats.agility": [20, 30],
+        "mbx.stats.strength": [5, 10]
+    },
+    "necklace_big_gem_yellow" : {
+        "mbx.stats.wisdom": [11, 15],
+        "mbx.stats.intelligence": [31, 40],
+        "mbx.stats.strength": [31, 40]
+    },
+    "necklace_caramelized" : {
+        "mbx.stats.fortune": [22, 32],
+        "mbx.stats.wisdom": [26, 36],
+        "mbx.stats.agility": [31, 41],
+        "mbx.stats.strength": [30, 40]
+    },
+    "necklace_creamy_white" : {
+        "mbx.stats.wisdom": [7, 10],
+        "mbx.stats.strength": [21, 30],
+        "mbx.stats.health": [21, 30]
+    },
+    "necklace_cute_green" : {
+        "mbx.stats.luck": [21, 30],
+        "mbx.stats.intelligence": [21, 30],
+        "mbx.stats.health": [41, 50]
+    },
+    "necklace_cute_purple" : {
+        "mbx.stats.fortune": [21, 25],
+        "mbx.stats.wisdom": [19, 24],
+        "mbx.stats.health": [41, 50]
+    },
+    "necklace_eyed_green" : {
+        "mbx.stats.wisdom": [11, 20],
+        "mbx.stats.luck": [26, 40],
+        "mbx.stats.strength": [21, 30],
+        "mbx.stats.health": [51, 100]
+    },
+    "necklace_tropical_red" : {
+        "mbx.stats.wisdom": [11, 15],
+        "mbx.stats.strength": [26, 35],
+        "mbx.stats.health": [41, 50]
+    },
+    "ring_bagouze_blue" : {
+        "mbx.stats.wisdom": [21, 30],
+        "mbx.stats.agility": [21, 30],
+        "mbx.stats.strength": [31, 40],
+        "mbx.stats.health": [101, 150]
+    },
+    "ring_bagouze_yellow" : {
+        "mbx.stats.wisdom": [21, 30],
+        "mbx.stats.luck": [31, 40],
+        "mbx.stats.strength": [31, 40],
+        "mbx.stats.health": [151, 200]
+    },
+    "ring_bagouze_green" : {
+        "mbx.stats.wisdom": [16, 25],
+        "mbx.stats.agility": [37, 48],
+        "mbx.stats.strength": [31, 40],
+        "mbx.stats.health": [151, 200]
+    },
+    "ring_creamy_blue" : {
+        "mbx.stats.wisdom": [7, 10],
+        "mbx.stats.luck": [21, 25],
+        "mbx.stats.intelligence": [21, 25],
+        "mbx.stats.health": [21, 30]
+    },
+    "ring_creamy_white" : {
+        "mbx.stats.fortune": [4, 5],
+        "mbx.stats.wisdom": [16, 20],
+        "mbx.stats.strength": [21, 30],
+        "mbx.stats.health": [41, 50]
+    },
+    "ring_eyed_blue" : {
+        "mbx.stats.wisdom": [16, 20],
+        "mbx.stats.agility": [21, 30],
+        "mbx.stats.health": [41, 50]
+    },
+    "ring_eyed_green" : {
+        "mbx.stats.wisdom": [15, 25],
+        "mbx.stats.intelligence": [30, 45],
+        "mbx.stats.health": [21, 35]
+    },
+    "ring_ninja_white" : {
+        "mbx.stats.fortune": [25, 45],
+        "mbx.stats.wisdom": [21, 25],
+        "mbx.stats.health": [31, 40]
+    },
+    "ring_pearl_blue" : {
+        "mbx.stats.intelligence": [16, 20],
+        "mbx.stats.health": [21, 25]
+    },
+    "computer_necklace" : {
+        "mbx.stats.wisdom": [20, 30],
+        "mbx.stats.intelligence": [28, 40],
+        "mbx.stats.strength": [28, 40],
+        "mbx.stats.health": [32, 42]
+    },
+    "pineapple_necklace" : {
+        "mbx.stats.defense": [-30, -15],
+        "mbx.stats.luck": [35, 45],
+        "mbx.stats.health": [20, 30]
+    },
+    "speed_talisman_necklace" : {
+        "mbx.stats.intelligence": [-20, -10],
+        "mbx.stats.agility": [25, 35],
+        "mbx.stats.health": [20, 30]
+    },
+    "superdyno_blue_necklace" : {
+        "mbx.stats.defense": [10, 20],
+        "mbx.stats.luck": [20, 30],
+        "mbx.stats.agility": [20, 30],
+        "mbx.stats.health": [20, 30]
+    },
+    "computer_ring" : {
+        "mbx.stats.wisdom": [18, 28],
+        "mbx.stats.intelligence": [25, 40],
+        "mbx.stats.strength": [25, 40],
+        "mbx.stats.health": [30, 40]
+    },
+    "pineapple_ring" : {
+        "mbx.stats.defense": [-30, -15],
+        "mbx.stats.luck": [35, 45],
+        "mbx.stats.health": [30, 40]
+    },
+    "small_royale_ring" : {
+        "mbx.stats.defense": [15, 20],
+        "mbx.stats.agility": [-5, -2],
+        "mbx.stats.strength": [20, 30],
+        "mbx.stats.health": [10, 20]
+    },
+    "speed_talisman_ring" : {
+        "mbx.stats.intelligence": [-20, -10],
+        "mbx.stats.agility": [25, 35],
+        "mbx.stats.health": [20, 30]
+    },
+    "superdyno_blue_ring" : {
+        "mbx.stats.defense": [18, 23],
+        "mbx.stats.luck": [28, 38],
+        "mbx.stats.agility": [25, 35],
+        "mbx.stats.health": [25, 35]
+    },
+    "necklace_cute_red" : {
+        "mbx.stats.fortune": [16, 20],
+        "mbx.stats.wisdom": [16, 20],
+        "mbx.stats.luck": [41, 50],
+        "mbx.stats.health": [41, 60]
+    },
+    "necklace_eagle_bronze" : {
+        "mbx.stats.wisdom": [7, 10],
+        "mbx.stats.luck": [21, 30],
+        "mbx.stats.strength": [16, 20],
+        "mbx.stats.health": [41, 60]
+    },
+    "necklace_eagle_silver" : {
+        "mbx.stats.wisdom": [21, 30],
+        "mbx.stats.intelligence": [26, 40],
+        "mbx.stats.agility": [21, 30],
+        "mbx.stats.health": [41, 70]
+    },
+    "necklace_illuminati_green" : {
+        "mbx.stats.wisdom": [21, 30],
+        "mbx.stats.luck": [31, 40],
+        "mbx.stats.agility": [37, 48],
+        "mbx.stats.health": [101, 150]
+    },
+    "necklace_ninja_blue" : {
+        "mbx.stats.wisdom": [31, 40],
+        "mbx.stats.intelligence": [11, 30],
+        "mbx.stats.health": [101, 150]
+    },
+    "necklace_ninja_green" : {
+        "mbx.stats.fortune": [6, 15],
+        "mbx.stats.wisdom": [21, 30],
+        "mbx.stats.strength": [31, 50],
+        "mbx.stats.health": [151, 200]
+    },
+    "necklace_ninja_white" : {
+        "mbx.stats.fortune": [16, 25],
+        "mbx.stats.wisdom": [21, 30],
+        "mbx.stats.agility": [31, 40],
+        "mbx.stats.health": [151, 200]
+    },
+    "necklace_pearl_blue" : {
+        "mbx.stats.wisdom": [21, 30],
+        "mbx.stats.luck": [31, 50],
+        "mbx.stats.health": [151, 200]
+    },
+    "necklace_pearl_green" : {
+        "mbx.stats.wisdom": [16, 20],
+        "mbx.stats.agility": [37, 48],
+        "mbx.stats.strength": [31, 40],
+        "mbx.stats.health": [151, 200]
+    },
+    "necklace_pearl_pink" : {
+        "mbx.stats.wisdom": [37, 48],
+        "mbx.stats.intelligence": [31, 50],
+        "mbx.stats.agility": [31, 50]
+    },
+    "necklace_pearl_yellow" : {
+        "mbx.stats.wisdom": [21, 30],
+        "mbx.stats.luck": [31, 40],
+        "mbx.stats.agility": [31, 40],
+        "mbx.stats.health": [201, 250]
+    },
+    "ring_bagouze_pink" : {
+        "mbx.stats.wisdom": [19, 30],
+        "mbx.stats.intelligence": [25, 36],
+        "mbx.stats.strength": [21, 30],
+        "mbx.stats.health": [51, 100]
+    },
+    "ring_big_gem_yellow" : {
+        "mbx.stats.wisdom": [11, 15],
+        "mbx.stats.intelligence": [16, 30],
+        "mbx.stats.health": [21, 35]
+    },
+    "ring_cute_purple" : {
+        "mbx.stats.wisdom": [25, 42],
+        "mbx.stats.luck": [26, 40],
+        "mbx.stats.agility": [26, 40],
+        "mbx.stats.health": [101, 150]
+    },
+    "ring_cute_red" : {
+        "mbx.stats.wisdom": [21, 30],
+        "mbx.stats.intelligence": [25, 36],
+        "mbx.stats.health": [81, 120]
+    },
+    "ring_illuminati_super" : {
+        "mbx.stats.wisdom": [16, 25],
+        "mbx.stats.strength": [31, 40],
+        "mbx.stats.health": [101, 140]
+    },
+    "ring_ninja_green" : {
+        "mbx.stats.wisdom": [11, 20],
+        "mbx.stats.luck": [21, 30],
+        "mbx.stats.strength": [21, 30],
+        "mbx.stats.health": [71, 100]
+    },
+    "ring_ninja_blue" : {
+        "mbx.stats.wisdom": [16, 25],
+        "mbx.stats.intelligence": [21, 30],
+        "mbx.stats.strength": [21, 30],
+        "mbx.stats.health": [101, 150]
+    },
+    "ring_pearl_yellow" : {
+        "mbx.stats.wisdom": [26, 35],
+        "mbx.stats.luck": [26, 40],
+        "mbx.stats.strength": [21, 30],
+        "mbx.stats.health": [81, 130]
+    },
+    "dj_necklace" : {
+        "mbx.stats.defense": [20, 25],
+        "mbx.stats.fortune": [35, 60],
+        "mbx.stats.agility": [35, 45],
+        "mbx.stats.health": [20, 30]
+    },
+    "dj_ring" : {
+        "mbx.stats.defense": [20, 25],
+        "mbx.stats.fortune": [35, 55],
+        "mbx.stats.agility": [35, 45],
+        "mbx.stats.health": [30, 40]
+    },
+    "coconut_necklace" : {
+        "mbx.stats.intelligence": [65, 80],
+        "mbx.stats.strength": [65, 90],
+        "mbx.stats.health": [65, 80]
+    },
+    "coconut_ring" : {
+        "mbx.stats.intelligence": [55, 70],
+        "mbx.stats.strength": [55, 70],
+        "mbx.stats.health": [55, 70]
+    },
+    "necklace_illuminati_pink" : {
+        "mbx.stats.luck": [31, 50],
+        "mbx.stats.agility": [31, 50],
+        "mbx.stats.health": [41, 70]
+    },
+    "necklace_illuminati_red" : {
+        "mbx.stats.wisdom": [31, 40],
+        "mbx.stats.intelligence": [25, 48],
+        "mbx.stats.health": [101, 150]
+    },
+    "necklace_illuminati_super" : {
+        "mbx.stats.luck": [40, 50],
+        "mbx.stats.intelligence": [36, 51],
+        "mbx.stats.agility": [40, 55],
+        "mbx.stats.strength": [41, 56],
+        "mbx.stats.health": [37, 52]
+    },
+    "necklace_super_blue" : {
+        "mbx.stats.fortune": [21, 30],
+        "mbx.stats.wisdom": [21, 30],
+        "mbx.stats.luck": [21, 30],
+        "mbx.stats.strength": [21, 30],
+        "mbx.stats.health": [201, 250]
+    },
+    "necklace_super_caramelized" : {
+        "mbx.stats.fortune": [11, 15],
+        "mbx.stats.wisdom": [26, 35],
+        "mbx.stats.intelligence": [41, 50],
+        "mbx.stats.strength": [41, 50],
+        "mbx.stats.health": [201, 250]
+    },
+    "necklace_super_green" : {
+        "mbx.stats.fortune": [16, 25],
+        "mbx.stats.wisdom": [31, 50],
+        "mbx.stats.strength": [31, 50],
+        "mbx.stats.health": [251, 300]
+    },
+    "necklace_super_pink" : {
+        "mbx.stats.wisdom": [43, 60],
+        "mbx.stats.intelligence": [55, 72],
+        "mbx.stats.agility": [46, 60],
+        "mbx.stats.health": [301, 350]
+    },
+    "ring_beautiful_blue" : {
+        "mbx.stats.wisdom": [21, 30],
+        "mbx.stats.luck": [41, 60],
+        "mbx.stats.health": [151, 200]
+    },
+    "ring_beautiful_green" : {
+        "mbx.stats.wisdom": [31, 40],
+        "mbx.stats.intelligence": [31, 50],
+        "mbx.stats.health": [101, 150]
+    },
+    "ring_big_gem_blue" : {
+        "mbx.stats.wisdom": [21, 30],
+        "mbx.stats.agility": [26, 40],
+        "mbx.stats.strength": [26, 40],
+        "mbx.stats.health": [151, 200]
+    },
+    "ring_caramelized" : {
+        "mbx.stats.wisdom": [26, 35],
+        "mbx.stats.luck": [26, 35],
+        "mbx.stats.intelligence": [26, 35],
+        "mbx.stats.health": [151, 200]
+    },
+    "ring_creamy_black" : {
+        "mbx.stats.wisdom": [31, 40],
+        "mbx.stats.luck": [41, 60],
+        "mbx.stats.health": [201, 250]
+    },
+    "ring_cute_blue" : {
+        "mbx.stats.wisdom": [16, 25],
+        "mbx.stats.strength": [31, 50],
+        "mbx.stats.health": [151, 200]
+    },
+    "ring_cute_green" : {
+        "mbx.stats.wisdom": [16, 25],
+        "mbx.stats.luck": [31, 40],
+        "mbx.stats.strength": [31, 40],
+        "mbx.stats.health": [151, 200]
+    },
+    "ring_eagle_silver" : {
+        "mbx.stats.wisdom": [21, 30],
+        "mbx.stats.health": [301, 350]
+    },
+    "ring_eyed_yellow" : {
+        "mbx.stats.wisdom": [21, 30],
+        "mbx.stats.intelligence": [26, 40],
+        "mbx.stats.agility": [26, 40],
+        "mbx.stats.health": [101, 150]
+    },
+    "ring_illuminati_green" : {
+        "mbx.stats.fortune": [101, 150],
+        "mbx.stats.wisdom": [21, 30],
+        "mbx.stats.health": [301, 350]
+    },
+    "ring_illuminati_purple" : {
+        "mbx.stats.wisdom": [25, 36],
+        "mbx.stats.strength": [101, 150],
+        "mbx.stats.health": [201, 250]
+    },
+    "ring_illuminati_red" : {
+        "mbx.stats.wisdom": [26, 35],
+        "mbx.stats.luck": [101, 150],
+        "mbx.stats.health": [151, 200]
+    },
+    "ring_pearl_green" : {
+        "mbx.stats.wisdom": [21, 35],
+        "mbx.stats.luck": [26, 40],
+        "mbx.stats.agility": [31, 48],
+        "mbx.stats.health": [101, 150]
+    },
+    "ring_pearl_pink" : {
+        "mbx.stats.wisdom": [25, 36],
+        "mbx.stats.luck": [41, 60],
+        "mbx.stats.strength": [41, 60]
+    },
+    "ring_salted" : {
+        "mbx.stats.wisdom": [31, 40],
+        "mbx.stats.luck": [21, 30],
+        "mbx.stats.agility": [21, 30],
+        "mbx.stats.health": [151, 200]
+    },
+    "ring_super_blue" : {
+        "mbx.stats.wisdom": [21, 35],
+        "mbx.stats.luck": [26, 40],
+        "mbx.stats.agility": [101, 150],
+        "mbx.stats.health": [101, 150]
+    },
+    "ring_super_caramelized" : {
+        "mbx.stats.fortune": [151, 220],
+        "mbx.stats.wisdom": [151, 250],
+        "mbx.stats.luck": [151, 250],
+        "mbx.stats.strength": [31, 50],
+        "mbx.stats.health": [201, 250]
+    },
+    "ring_super_green" : {
+        "mbx.stats.wisdom": [121, 130],
+        "mbx.stats.luck": [31, 40],
+        "mbx.stats.intelligence": [31, 40],
+        "mbx.stats.agility": [37, 48],
+        "mbx.stats.health": [101, 150]
+    },
+    "ring_super_red" : {
+        "mbx.stats.wisdom": [21, 30],
+        "mbx.stats.luck": [131, 140],
+        "mbx.stats.strength": [31, 40],
+        "mbx.stats.health": [151, 200]
+    },
+    "belt_bronze" : {
+        "mbx.stats.wisdom": [1, 4],
+        "mbx.stats.luck": [0, 1],
+        "mbx.stats.agility": [1, 2],
+        "mbx.stats.health": [1, 3]
+    },
+    "belt_caramelized" : {
+        "mbx.stats.luck": [4, 8]
+    },
+    "belt_improved" : {
+        "mbx.stats.intelligence": [3, 5],
+        "mbx.stats.health": [3, 7]
+    },
+    "belt_bagouze_yellow" : {
+        "mbx.stats.agility": [9, 12]
+    },
+    "belt_cute_blue" : {
+        "mbx.stats.health": [16, 20]
+    },
+    "belt_cute_purple" : {
+        "mbx.stats.agility": [16, 20]
+    },
+    "belt_lily" : {
+        "mbx.stats.wisdom": [3, 5],
+        "mbx.stats.agility": [1, 3],
+        "mbx.stats.health": [1, 2]
+    },
+    "belt_plant_blue" : {
+        "mbx.stats.luck": [5, 10],
+        "mbx.stats.agility": [5, 10]
+    },
+    "basic_agility_belt" : {
+        "mbx.stats.agility": [2, 4],
+        "mbx.stats.health": [2, 4]
+    },
+    "basic_intelligence_belt" : {
+        "mbx.stats.intelligence": [2, 4],
+        "mbx.stats.health": [2, 4]
+    },
+    "basic_luck_belt" : {
+        "mbx.stats.luck": [2, 4],
+        "mbx.stats.health": [2, 4]
+    },
+    "banana_boots" : {
+        "mbx.stats.defense": [1, 2],
+        "mbx.stats.fortune": [2, 4],
+        "mbx.stats.wisdom": [5, 8],
+        "mbx.stats.luck": [-5, 0],
+        "mbx.stats.agility": [-5, 0],
+        "mbx.stats.health": [5, 8]
+    },
+    "basic_agility_boots" : {
+        "mbx.stats.agility": [3, 8],
+        "mbx.stats.health": [1, 2]
+    },
+    "basic_intelligence_boots" : {
+        "mbx.stats.intelligence": [3, 8],
+        "mbx.stats.health": [1, 2]
+    },
+    "basic_luck_boots" : {
+        "mbx.stats.luck": [3, 8],
+        "mbx.stats.health": [1, 2]
+    },
+    "belt_locker" : {
+        "mbx.stats.defense": [10, 15],
+        "mbx.stats.health": [8, 15]
+    },
+    "belt_bagouze_blue" : {
+        "mbx.stats.intelligence": [16, 20],
+        "mbx.stats.health": [26, 30]
+    },
+    "belt_bagouze_green" : {
+        "mbx.stats.defense": [13, 23],
+        "mbx.stats.agility": [14, 34],
+        "mbx.stats.strength": [10, 20]
+    },
+    "belt_cute_green" : {
+        "mbx.stats.fortune": [12, 22],
+        "mbx.stats.wisdom": [6, 16]
+    },
+    "belt_cute_red" : {
+        "mbx.stats.fortune": [11, 21],
+        "mbx.stats.agility": [15, 25],
+        "mbx.stats.health": [9, 19]
+    },
+    "belt_eagle_bronze" : {
+        "mbx.stats.agility": [9, 12]
+    },
+    "belt_plant_pink" : {
+        "mbx.stats.agility": [7, 10],
+        "mbx.stats.health": [16, 20]
+    },
+    "wedding_costume_boots" : {
+        "mbx.stats.wisdom": [25, 35],
+        "mbx.stats.luck": [-5, -8],
+        "mbx.stats.health": [20, 30]
+    },
+    "wedding_dress_boots" : {
+        "mbx.stats.intelligence": [15, 20],
+        "mbx.stats.luck": [-5, -8],
+        "mbx.stats.health": [20, 30]
+    },
+    "wedding_dress_back" : {
+        "mbx.stats.intelligence": [25, 35],
+        "mbx.stats.luck": [-5, -8],
+        "mbx.stats.health": [20, 30]
+    },
+    "moonlit_belt" : {
+        "mbx.stats.defense": [10, 15],
+        "mbx.stats.health": [10, 15]
+    },
+    "babyshark_belt" : {
+        "mbx.stats.defense": [3, 5],
+        "mbx.stats.fortune": [5, 8],
+        "mbx.stats.strength": [4, 8],
+        "mbx.stats.health": [5, 10]
+    },
+    "cactus_belt" : {
+        "mbx.stats.agility": [-20, -10],
+        "mbx.stats.strength": [10, 15],
+        "mbx.stats.health": [10, 15]
+    },
+    "gentle_ninja_belt" : {
+        "mbx.stats.wisdom": [-4, -2],
+        "mbx.stats.luck": [5, 7],
+        "mbx.stats.agility": [7, 10],
+        "mbx.stats.health": [5, 8]
+    },
+    "golden_rune_belt" : {
+        "mbx.stats.fortune": [15, 20],
+        "mbx.stats.intelligence": [5, 10]
+    },
+    "little_knight_belt" : {
+        "mbx.stats.defense": [10, 15],
+        "mbx.stats.strength": [8, 10],
+        "mbx.stats.health": [10, 15]
+    },
+    "superdyno_purple_belt" : {
+        "mbx.stats.defense": [3, 5],
+        "mbx.stats.wisdom": [4, 10],
+        "mbx.stats.agility": [5, 10],
+        "mbx.stats.health": [5, 10]
+    },
+    "babyshark_boots" : {
+        "mbx.stats.defense": [3, 5],
+        "mbx.stats.fortune": [2, 5],
+        "mbx.stats.agility": [5, 10],
+        "mbx.stats.strength": [5, 9],
+        "mbx.stats.health": [10, 15]
+    },
+    "cactus_boots" : {
+        "mbx.stats.defense": [10, 15],
+        "mbx.stats.agility": [-25, -15],
+        "mbx.stats.strength": [15, 22],
+        "mbx.stats.health": [25, 35]
+    },
+    "candle_boots" : {
+        "mbx.stats.fortune": [6, 9],
+        "mbx.stats.wisdom": [7, 10],
+        "mbx.stats.luck": [-15, -5],
+        "mbx.stats.intelligence": [15, 25],
+        "mbx.stats.health": [15, 20]
+    },
+    "gentle_ninja_boots" : {
+        "mbx.stats.wisdom": [-8, -4],
+        "mbx.stats.luck": [10, 15],
+        "mbx.stats.agility": [15, 20],
+        "mbx.stats.health": [10, 16]
+    },
+    "little_knight_boots" : {
+        "mbx.stats.defense": [10, 15],
+        "mbx.stats.strength": [8, 11],
+        "mbx.stats.health": [12, 20]
+    },
+    "superdyno_purple_boots" : {
+        "mbx.stats.defense": [10, 15],
+        "mbx.stats.wisdom": [15, 25],
+        "mbx.stats.agility": [15, 25],
+        "mbx.stats.health": [15, 25]
+    },
+    "cactus_backpack" : {
+        "mbx.stats.defense": [10, 15],
+        "mbx.stats.agility": [-25, -15],
+        "mbx.stats.strength": [15, 22],
+        "mbx.stats.health": [25, 35]
+    },
+    "adventurer_backpack" : {
+        "mbx.stats.fortune": [5, 10],
+        "mbx.stats.wisdom": [5, 10],
+        "mbx.stats.luck": [5, 10],
+        "mbx.stats.intelligence": [5, 10],
+        "mbx.stats.agility": [5, 10],
+        "mbx.stats.strength": [5, 10]
+    },
+    "belt_agility" : {
+        "mbx.stats.agility": [16, 20],
+        "mbx.stats.health": [26, 30]
+    },
+    "belt_bagouze_pink" : {
+        "mbx.stats.wisdom": [13, 18],
+        "mbx.stats.intelligence": [19, 30]
+    },
+    "belt_gold" : {
+        "mbx.stats.wisdom": [11, 15],
+        "mbx.stats.intelligence": [16, 25]
+    },
+    "belt_intelligence" : {
+        "mbx.stats.intelligence": [18, 25],
+        "mbx.stats.health": [12, 18]
+    },
+    "belt_plant_purple" : {
+        "mbx.stats.intelligence": [7, 10],
+        "mbx.stats.agility": [7, 10]
+    },
+    "belt_salted" : {
+        "mbx.stats.wisdom": [11, 15],
+        "mbx.stats.luck": [31, 40]
+    },
+    "superdyno_black_belt" : {
+        "mbx.stats.defense": [8, 10],
+        "mbx.stats.fortune": [18, 20],
+        "mbx.stats.agility": [18, 20],
+        "mbx.stats.strength": [5, 10],
+        "mbx.stats.health": [15, 20]
+    },
+    "wise_leatherhead_belt" : {
+        "mbx.stats.defense": [5, 10],
+        "mbx.stats.wisdom": [30, 40],
+        "mbx.stats.health": [25, 35]
+    },
+    "lucky_jester_boots" : {
+        "mbx.stats.wisdom": [-15, -5],
+        "mbx.stats.luck": [20, 35],
+        "mbx.stats.strength": [-15, -5],
+        "mbx.stats.health": [15, 25]
+    },
+    "nimble_jester_boots" : {
+        "mbx.stats.wisdom": [-15, -5],
+        "mbx.stats.agility": [20, 40],
+        "mbx.stats.strength": [-15, -5],
+        "mbx.stats.health": [15, 25]
+    },
+    "smart_jester_boots" : {
+        "mbx.stats.wisdom": [-15, -5],
+        "mbx.stats.intelligence": [20, 40],
+        "mbx.stats.agility": [-15, -5],
+        "mbx.stats.health": [15, 25]
+    },
+    "steampunk_boots" : {
+        "mbx.stats.defense": [-15, -10],
+        "mbx.stats.fortune": [10, 15],
+        "mbx.stats.luck": [12, 20]
+    },
+    "superdyno_black_boots" : {
+        "mbx.stats.defense": [18, 20],
+        "mbx.stats.fortune": [25, 30],
+        "mbx.stats.agility": [18, 20],
+        "mbx.stats.strength": [5, 10],
+        "mbx.stats.health": [18, 20]
+    },
+    "wise_leatherhead_boots" : {
+        "mbx.stats.defense": [5, 10],
+        "mbx.stats.wisdom": [25, 35],
+        "mbx.stats.intelligence": [20, 30],
+        "mbx.stats.health": [20, 30]
+    },
+    "steampunk_backpack" : {
+        "mbx.stats.defense": [-15, -10],
+        "mbx.stats.fortune": [10, 15],
+        "mbx.stats.luck": [13, 20]
+    },
+    "belt_eyed_green" : {
+        "mbx.stats.fortune": [11, 15],
+        "mbx.stats.luck": [21, 25],
+        "mbx.stats.agility": [25, 30]
+    },
+    "belt_luck" : {
+        "mbx.stats.wisdom": [11, 15],
+        "mbx.stats.luck": [16, 20],
+        "mbx.stats.strength": [16, 20]
+    },
+    "belt_ninja_blue" : {
+        "mbx.stats.wisdom": [1, 15],
+        "mbx.stats.health": [26, 35]
+    },
+    "belt_pearl_pink" : {
+        "mbx.stats.wisdom": [38, 52],
+        "mbx.stats.health": [35, 45]
+    },
+    "belt_tropical_blue" : {
+        "mbx.stats.agility": [21, 25],
+        "mbx.stats.strength": [21, 25]
+    },
+    "belt_tropical_purple" : {
+        "mbx.stats.wisdom": [13, 18],
+        "mbx.stats.health": [21, 30]
+    },
+    "belt_tropical_red" : {
+        "mbx.stats.intelligence": [25, 30],
+        "mbx.stats.health": [31, 40]
+    },
+    "small_royale_belt" : {
+        "mbx.stats.defense": [15, 20],
+        "mbx.stats.agility": [-10, -5],
+        "mbx.stats.strength": [20, 30],
+        "mbx.stats.health": [10, 20]
+    },
+    "speed_talisman_belt" : {
+        "mbx.stats.intelligence": [-20, -10],
+        "mbx.stats.agility": [25, 35],
+        "mbx.stats.health": [20, 30]
+    },
+    "superdyno_blue_belt" : {
+        "mbx.stats.defense": [10, 20],
+        "mbx.stats.luck": [20, 30],
+        "mbx.stats.agility": [20, 30],
+        "mbx.stats.health": [20, 30]
+    },
+    "computer_boots" : {
+        "mbx.stats.wisdom": [20, 28],
+        "mbx.stats.intelligence": [25, 38],
+        "mbx.stats.strength": [25, 38],
+        "mbx.stats.health": [33, 43]
+    },
+    "pineapple_boots" : {
+        "mbx.stats.defense": [-30, -15],
+        "mbx.stats.luck": [50, 65],
+        "mbx.stats.health": [15, 25]
+    },
+    "astral_boots" : {
+        "mbx.stats.fortune": [30, 50],
+        "mbx.stats.wisdom": [30, 50],
+        "mbx.stats.luck": [30, 50],
+        "mbx.stats.intelligence": [30, 50],
+        "mbx.stats.agility": [30, 50],
+        "mbx.stats.strength": [30, 50],
+        "mbx.stats.health": [40, 60]
+    },
+    "mushroom_boots" : {
+        "mbx.stats.fortune": [20, 35],
+        "mbx.stats.intelligence": [30, 45],
+        "mbx.stats.health": [28, 42]
+    },
+    "small_royale_boots" : {
+        "mbx.stats.defense": [20, 30],
+        "mbx.stats.agility": [-5, -2],
+        "mbx.stats.strength": [25, 35],
+        "mbx.stats.health": [30, 40]
+    },
+    "snail_boots" : {
+        "mbx.stats.defense": [35, 48],
+        "mbx.stats.fortune": [5, 10],
+        "mbx.stats.agility": [-10, -5],
+        "mbx.stats.strength": [25, 35],
+        "mbx.stats.health": [20, 30]
+    },
+    "superdyno_blue_boots" : {
+        "mbx.stats.defense": [20, 25],
+        "mbx.stats.luck": [30, 40],
+        "mbx.stats.agility": [30, 40],
+        "mbx.stats.health": [30, 40]
+    },
+    "very_heavy_boots" : {
+        "mbx.stats.defense": [80, 100],
+        "mbx.stats.agility": [-50, -25],
+        "mbx.stats.health": [90, 110]
+    },
+    "mushroom_backpack" : {
+        "mbx.stats.fortune": [30, 45],
+        "mbx.stats.intelligence": [30, 55],
+        "mbx.stats.health": [30, 45]
+    },
+    "snail_backpack" : {
+        "mbx.stats.defense": [37, 50],
+        "mbx.stats.fortune": [5, 10],
+        "mbx.stats.agility": [-10, -5],
+        "mbx.stats.strength": [27, 37],
+        "mbx.stats.health": [22, 32]
+    },
+    "astral_back" : {
+        "mbx.stats.fortune": [30, 50],
+        "mbx.stats.wisdom": [30, 50],
+        "mbx.stats.luck": [30, 50],
+        "mbx.stats.intelligence": [30, 50],
+        "mbx.stats.agility": [30, 50],
+        "mbx.stats.strength": [30, 50],
+        "mbx.stats.health": [40, 60]
+    },
+    "pineapple_cape" : {
+        "mbx.stats.defense": [-30, -15],
+        "mbx.stats.luck": [45, 65],
+        "mbx.stats.health": [35, 50]
+    },
+    "pineapple_belt" : {
+        "mbx.stats.defense": [-30, -15],
+        "mbx.stats.luck": [45, 60],
+        "mbx.stats.health": [40, 60]
+    },
+    "belt_eagle_silver" : {
+        "mbx.stats.fortune": [26, 35],
+        "mbx.stats.wisdom": [21, 30],
+        "mbx.stats.health": [71, 100]
+    },
+    "belt_ninja_green" : {
+        "mbx.stats.luck": [21, 30],
+        "mbx.stats.health": [41, 50]
+    },
+    "belt_ninja_white" : {
+        "mbx.stats.wisdom": [11, 15],
+        "mbx.stats.luck": [31, 40]
+    },
+    "belt_pearl_blue" : {
+        "mbx.stats.luck": [31, 40],
+        "mbx.stats.health": [31, 40]
+    },
+    "belt_pearl_green" : {
+        "mbx.stats.agility": [49, 72],
+        "mbx.stats.health": [61, 80]
+    },
+    "belt_super_blue" : {
+        "mbx.stats.wisdom": [31, 50],
+        "mbx.stats.luck": [31, 50],
+        "mbx.stats.agility": [31, 50]
+    },
+    "belt_super_pink" : {
+        "mbx.stats.fortune": [31, 40],
+        "mbx.stats.health": [151, 200]
+    },
+    "dj_belt" : {
+        "mbx.stats.defense": [25, 30],
+        "mbx.stats.fortune": [35, 40],
+        "mbx.stats.agility": [45, 60],
+        "mbx.stats.health": [40, 60]
+    },
+    "coconut_belt" : {
+        "mbx.stats.intelligence": [50, 80],
+        "mbx.stats.strength": [65, 85],
+        "mbx.stats.health": [60, 90]
+    },
+    "coconut_backpack" : {
+        "mbx.stats.intelligence": [50, 80],
+        "mbx.stats.strength": [65, 95],
+        "mbx.stats.health": [60, 90]
+    },
+    "dj_backpack" : {
+        "mbx.stats.defense": [25, 30],
+        "mbx.stats.fortune": [55, 70],
+        "mbx.stats.agility": [65, 75],
+        "mbx.stats.health": [35, 50]
+    },
+    "coconut_boots" : {
+        "mbx.stats.intelligence": [60, 80],
+        "mbx.stats.strength": [65, 85],
+        "mbx.stats.health": [60, 90]
+    },
+    "dj_boots" : {
+        "mbx.stats.defense": [25, 30],
+        "mbx.stats.fortune": [60, 75],
+        "mbx.stats.luck": [20, 35],
+        "mbx.stats.agility": [55, 70],
+        "mbx.stats.health": [15, 25]
+    },
+    "cyan_squid_boots" : {
+        "mbx.stats.defense": [40, 60],
+        "mbx.stats.luck": [75, 90],
+        "mbx.stats.health": [40, 60]
+    },
+    "cyan_squid_backpack" : {
+        "mbx.stats.defense": [40, 60],
+        "mbx.stats.luck": [50, 85],
+        "mbx.stats.health": [40, 60]
+    },
+    "belt_illuminati_green" : {
+        "mbx.stats.wisdom": [31, 40],
+        "mbx.stats.luck": [41, 60],
+        "mbx.stats.agility": [49, 72],
+        "mbx.stats.health": [201, 250]
+    },
+    "belt_illuminati_pink" : {
+        "mbx.stats.wisdom": [37, 48],
+        "mbx.stats.intelligence": [37, 60],
+        "mbx.stats.health": [201, 250]
+    },
+    "belt_illuminati_red" : {
+        "mbx.stats.fortune": [37, 60],
+        "mbx.stats.wisdom": [31, 40],
+        "mbx.stats.health": [201, 250]
+    },
+    "belt_illuminati_super" : {
+        "mbx.stats.fortune": [6, 10],
+        "mbx.stats.wisdom": [21, 30],
+        "mbx.stats.luck": [31, 50],
+        "mbx.stats.intelligence": [31, 50],
+        "mbx.stats.health": [251, 300]
+    },
+    "belt_super_caramelized" : {
+        "mbx.stats.wisdom": [21, 30],
+        "mbx.stats.agility": [31, 50],
+        "mbx.stats.health": [181, 230]
+    },
+    "belt_super_green" : {
+        "mbx.stats.wisdom": [31, 40],
+        "mbx.stats.intelligence": [31, 50],
+        "mbx.stats.health": [201, 250]
+    }
+
+
+    ,
+    "basic_agility_chestplate" : {
+        "mbx.stats.agility": [3, 6],
+        "mbx.stats.health": [1, 2]
+    },
+    "basic_intelligence_chestplate" : {
+        "mbx.stats.intelligence": [3, 6],
+        "mbx.stats.health": [1, 2]
+    },
+    "basic_luck_helmet" : {
+        "mbx.stats.luck": [2, 4],
+        "mbx.stats.health": [1, 3]
+    },
+    "banana_chestplate" : {
+        "mbx.stats.defense": [2, 3],
+        "mbx.stats.fortune": [4, 6],
+        "mbx.stats.wisdom": [5, 7],
+        "mbx.stats.luck": [-5, 0],
+        "mbx.stats.agility": [-5, 0],
+        "mbx.stats.health": [8, 12]
+    },
+    "basic_luck_chestplate" : {
+        "mbx.stats.agility": [3, 6],
+        "mbx.stats.health": [1, 2]
+    },
+    "basic_agility_leggings" : {
+        "mbx.stats.agility": [4, 5],
+        "mbx.stats.health": [1, 2]
+    },
+    "banana_leggings" : {
+        "mbx.stats.defense": [1, 2],
+        "mbx.stats.fortune": [3, 5],
+        "mbx.stats.wisdom": [2, 4],
+        "mbx.stats.luck": [-2, 0],
+        "mbx.stats.agility": [-5, 0],
+        "mbx.stats.health": [7, 10]
+    },
+    "basic_intelligence_leggings" : {
+        "mbx.stats.intelligence": [4, 5],
+        "mbx.stats.health": [1, 2]
+    },
+    "basic_luck_leggings" : {
+        "mbx.stats.luck": [4, 5],
+        "mbx.stats.health": [1, 2]
+    },
+    "banana_helmet" : {
+        "mbx.stats.defense": [1, 2],
+        "mbx.stats.fortune": [3, 5],
+        "mbx.stats.wisdom": [2, 4],
+        "mbx.stats.luck": [-2, 0],
+        "mbx.stats.agility": [-5, 0],
+        "mbx.stats.health": [5, 10]
+    },
+    "basic_agility_helmet" : {
+        "mbx.stats.agility": [2, 4],
+        "mbx.stats.health": [1, 3]
+    },
+    "basic_intelligence_helmet" : {
+        "mbx.stats.intelligence": [2, 4],
+        "mbx.stats.health": [1, 3]
+    },
+    "babyshark_chestplate" : {
+        "mbx.stats.defense": [4, 6],
+        "mbx.stats.fortune": [5, 8],
+        "mbx.stats.agility": [8, 16],
+        "mbx.stats.strength": [6, 12],
+        "mbx.stats.health": [12, 18]
+    },
+    "wedding_costume_chestplate" : {
+        "mbx.stats.wisdom": [30, 45],
+        "mbx.stats.luck": [-10, -16],
+        "mbx.stats.health": [20, 30]
+    },
+    "wedding_costume_leggings" : {
+        "mbx.stats.wisdom": [30, 40],
+        "mbx.stats.luck": [-7, -10],
+        "mbx.stats.health": [20, 30]
+    },
+    "wedding_dress_helmet" : {
+        "mbx.stats.luck": [-5, -8],
+        "mbx.stats.intelligence": [12, 20],
+        "mbx.stats.health": [20, 30]
+    },
+    "wedding_dress_chestplate" : {
+        "mbx.stats.luck": [-5, -8],
+        "mbx.stats.intelligence": [20, 25],
+        "mbx.stats.health": [20, 30]
+    },
+    "wedding_dress_leggings" : {
+        "mbx.stats.luck": [-5, -8],
+        "mbx.stats.intelligence": [18, 25],
+        "mbx.stats.health": [20, 30]
+    },
+    "candle_chestplate" : {
+        "mbx.stats.fortune": [8, 12],
+        "mbx.stats.wisdom": [15, 20],
+        "mbx.stats.luck": [-15, -5],
+        "mbx.stats.intelligence": [12, 18],
+        "mbx.stats.health": [20, 25]
+    },
+    "gentle_ninja_chestplate" : {
+        "mbx.stats.wisdom": [-10, -5],
+        "mbx.stats.luck": [10, 15],
+        "mbx.stats.agility": [20, 25],
+        "mbx.stats.health": [15, 22]
+    },
+    "little_knight_chestplate" : {
+        "mbx.stats.defense": [15, 20],
+        "mbx.stats.strength": [10, 15],
+        "mbx.stats.health": [20, 25]
+    },
+    "superdyno_purple_chestplate" : {
+        "mbx.stats.defense": [15, 20],
+        "mbx.stats.wisdom": [15, 25],
+        "mbx.stats.agility": [20, 30],
+        "mbx.stats.health": [20, 30]
+    },
+    "babyshark_leggings" : {
+        "mbx.stats.defense": [4, 6],
+        "mbx.stats.fortune": [5, 8],
+        "mbx.stats.agility": [8, 16],
+        "mbx.stats.strength": [6, 10],
+        "mbx.stats.health": [12, 18]
+    },
+    "cactus_leggings" : {
+        "mbx.stats.defense": [14, 20],
+        "mbx.stats.agility": [-25, -15],
+        "mbx.stats.strength": [18, 26],
+        "mbx.stats.health": [33, 43]
+    },
+    "candle_leggings" : {
+        "mbx.stats.fortune": [7, 10],
+        "mbx.stats.wisdom": [15, 20],
+        "mbx.stats.luck": [-15, -5],
+        "mbx.stats.intelligence": [10, 15],
+        "mbx.stats.health": [18, 22]
+    },
+    "gentle_ninja_leggings" : {
+        "mbx.stats.wisdom": [-9, -4],
+        "mbx.stats.luck": [10, 20],
+        "mbx.stats.agility": [15, 25],
+        "mbx.stats.health": [14, 20]
+    },
+    "little_knight_leggings" : {
+        "mbx.stats.defense": [13, 19],
+        "mbx.stats.strength": [9, 14],
+        "mbx.stats.health": [15, 25]
+    },
+    "superdyno_purple_leggings" : {
+        "mbx.stats.defense": [12, 17],
+        "mbx.stats.wisdom": [15, 25],
+        "mbx.stats.agility": [18, 28],
+        "mbx.stats.health": [18, 28]
+    },
+    "babyshark_helmet" : {
+        "mbx.stats.fortune": [3, 6],
+        "mbx.stats.wisdom": [1, 5],
+        "mbx.stats.agility": [5, 10],
+        "mbx.stats.strength": [5, 10],
+        "mbx.stats.health": [15, 20]
+    },
+    "cactus_helmet" : {
+        "mbx.stats.defense": [12, 20],
+        "mbx.stats.agility": [-25, -15],
+        "mbx.stats.strength": [18, 25],
+        "mbx.stats.health": [30, 40]
+    },
+    "candle_helmet" : {
+        "mbx.stats.fortune": [6, 10],
+        "mbx.stats.wisdom": [10, 20],
+        "mbx.stats.luck": [-15, -5],
+        "mbx.stats.intelligence": [15, 25],
+        "mbx.stats.health": [15, 20]
+    },
+    "gentle_ninja_helmet" : {
+        "mbx.stats.wisdom": [-8, -4],
+        "mbx.stats.luck": [10, 20],
+        "mbx.stats.agility": [10, 20],
+        "mbx.stats.health": [12, 18]
+    },
+    "little_knight_helmet" : {
+        "mbx.stats.defense": [12, 18],
+        "mbx.stats.strength": [8, 12],
+        "mbx.stats.health": [15, 25]
+    },
+    "superdyno_purple_helmet" : {
+        "mbx.stats.defense": [10, 15],
+        "mbx.stats.wisdom": [15, 25],
+        "mbx.stats.agility": [15, 25],
+        "mbx.stats.health": [15, 25]
+    },
+    "adventurer_helmet" : {
+        "mbx.stats.fortune": [5, 10],
+        "mbx.stats.wisdom": [5, 10],
+        "mbx.stats.luck": [5, 10],
+        "mbx.stats.intelligence": [5, 10],
+        "mbx.stats.agility": [5, 10],
+        "mbx.stats.health": [5, 10]
+    },
+    "lucky_jester_chestplate" : {
+        "mbx.stats.defense": [-15, -10],
+        "mbx.stats.luck": [25, 55],
+        "mbx.stats.strength": [-10, -5],
+        "mbx.stats.health": [15, 25]
+    },
+    "lucky_jester_leggings" : {
+        "mbx.stats.luck": [35, 50],
+        "mbx.stats.intelligence": [-15, -5],
+        "mbx.stats.strength": [-5, -2],
+        "mbx.stats.health": [20, 30]
+    },
+    "lucky_jester_helmet" : {
+        "mbx.stats.defense": [-15, -10],
+        "mbx.stats.wisdom": [-5, -2],
+        "mbx.stats.luck": [20, 40],
+        "mbx.stats.strength": [-5, -2],
+        "mbx.stats.health": [20, 30]
+    },
+    "nimble_jester_chestplate" : {
+        "mbx.stats.defense": [-5, -2],
+        "mbx.stats.agility": [25, 55],
+        "mbx.stats.strength": [-5, -2],
+        "mbx.stats.health": [25, 35]
+    },
+    "nimble_jester_leggings" : {
+        "mbx.stats.intelligence": [-15, -5],
+        "mbx.stats.agility": [35, 50],
+        "mbx.stats.strength": [-5, -2],
+        "mbx.stats.health": [20, 30]
+    },
+    "nimble_jester_helmet" : {
+        "mbx.stats.wisdom": [-5, -2],
+        "mbx.stats.agility": [20, 40],
+        "mbx.stats.intelligence": [-5, -2],
+        "mbx.stats.health": [20, 30]
+    },
+    "smart_jester_chestplate" : {
+        "mbx.stats.defense": [-5, -2],
+        "mbx.stats.intelligence": [25, 55],
+        "mbx.stats.strength": [-5, -2],
+        "mbx.stats.health": [25, 35]
+    },
+    "smart_jester_leggings" : {
+        "mbx.stats.agility": [-15, -5],
+        "mbx.stats.intelligence": [35, 50],
+        "mbx.stats.strength": [-5, -2],
+        "mbx.stats.health": [20, 30]
+    },
+    "smart_jester_helmet" : {
+        "mbx.stats.wisdom": [-5, -2],
+        "mbx.stats.intelligence": [20, 40],
+        "mbx.stats.agility": [-5, -2],
+        "mbx.stats.health": [20, 30]
+    },
+    "steampunk_chestplate" : {
+        "mbx.stats.defense": [-18, -12],
+        "mbx.stats.fortune": [23, 33],
+        "mbx.stats.luck": [18, 25]
+    },
+    "steampunk_leggings" : {
+        "mbx.stats.defense": [-17, -11],
+        "mbx.stats.fortune": [18, 28],
+        "mbx.stats.luck": [11, 20]
+    },
+    "steampunk_helmet" : {
+        "mbx.stats.defense": [-15, -10],
+        "mbx.stats.fortune": [25, 30],
+        "mbx.stats.luck": [10, 20]
+    },
+    "superdyno_black_chestplate" : {
+        "mbx.stats.defense": [20, 25],
+        "mbx.stats.fortune": [27, 30],
+        "mbx.stats.agility": [23, 30],
+        "mbx.stats.strength": [10, 15],
+        "mbx.stats.health": [25, 30]
+    },
+    "superdyno_black_leggings" : {
+        "mbx.stats.defense": [18, 23],
+        "mbx.stats.fortune": [25, 28],
+        "mbx.stats.agility": [23, 33],
+        "mbx.stats.strength": [18, 13],
+        "mbx.stats.health": [25, 30]
+    },
+    "superdyno_black_helmet" : {
+        "mbx.stats.defense": [15, 20],
+        "mbx.stats.fortune": [27, 30],
+        "mbx.stats.agility": [25, 30],
+        "mbx.stats.strength": [5, 10],
+        "mbx.stats.health": [25, 30]
+    },
+    "wise_leatherhead_chestplate" : {
+        "mbx.stats.defense": [10, 15],
+        "mbx.stats.wisdom": [35, 45],
+        "mbx.stats.intelligence": [30, 40],
+        "mbx.stats.health": [30, 40]
+    },
+    "wise_leatherhead_leggings" : {
+        "mbx.stats.defense": [10, 15],
+        "mbx.stats.wisdom": [30, 40],
+        "mbx.stats.intelligence": [25, 35],
+        "mbx.stats.health": [25, 35]
+    },
+    "wise_leatherhead_helmet" : {
+        "mbx.stats.defense": [5, 10],
+        "mbx.stats.wisdom": [30, 40],
+        "mbx.stats.intelligence": [25, 35],
+        "mbx.stats.health": [25, 35]
+    },
+    "computer_chestplate" : {
+        "mbx.stats.wisdom": [25, 35],
+        "mbx.stats.intelligence": [30, 45],
+        "mbx.stats.strength": [30, 45],
+        "mbx.stats.health": [40, 50]
+    },
+    "computer_leggings" : {
+        "mbx.stats.wisdom": [23, 33],
+        "mbx.stats.intelligence": [30, 43],
+        "mbx.stats.strength": [30, 43],
+        "mbx.stats.health": [38, 48]
+    },
+    "computer_helmet" : {
+        "mbx.stats.wisdom": [20, 30],
+        "mbx.stats.intelligence": [30, 45],
+        "mbx.stats.strength": [30, 45],
+        "mbx.stats.health": [35, 45]
+    },
+    "pineapple_chestplate" : {
+        "mbx.stats.defense": [-30, -15],
+        "mbx.stats.luck": [55, 75],
+        "mbx.stats.health": [45, 65]
+    },
+    "pineapple_leggings" : {
+        "mbx.stats.defense": [-30, -15],
+        "mbx.stats.luck": [45, 55],
+        "mbx.stats.health": [35, 55]
+    },
+    "pineapple_helmet" : {
+        "mbx.stats.defense": [-30, -15],
+        "mbx.stats.luck": [35, 55],
+        "mbx.stats.health": [35, 45]
+    },
+    "astral_chestplate" : {
+        "mbx.stats.fortune": [30, 50],
+        "mbx.stats.wisdom": [30, 50],
+        "mbx.stats.luck": [30, 50],
+        "mbx.stats.intelligence": [30, 50],
+        "mbx.stats.agility": [30, 50],
+        "mbx.stats.strength": [30, 50],
+        "mbx.stats.health": [40, 60]
+    },
+    "astral_leggings" : {
+        "mbx.stats.fortune": [30, 50],
+        "mbx.stats.wisdom": [30, 50],
+        "mbx.stats.luck": [30, 50],
+        "mbx.stats.intelligence": [30, 50],
+        "mbx.stats.agility": [30, 50],
+        "mbx.stats.strength": [30, 50],
+        "mbx.stats.health": [40, 60]
+    },
+    "astral_helmet" : {
+        "mbx.stats.fortune": [30, 50],
+        "mbx.stats.wisdom": [30, 50],
+        "mbx.stats.luck": [30, 50],
+        "mbx.stats.intelligence": [30, 50],
+        "mbx.stats.agility": [30, 50],
+        "mbx.stats.strength": [30, 50],
+        "mbx.stats.health": [40, 60]
+    },
+    "mushroom_chestplate" : {
+        "mbx.stats.fortune": [35, 50],
+        "mbx.stats.intelligence": [35, 50],
+        "mbx.stats.health": [35, 50]
+    },
+    "mushroom_leggings" : {
+        "mbx.stats.fortune": [30, 45],
+        "mbx.stats.intelligence": [40, 55],
+        "mbx.stats.health": [33, 47]
+    },
+    "mushroom_helmet" : {
+        "mbx.stats.fortune": [20, 35],
+        "mbx.stats.intelligence": [30, 45],
+        "mbx.stats.health": [30, 40]
+    },
+    "small_royale_chestplate" : {
+        "mbx.stats.defense": [30, 40],
+        "mbx.stats.agility": [-5, -2],
+        "mbx.stats.strength": [35, 45],
+        "mbx.stats.health": [40, 50]
+    },
+    "small_royale_leggings" : {
+        "mbx.stats.defense": [25, 35],
+        "mbx.stats.agility": [-5, -2],
+        "mbx.stats.strength": [30, 40],
+        "mbx.stats.health": [35, 45]
+    },
+    "small_royale_helmet" : {
+        "mbx.stats.defense": [25, 35],
+        "mbx.stats.agility": [-5, -2],
+        "mbx.stats.strength": [30, 40],
+        "mbx.stats.health": [35, 45]
+    },
+    "snail_chestplate" : {
+        "mbx.stats.defense": [40, 55],
+        "mbx.stats.fortune": [5, 10],
+        "mbx.stats.agility": [-10, -5],
+        "mbx.stats.strength": [30, 40],
+        "mbx.stats.health": [25, 35]
+    },
+    "snail_leggings" : {
+        "mbx.stats.defense": [38, 52],
+        "mbx.stats.fortune": [5, 10],
+        "mbx.stats.agility": [-10, -5],
+        "mbx.stats.strength": [28, 38],
+        "mbx.stats.health": [23, 33]
+    },
+    "snail_helmet" : {
+        "mbx.stats.defense": [35, 50],
+        "mbx.stats.fortune": [5, 10],
+        "mbx.stats.agility": [-10, -5],
+        "mbx.stats.strength": [25, 35],
+        "mbx.stats.health": [20, 30]
+    },
+    "superdyno_blue_chestplate" : {
+        "mbx.stats.defense": [25, 30],
+        "mbx.stats.luck": [40, 50],
+        "mbx.stats.agility": [35, 45],
+        "mbx.stats.health": [35, 45]
+    },
+    "superdyno_blue_leggings" : {
+        "mbx.stats.defense": [23, 28],
+        "mbx.stats.luck": [35, 45],
+        "mbx.stats.agility": [33, 43],
+        "mbx.stats.health": [33, 43]
+    },
+    "superdyno_blue_helmet" : {
+        "mbx.stats.defense": [20, 25],
+        "mbx.stats.luck": [35, 45],
+        "mbx.stats.agility": [30, 40],
+        "mbx.stats.health": [30, 40]
+    },
+    "very_heavy_chestplate" : {
+        "mbx.stats.defense": [100, 120],
+        "mbx.stats.agility": [-50, -25],
+        "mbx.stats.health": [110, 130]
+    },
+    "very_heavy_leggings" : {
+        "mbx.stats.defense": [90, 110],
+        "mbx.stats.agility": [-50, -25],
+        "mbx.stats.health": [100, 120]
+    },
+    "very_heavy_helmet" : {
+        "mbx.stats.defense": [90, 110],
+        "mbx.stats.agility": [-50, -25],
+        "mbx.stats.health": [100, 120]
+    },
+    "gary_helmet" : {
+        "mbx.stats.defense": [15, 25],
+        "mbx.stats.fortune": [40, 55],
+        "mbx.stats.wisdom": [30, 40],
+        "mbx.stats.intelligence": [-40, -30],
+        "mbx.stats.agility": [-20, -10],
+        "mbx.stats.health": [22, 32]
+    },
+    "dj_chestplate" : {
+        "mbx.stats.defense": [25, 35],
+        "mbx.stats.fortune": [80, 95],
+        "mbx.stats.luck": [25, 35],
+        "mbx.stats.agility": [65, 85],
+        "mbx.stats.health": [45, 65]
+    },
+    "dj_legginsg" : {
+        "mbx.stats.defense": [20, 25],
+        "mbx.stats.fortune": [65, 80],
+        "mbx.stats.luck": [15, 25],
+        "mbx.stats.agility": [55, 65],
+        "mbx.stats.health": [35, 55]
+    },
+    "dj_helmet" : {
+        "mbx.stats.defense": [20, 25],
+        "mbx.stats.fortune": [70, 85],
+        "mbx.stats.luck": [15, 30],
+        "mbx.stats.agility": [45, 65],
+        "mbx.stats.health": [35, 45]
+    },
+    "coconut_chestplate" : {
+        "mbx.stats.intelligence": [80, 100],
+        "mbx.stats.strength": [85, 115],
+        "mbx.stats.health": [80, 110]
+    },
+    "coconut_helmet" : {
+        "mbx.stats.intelligence": [70,90],
+        "mbx.stats.strength": [85, 105],
+        "mbx.stats.health": [70, 100]
+    },
+    "coconut_leggings" : {
+        "mbx.stats.intelligence": [70, 90],
+        "mbx.stats.strength": [85, 105],
+        "mbx.stats.health": [70, 90]
+    },
+    "cyan_squid_chestplate" : {
+        "mbx.stats.defense": [40, 60],
+        "mbx.stats.luck": [75, 100],
+        "mbx.stats.health": [40, 60]
+    },
+    "cyan_squid_leggings" : {
+        "mbx.stats.defense": [40, 60],
+        "mbx.stats.luck": [60, 90],
+        "mbx.stats.health": [40, 60]
+    },
+    "cyan_squid_helmet" : {
+        "mbx.stats.defense": [40, 60],
+        "mbx.stats.luck": [60, 90],
+        "mbx.stats.health": [40, 60]
+    },
+    "harvester_amethyst" : {
+        "mbx.stats.fortune" : [50, 90]
+    },
+    "lny_snake_belt" : {
+        "mbx.stats.health" : [10, 15],
+        "mbx.stats.intelligence" : [8, 12],
+        "mbx.stats.luck" : [8, 12],
+        "mbx.stats.wisdom" : [9, 14]
+    },
+    "lny_snake_backpack" : {
+        "mbx.stats.health" : [10, 15],
+        "mbx.stats.intelligence" : [8, 14],
+        "mbx.stats.luck" : [8, 14],
+        "mbx.stats.wisdom" : [10, 16]
+    },
+    "lny_snake_ring" : {
+        "mbx.stats.health" : [8, 16],
+        "mbx.stats.intelligence" : [6, 12],
+        "mbx.stats.luck" : [6, 12],
+        "mbx.stats.wisdom" : [8, 12]
+    },
+    "lny_snake_necklace" : {
+        "mbx.stats.health" : [10, 20],
+        "mbx.stats.intelligence" : [8, 13],
+        "mbx.stats.luck" : [8, 13],
+        "mbx.stats.wisdom" : [10, 15]
+    },
+    "lny_snake_helmet" : {
+        "mbx.stats.health" : [20, 30],
+        "mbx.stats.intelligence" : [10, 16],
+        "mbx.stats.luck" : [10, 16],
+        "mbx.stats.wisdom" : [15, 20]
+    },
+    "lny_snake_chestplate" : {
+        "mbx.stats.health" : [20, 30],
+        "mbx.stats.intelligence" : [10, 16],
+        "mbx.stats.luck" : [10, 16],
+        "mbx.stats.wisdom" : [14, 20]
+    },
+    "lny_snake_leggings" : {
+        "mbx.stats.health" : [17, 28],
+        "mbx.stats.intelligence" : [10, 16],
+        "mbx.stats.luck" : [10, 16],
+        "mbx.stats.wisdom" : [14, 20]
+    },
+    "lny_snake_boots" : {
+        "mbx.stats.health" : [10, 15],
+        "mbx.stats.intelligence" : [8, 13],
+        "mbx.stats.luck" : [8, 13],
+        "mbx.stats.wisdom" : [10, 15]
+    },
+    "xmas_hipster_backpack" : {
+        "mbx.stats.intelligence": [10, 15],
+        "mbx.stats.strength": [5, 10],
+        "mbx.stats.health": [10, 15]
+    },
+    "xmas_hipster_ring" : {
+        "mbx.stats.intelligence": [10, 15],
+        "mbx.stats.health": [10, 20]
+    },
+    "xmas_hipster_belt" : {
+        "mbx.stats.intelligence": [10, 15],
+        "mbx.stats.health": [10, 15]
+    },
+    "xmas_hipster_necklace" : {
+        "mbx.stats.intelligence": [10, 15],
+        "mbx.stats.health": [15, 25]
+    },
+    "xmas_hipster_helmet" : {
+        "mbx.stats.defense": [10, 15],
+        "mbx.stats.intelligence": [10, 15],
+        "mbx.stats.health": [15, 25]
+    },
+    "xmas_hipster_chestplate" : {
+        "mbx.stats.defense": [10, 15],
+        "mbx.stats.intelligence": [10, 15],
+        "mbx.stats.health": [20, 30]
+    },
+    "xmas_hipster_leggings" : {
+        "mbx.stats.defense": [10, 15],
+        "mbx.stats.intelligence": [10, 15],
+        "mbx.stats.health": [15, 25]
+    },
+    "xmas_hipster_boots" : {
+        "mbx.stats.defense": [10, 15],
+        "mbx.stats.intelligence": [8, 12],
+        "mbx.stats.health": [12, 20]
+    }
+}
