@@ -27,9 +27,18 @@ public class ItemStatsRangeLoader {
                     Map<String, int[]> itemStats = new HashMap<>();
 
                     for (Map.Entry<String, JsonElement> stat : stats.entrySet()) {
-                        JsonArray arr = stat.getValue().getAsJsonArray();
-                        int[] range = new int[] { arr.get(0).getAsInt(), arr.get(1).getAsInt() };
-                        itemStats.put(stat.getKey(), range);
+                        JsonElement value = stat.getValue();
+
+                        if (value.isJsonArray()) {
+                            JsonArray arr = value.getAsJsonArray();
+                            if (arr.size() == 2) {
+                                int[] range = new int[] { arr.get(0).getAsInt(), arr.get(1).getAsInt() };
+                                itemStats.put(stat.getKey(), range);
+                            }
+                        } else if (value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber()) {
+                            int val = value.getAsInt();
+                            itemStats.put(stat.getKey(), new int[] { val, val });
+                        }
                     }
                     statRanges.put(itemId, itemStats);
                 }
