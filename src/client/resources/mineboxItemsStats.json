@@ -4720,15 +4720,15 @@
       20,
       30
     ],
-    "mbx.stats.strength": [
+    "mbx.stats.wisdom": [
       20,
       30
     ],
     "mbx.durability": 500
   },
   "vein_axe_chop": {
-    "mbx.stats.strength": [
-      30,
+    "mbx.stats.fortune": [
+      25,
       40
     ],
     "mbx.durability": 500
@@ -5024,9 +5024,9 @@
   "vein_axe_nether": {
     "mbx.stats.fortune": [
       20,
-      30
+      35
     ],
-    "mbx.stats.strength": [
+    "mbx.stats.wisdom": [
       20,
       30
     ],
@@ -6248,8 +6248,8 @@
   },
   "vein_axe_fortune": {
     "mbx.stats.fortune": [
-      40,
-      60
+      50,
+      80
     ],
     "mbx.durability": 500
   },
@@ -6866,7 +6866,11 @@
     "mbx.durability": 0
   },
   "vein_axe_relax": {
-    "mbx.stats.strength": [
+    "mbx.stats.fortune": [
+      90,
+      120
+    ],
+    "mbx.stats.wisdom": [
       60,
       80
     ],
@@ -7820,5 +7824,98 @@
       250
     ],
     "mbx.durability": 0
+  },
+  "harvester_fisherman_01": {
+    "mbx.stats.fortune": [
+      2,
+      4
+    ],
+    "mbx.stats.luck": [
+      1,
+      3
+    ],
+    "mbx.stats.agility": [
+      4,
+      8
+    ],
+    "mbx.durability": 0
+  },
+  "harvester_fisherman_10": {
+    "mbx.stats.fortune": [
+      6,
+      10
+    ],
+    "mbx.stats.luck": [
+      4,
+      7
+    ],
+    "mbx.stats.agility": [
+      8,
+      16
+    ],
+    "mbx.durability": 0
+  },
+  "harvester_fisherman_20": {
+    "mbx.stats.fortune": [
+      15,
+      25
+    ],
+    "mbx.stats.luck": [
+      10,
+      18
+    ],
+    "mbx.stats.agility": [
+      20,
+      32
+    ],
+    "mbx.durability": 0
+  },
+  "harvester_fisherman_40": {
+    "mbx.stats.fortune": [
+      35,
+      50
+    ],
+    "mbx.stats.luck": [
+      25,
+      40
+    ],
+    "mbx.stats.agility": [
+      40,
+      70
+    ],
+    "mbx.durability": 0
+  },
+  "harvester_fisherman_60": {
+    "mbx.stats.fortune": [
+      55,
+      75
+    ],
+    "mbx.stats.luck": [
+      38,
+      55
+    ],
+    "mbx.stats.agility": [
+      80,
+      110
+    ],
+    "mbx.durability": 0
+  },
+  "harvester_fisherman_80": {
+    "mbx.stats.fortune": [
+      70,
+      90
+    ],
+    "mbx.stats.luck": [
+      48,
+      65
+    ],
+    "mbx.stats.agility": [
+      120,
+      160
+    ],
+    "mbx.durability": 0
+  },
+  "leaf_blower": {
+    "mbx.durability": 500
   }
 }
