@@ -7,12 +7,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 
 import java.util.List;
 import java.util.Map;
 
 import fr.silv.utils.ItemStatsRangeLoader;
+import fr.silv.utils.TooltipStatColor;
 
 public class CustomItemTooltipHandler {
 
@@ -45,7 +45,7 @@ public class CustomItemTooltipHandler {
                     int[] range = entry.getValue();
                     String suffix = (range[0] == range[1]) ? " [" + range[0] + "]"
                             : " [" + range[0] + " to " + range[1] + "]";
-                    Text newLine = line.copy().append(Text.literal(suffix).formatted(Formatting.GRAY));
+                    Text newLine = line.copy().append(TooltipStatColor.statColor(suffix, translated.toUpperCase()));
                     lines.set(i, newLine);
                     break;
                 }
