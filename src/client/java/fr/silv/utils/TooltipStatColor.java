@@ -9,26 +9,25 @@ import net.minecraft.util.Formatting;
 public class TooltipStatColor {
     public static Text statColor(String suffix, String stat) {
         MutableText text = Text.literal(suffix);
-        switch (stat) {
-            case "HEALTH":
-                return text.formatted(Formatting.DARK_RED);
-            case "STRENGTH":
-                TextColor brown = TextColor.fromRgb(0x8B4513);
-                return text.setStyle(Style.EMPTY.withColor(brown));
-            case "AGILITY":
-                return text.formatted(Formatting.GREEN);
-            case "INTELLIGENCE":
-                return text.formatted(Formatting.RED);
-            case "LUCK":
-                return text.formatted(Formatting.BLUE);
-            case "WISDOM":
-                return text.formatted(Formatting.LIGHT_PURPLE);
-            case "FORTUNE":
-                return text.formatted(Formatting.GOLD);
-            case "DEFENSE":
-                return text.formatted(Formatting.DARK_AQUA);
+        switch (stat.toUpperCase()) {
+            case "MBX.STATS.HEALTH":
+                return text.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xE24A63)));
+            case "MBX.STATS.STRENGTH":
+                return text.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xA55F26)));
+            case "MBX.STATS.AGILITY":
+                return text.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0x6BC047)));
+            case "MBX.STATS.INTELLIGENCE":
+                return text.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xE24A2E)));
+            case "MBX.STATS.DEFENSE":
+                return text.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0x1F8ECD)));
+            case "MBX.STATS.WISDOM":
+                return text.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0x9457D3)));
+            case "MBX.STATS.LUCK":
+                return text.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0x3D84A8)));
+            case "MBX.STATS.FORTUNE":
+                return text.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xEC8C2E)));
             default:
-                return text.formatted(Formatting.GRAY);
+                return text.setStyle(Style.EMPTY.withColor(Formatting.GRAY));
         }
     }
 }
