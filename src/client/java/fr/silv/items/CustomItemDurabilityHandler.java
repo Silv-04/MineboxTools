@@ -57,7 +57,7 @@ public class CustomItemDurabilityHandler {
 
         if (id.contains("harvester_") || id.contains("hammer") || id.contains("vein") || id.contains("watering_can")
                 || id.contains("sponge") || id.contains("bucket") || id.contains("laborer") || id.contains("basket_seeds") 
-                || id.contains("leaf_blower")) {
+                || id.contains("block_stick") || id.contains("leaf_blower")) {
             float ratio = handleHarvesterDurability(item);
             applyFakeDurability(item, ratio);
         }

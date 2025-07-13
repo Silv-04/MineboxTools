@@ -7917,5 +7917,14 @@
   },
   "leaf_blower": {
     "mbx.durability": 500
+  },
+  "block_stick_topaz": {
+    "mbx.durability": 500
+  },
+  "block_stick_diamond": {
+    "mbx.durability": 250
+  },
+  "block_stick_simple": {
+    "mbx.durability": 100
   }
 }
