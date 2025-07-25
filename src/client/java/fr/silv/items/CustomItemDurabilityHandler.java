@@ -82,7 +82,7 @@ public class CustomItemDurabilityHandler {
     private static void applyFakeDurability(ItemStack item, Integer currentDamage, Integer maxDamage, String id) {
         if (currentDamage == null || currentDamage <= 0)
             return;
-        if (maxDamage == null || maxDamage <= 0 || maxDamage == currentDamage || maxDamage < currentDamage)
+        if (maxDamage == null || maxDamage <= 0 || maxDamage < currentDamage)
             return;
 
         Integer previous = durabilityCache.get(item);
