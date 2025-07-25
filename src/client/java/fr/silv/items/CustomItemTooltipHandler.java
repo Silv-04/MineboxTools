@@ -36,7 +36,7 @@ public class CustomItemTooltipHandler {
                 String key = content.getKey();
                 int[] range = statRanges.get(key);
                 String suffix = (range[0] == range[1]) ? " [" + range[0] + "]"
-                        : " [" + range[0] + " to " + range[1] + "]";
+                        : " [" + range[0] + "  |  " + range[1] + "]";
                 Text newLine = line.copy().append(TooltipStatColor.statColor(suffix, key.toUpperCase()));
                 lines.set(i, newLine);
             }

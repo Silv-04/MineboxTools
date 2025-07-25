@@ -1,6 +1,8 @@
 package fr.silv.items;
 
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 import fr.silv.utils.ItemStatsRangeLoader;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -15,8 +17,14 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableTextContent;
 
 public class CustomItemDurabilityHandler {
+    private static int tickCounter = 0;
+    private static final Map<ItemStack, Integer> durabilityCache = new WeakHashMap<>();
+
     public static void register() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            tickCounter++;
+            if (tickCounter % 10 != 0)
+                return;
             ClientPlayerEntity player = client.player;
             if (player != null) {
                 scanInventory(player.getInventory().main);
@@ -45,102 +53,71 @@ public class CustomItemDurabilityHandler {
         NbtComponent nbtComponent = item.get(DataComponentTypes.CUSTOM_DATA);
         if (nbtComponent == null)
             return;
+
         NbtCompound nbt = nbtComponent.copyNbt();
         if (nbt == null)
             return;
+
         String id = nbt.getString("mbitems:id");
+        NbtCompound persistent = nbt.getCompound("mbitems:persistent");
 
         if (id.contains("haversack") || id.contains("block_infinite_chest")) {
-            float ratio = handleHaversackDurability(item);
-            applyFakeDurability(item, ratio);
+            String[] amountInside = getHaverackAmountInside(item);
+            int currentAmount = Integer.valueOf(amountInside[0]);
+            int maxAmount = Integer.valueOf(amountInside[1]);
+            applyFakeDurability(item, currentAmount, maxAmount, id);
         }
 
         if (id.contains("harvester_") || id.contains("hammer") || id.contains("vein") || id.contains("watering_can")
-                || id.contains("sponge") || id.contains("bucket") || id.contains("laborer") || id.contains("basket_seeds") 
+                || id.contains("sponge") || id.contains("bucket") || id.contains("laborer")
+                || id.contains("basket_seeds")
                 || id.contains("block_stick") || id.contains("leaf_blower")) {
-            float ratio = handleHarvesterDurability(item);
-            applyFakeDurability(item, ratio);
+
+            Integer currentDurability = persistent.getInt("mbitems:durability");
+            Integer maxDurability = ItemStatsRangeLoader.getStatsFor(id).get("mbx.durability")[0];
+            applyFakeDurability(item, currentDurability, maxDurability, id);
         }
     }
 
-    private static void applyFakeDurability(ItemStack item, float ratio) {
-        if (ratio < 0f || ratio > 1f)
+    private static void applyFakeDurability(ItemStack item, Integer currentDamage, Integer maxDamage, String id) {
+        if (currentDamage == null || currentDamage <= 0)
+            return;
+        if (maxDamage == null || maxDamage <= 0 || maxDamage == currentDamage || maxDamage < currentDamage)
             return;
 
-        int fakeMaxDamage = 1000;
-        int fakeDamage = (int) (fakeMaxDamage * (1 - ratio));
-
-        item.set(DataComponentTypes.MAX_DAMAGE, fakeMaxDamage);
-        item.set(DataComponentTypes.DAMAGE, fakeDamage);
-        item.remove(DataComponentTypes.UNBREAKABLE);
+        Integer previous = durabilityCache.get(item);
+        if (previous != null && previous.equals(currentDamage)) return;
+        if (item.get(DataComponentTypes.UNBREAKABLE) != null) {
+            item.remove(DataComponentTypes.UNBREAKABLE);
+        }
+        item.set(DataComponentTypes.MAX_DAMAGE, maxDamage);
+        item.set(DataComponentTypes.DAMAGE, currentDamage);
+        durabilityCache.put(item, currentDamage);
     }
 
-    private static float handleHaversackDurability(ItemStack item) {
+    private static String[] getHaverackAmountInside(ItemStack item) {
         LoreComponent loreComponent = item.get(DataComponentTypes.LORE);
         if (loreComponent != null) {
             for (Text lore : loreComponent.lines()) {
                 if (lore.getContent() instanceof TranslatableTextContent translatable) {
                     if (translatable.getKey().equals("mbx.items.infinite_bag.amount_inside")) {
-                        return parseDurabilityRatio(translatable.getArgs(), null);
-                    }
-                }
-            }
-        }
-        return -1f;
-    }
-
-    private static float handleHarvesterDurability(ItemStack item) {
-        LoreComponent loreComponent = item.get(DataComponentTypes.LORE);
-        String harvesterID = item.get(DataComponentTypes.CUSTOM_DATA).copyNbt().getString("mbitems:id");
-        if (loreComponent != null) {
-            for (Text lore : loreComponent.lines()) {
-                if (lore.getContent() instanceof TranslatableTextContent translatable) {
-                    if (translatable.getKey().equals("mbx.durability")) {
-                        return parseDurabilityRatio(translatable.getArgs(), harvesterID);
-                    }
-                }
-            }
-        }
-        return -1f;
-    }
-
-    private static float parseDurabilityRatio(Object[] args, String harvesterID) {
-        if (args.length > 0) {
-            Object arg = args[0];
-            String durabilityRatio = null;
-
-            if (arg instanceof Text text) {
-                durabilityRatio = text.getString();
-            } else if (arg instanceof String str) {
-                durabilityRatio = str;
-            }
-
-            if (durabilityRatio != null && durabilityRatio.contains("/")) {
-                String[] parts = durabilityRatio.split("/");
-                if (parts.length == 2) {
-                    try {
-                        float current = Float.parseFloat(parts[0]);
-                        float max = Float.parseFloat(parts[1]);
-                        return current / max;
-                    } catch (NumberFormatException e) {
-                        return -1f;
-                    }
-                }
-            } else {
-                if (durabilityRatio != null && durabilityRatio.contains("Non-repairable")) {
-                    String[] parts = durabilityRatio.split(" ");
-                    if (parts.length == 2) {
-                        try {
-                            float current = Float.parseFloat(parts[0]);
-                            int max = ItemStatsRangeLoader.getStatsFor(harvesterID).get("mbx.durability")[0];
-                            return current / max;
-                        } catch (NumberFormatException e) {
-                            return -1f;
+                        Object arg = translatable.getArgs()[0];
+                        String obj = null;
+                        if (arg instanceof Text text) {
+                            obj = text.getString();
+                        } else if (arg instanceof String str) {
+                            obj = str;
+                        }
+                        if (obj != null && obj.contains("/")) {
+                            String[] parts = obj.split("/");
+                            if (parts.length == 2) {
+                                return parts;
+                            }
                         }
                     }
                 }
             }
         }
-        return -1f;
+        return null;
     }
 }

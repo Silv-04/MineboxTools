@@ -27,7 +27,7 @@ public class TooltipStatColor {
             case "MBX.STATS.FORTUNE":
                 return text.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xEC8C2E)));
             default:
-                return text.setStyle(Style.EMPTY.withColor(Formatting.GRAY));
+                return text.setStyle(Style.EMPTY.withColor(Formatting.WHITE));
         }
     }
 }
