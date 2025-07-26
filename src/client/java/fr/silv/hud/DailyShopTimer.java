@@ -49,10 +49,13 @@ public class DailyShopTimer {
             drawContext.drawTexture(RenderLayer::getGuiTextured, BakeryICON, x, y, 0f, 0f, iconWidth, iconHeight, iconWidth, iconHeight);
         }
         // Cocktail bar
-        if (total > 2775 && total < 2925) {
+        if (minute > 45 && total < 2925) {
             drawContext.drawTexture(RenderLayer::getGuiTextured, CocktailBarICON, x, y, 0f, 0f, iconWidth, iconHeight, iconWidth, iconHeight);
             isCocktailBarOpen = true;
-        } else {isCocktailBarOpen = false;}
+        }
+        else {
+            isCocktailBarOpen = false;
+        }
         // Italian restaurant
         if (total > 2850 || total < 750) {
             if (isCocktailBarOpen) {
