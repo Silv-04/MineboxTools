@@ -48,25 +48,21 @@ public class CustomItemDurabilityHandler {
     }
 
     private static void scanItem(ItemStack item) {
-        if (item == null || item.isEmpty())
-            return;
+        if (item == null || item.isEmpty()) return;
 
         NbtComponent nbtComponent = item.get(DataComponentTypes.CUSTOM_DATA);
-        if (nbtComponent == null)
-            return;
-
+        if (nbtComponent == null) return;
         NbtCompound nbt = nbtComponent.copyNbt();
-        if (nbt == null)
-            return;
-
+        if (nbt == null) return;
+        if (nbt.getInt("mbitems:display") == 1 ) return;
+        
         String id = nbt.getString("mbitems:id");
         NbtCompound persistent = nbt.getCompound("mbitems:persistent");
-
         if (id.contains("haversack") || id.contains("block_infinite_chest")) {
             String[] amountInside = getHaverackAmountInside(item);
             Integer currentAmount = Integer.valueOf(amountInside[0]);
             Integer maxAmount = Integer.valueOf(amountInside[1]);
-            if (currentAmount == null || maxAmount == null || currentAmount <= 0 || maxAmount <= 0) return;
+            if (currentAmount == null || maxAmount == null || currentAmount <= 0 || maxAmount <= 0 || currentAmount == maxAmount) return;
             applyFakeDurability(item, currentAmount, maxAmount, id);
         }
 
@@ -77,27 +73,24 @@ public class CustomItemDurabilityHandler {
 
             Integer currentDurability = persistent.getInt("mbitems:durability");
             Integer maxDurability = ItemStatsRangeLoader.getStatsFor(id).get("mbx.durability")[0];
-            if (currentDurability == null || maxDurability == null || currentDurability < 0 || maxDurability <= 0) return;
+            if (currentDurability == null || maxDurability == null || currentDurability <= 0 || maxDurability <= 0 || currentDurability == maxDurability) return;
             applyFakeDurability(item, currentDurability, maxDurability, id);
         }
     }
 
-    private static void applyFakeDurability(ItemStack item, Integer currentDamage, Integer maxDamage, String id) {
-        if (currentDamage == null || currentDamage < 0)
-            return;
-        if (maxDamage == null || maxDamage <= 0 || maxDamage < currentDamage)
-            return;
+    private static void applyFakeDurability(ItemStack item, Integer currentDurability, Integer maxDurability, String id) {
+        System.out.println("Applying fake durability for " + id + ": " + currentDurability + "/" + maxDurability);
+
+        if (currentDurability == null || currentDurability <= 0) return;
+        if (maxDurability == null || maxDurability <= 0 || maxDurability < currentDurability) return;
 
         Integer previous = durabilityCache.get(item);
-        if (previous != null && previous.equals(currentDamage)) return;
+        if (previous != null && previous.equals(currentDurability)) return;
         if (item.get(DataComponentTypes.UNBREAKABLE) != null) {
             item.remove(DataComponentTypes.UNBREAKABLE);
         }
-        int damage = maxDamage - currentDamage;
-        if (damage < 0) {
-            damage = 0;
-        }
-        item.set(DataComponentTypes.MAX_DAMAGE, maxDamage);
+        int damage = maxDurability - currentDurability;
+        item.set(DataComponentTypes.MAX_DAMAGE, maxDurability);
         item.set(DataComponentTypes.DAMAGE, damage);
         durabilityCache.put(item, damage);
     }

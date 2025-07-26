@@ -20,11 +20,10 @@ public class CustomItemTooltipHandler {
     public static void addStatRangesToTooltip(ItemStack stack, Item.TooltipContext context, TooltipType type,
             List<Text> lines) {
         NbtComponent nbtComponent = stack.get(DataComponentTypes.CUSTOM_DATA);
-        if (nbtComponent == null)
-            return;
+        if (nbtComponent == null) return;
         NbtCompound nbt = nbtComponent.copyNbt();
-        if (nbt == null || !nbt.contains("mbitems:id"))
-            return;
+        if (nbt == null || !nbt.contains("mbitems:id")) return;
+        if (nbt.getInt("mbitems:display") == 1) return;
         String itemId = nbt.getString("mbitems:id");
         Map<String, int[]> statRanges = ItemStatsRangeLoader.getStatsFor(itemId);
         if (statRanges.isEmpty())
