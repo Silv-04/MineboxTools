@@ -37,6 +37,7 @@ public class CustomItemDurabilityHandler {
                     }
                 }
             }
+            tickCounter = 0;
         });
     }
 
@@ -63,24 +64,26 @@ public class CustomItemDurabilityHandler {
 
         if (id.contains("haversack") || id.contains("block_infinite_chest")) {
             String[] amountInside = getHaverackAmountInside(item);
-            int currentAmount = Integer.valueOf(amountInside[0]);
-            int maxAmount = Integer.valueOf(amountInside[1]);
+            Integer currentAmount = Integer.valueOf(amountInside[0]);
+            Integer maxAmount = Integer.valueOf(amountInside[1]);
+            if (currentAmount == null || maxAmount == null || currentAmount <= 0 || maxAmount <= 0) return;
             applyFakeDurability(item, currentAmount, maxAmount, id);
         }
 
-        if (id.contains("harvester_") || id.contains("hammer") || id.contains("vein") || id.contains("watering_can")
-                || id.contains("sponge") || id.contains("bucket") || id.contains("laborer")
-                || id.contains("basket_seeds")
-                || id.contains("block_stick") || id.contains("leaf_blower")) {
+        if (id.startsWith("harvester_") || id.startsWith("hammer_") || id.startsWith("vein_") || id.startsWith("watering_can_")
+                || id.startsWith("sponge_") || id.startsWith("bucket_") || id.startsWith("laborer_")
+                || id.startsWith("basket_seeds_")
+                || id.startsWith("block_stick_") || id.equals("leaf_blower")) {
 
             Integer currentDurability = persistent.getInt("mbitems:durability");
             Integer maxDurability = ItemStatsRangeLoader.getStatsFor(id).get("mbx.durability")[0];
+            if (currentDurability == null || maxDurability == null || currentDurability < 0 || maxDurability <= 0) return;
             applyFakeDurability(item, currentDurability, maxDurability, id);
         }
     }
 
     private static void applyFakeDurability(ItemStack item, Integer currentDamage, Integer maxDamage, String id) {
-        if (currentDamage == null || currentDamage <= 0)
+        if (currentDamage == null || currentDamage < 0)
             return;
         if (maxDamage == null || maxDamage <= 0 || maxDamage < currentDamage)
             return;
@@ -90,9 +93,13 @@ public class CustomItemDurabilityHandler {
         if (item.get(DataComponentTypes.UNBREAKABLE) != null) {
             item.remove(DataComponentTypes.UNBREAKABLE);
         }
+        int damage = maxDamage - currentDamage;
+        if (damage < 0) {
+            damage = 0;
+        }
         item.set(DataComponentTypes.MAX_DAMAGE, maxDamage);
-        item.set(DataComponentTypes.DAMAGE, currentDamage);
-        durabilityCache.put(item, currentDamage);
+        item.set(DataComponentTypes.DAMAGE, damage);
+        durabilityCache.put(item, damage);
     }
 
     private static String[] getHaverackAmountInside(ItemStack item) {

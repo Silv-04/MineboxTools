@@ -1,5 +1,6 @@
 package fr.silv;
 
+import fr.silv.hud.DailyShopTimer;
 import fr.silv.items.CustomItemDurabilityHandler;
 import fr.silv.items.CustomItemTooltipHandler;
 import fr.silv.utils.ItemStatsRangeLoader;
@@ -12,6 +13,7 @@ public class MineboxToolsClient implements ClientModInitializer {
 		System.out.println("[MineboxToolsClient] Initializing client...");
 		ItemStatsRangeLoader.load();
 		CustomItemDurabilityHandler.register();
+		DailyShopTimer.register();
 		ItemTooltipCallback.EVENT.register((stack, context, type, lines) -> {
 			CustomItemTooltipHandler.addStatRangesToTooltip(stack, context, type, lines);
 		});
