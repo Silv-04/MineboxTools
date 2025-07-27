@@ -17,14 +17,10 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableTextContent;
 
 public class CustomItemDurabilityHandler {
-    private static int tickCounter = 0;
     private static final Map<ItemStack, Integer> durabilityCache = new WeakHashMap<>();
 
     public static void register() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            tickCounter++;
-            if (tickCounter % 10 != 0)
-                return;
             ClientPlayerEntity player = client.player;
             if (player != null) {
                 scanInventory(player.getInventory().main);
@@ -37,7 +33,6 @@ public class CustomItemDurabilityHandler {
                     }
                 }
             }
-            tickCounter = 0;
         });
     }
 
@@ -55,14 +50,13 @@ public class CustomItemDurabilityHandler {
         NbtCompound nbt = nbtComponent.copyNbt();
         if (nbt == null) return;
         if (nbt.getInt("mbitems:display") == 1 ) return;
-        
+
         String id = nbt.getString("mbitems:id");
         NbtCompound persistent = nbt.getCompound("mbitems:persistent");
         if (id.contains("haversack") || id.contains("block_infinite_chest")) {
             String[] amountInside = getHaverackAmountInside(item);
             Integer currentAmount = Integer.valueOf(amountInside[0]);
             Integer maxAmount = Integer.valueOf(amountInside[1]);
-            if (currentAmount == null || maxAmount == null || currentAmount <= 0 || maxAmount <= 0 || currentAmount == maxAmount) return;
             applyFakeDurability(item, currentAmount, maxAmount, id);
         }
 
@@ -73,7 +67,6 @@ public class CustomItemDurabilityHandler {
 
             Integer currentDurability = persistent.getInt("mbitems:durability");
             Integer maxDurability = ItemStatsRangeLoader.getStatsFor(id).get("mbx.durability")[0];
-            if (currentDurability == null || maxDurability == null || currentDurability <= 0 || maxDurability <= 0 || currentDurability == maxDurability) return;
             applyFakeDurability(item, currentDurability, maxDurability, id);
         }
     }
@@ -81,7 +74,7 @@ public class CustomItemDurabilityHandler {
     private static void applyFakeDurability(ItemStack item, Integer currentDurability, Integer maxDurability, String id) {
         System.out.println("Applying fake durability for " + id + ": " + currentDurability + "/" + maxDurability);
 
-        if (currentDurability == null || currentDurability <= 0) return;
+        if (currentDurability == null || currentDurability < 0) return;
         if (maxDurability == null || maxDurability <= 0 || maxDurability < currentDurability) return;
 
         Integer previous = durabilityCache.get(item);
