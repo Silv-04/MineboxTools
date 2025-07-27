@@ -60,7 +60,9 @@ public class CustomItemDurabilityHandler {
             applyFakeDurability(item, currentAmount, maxAmount, id);
         }
 
-        if (id.startsWith("harvester_") || id.startsWith("hammer_") || id.startsWith("vein_") || id.startsWith("watering_can_")
+        if ((id.startsWith("harvester_") && !id.startsWith("harvester_lumberjack") && !id.startsWith("harvester_fisher"))
+                && !id.startsWith("harvester_miner") && !id.startsWith("harvester_alchemist")
+                || id.startsWith("hammer_") || id.startsWith("vein_") || id.startsWith("watering_can_")
                 || id.startsWith("sponge_") || id.startsWith("bucket_") || id.startsWith("laborer_")
                 || id.startsWith("basket_seeds_")
                 || id.startsWith("block_stick_") || id.equals("leaf_blower")) {
