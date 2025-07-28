@@ -2,6 +2,8 @@ package fr.silv.hud;
 
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
@@ -21,78 +23,81 @@ public class DailyShopTimer {
     private static final Identifier PaintingICON = Identifier.of("mineboxtools", "textures/img/painting.png");
 
     private static final LocalTime FullMoonStart = LocalTime.of(2, 0);
-    private static final LocalTime FullMoonEnd = LocalTime.of(3, 0);
+
 
     public static void register() {
         HudRenderCallback.EVENT.register(DailyShopTimer::onHudRender);
     }
 
     public static void onHudRender(DrawContext drawContext, RenderTickCounter tickDelta) {
-        boolean isPurpleEmperor = false;
-        boolean isItalianRestaurantOpen = false;
-        
         MinecraftClient client = MinecraftClient.getInstance();
-        if (client.player == null || client.options.hudHidden) return;
-        
+        if (client.player == null || client.options.hudHidden)
+            return;
+
         LocalTime now = LocalTime.now(ZoneId.of("Europe/Paris"));
         int minute = now.getMinute();
         int second = now.getSecond();
-        int total = minute* 60 + second;
+        int total = minute * 60 + second;
 
         int screenWidth = client.getWindow().getScaledWidth();
-        int x = screenWidth - 32;
+        int xBase = screenWidth - 32;
         int y = 10;
 
         int iconWidth = 24;
-        int iconHeight = 24;
+        int spacing = 2;
+        int offsetIndex = 0;
 
         // Coffee shop
-        if (minute > 15 && minute < 30 ) {
-            drawContext.drawTexture(RenderLayer::getGuiTextured, CoffeeShopICON, x, y, 0f, 0f, iconWidth, iconHeight, iconWidth, iconHeight);
+        if (total >= 900 && total < 1800) {
+            drawIcon(drawContext, CoffeeShopICON, xBase - (offsetIndex * (iconWidth + spacing)), y);
+            offsetIndex++;
         }
 
         // Bakery
-        if (minute > 30 && minute < 45) {
-            drawContext.drawTexture(RenderLayer::getGuiTextured, BakeryICON, x, y, 0f, 0f, iconWidth, iconHeight, iconWidth, iconHeight);
+        if (total >= 1800 && total < 2700) {
+            drawIcon(drawContext, BakeryICON, xBase - (offsetIndex * (iconWidth + spacing)), y);
+            offsetIndex++;
         }
 
-        // Cocktail bar
-        if (minute > 45 && total < 2925) {
-            drawContext.drawTexture(RenderLayer::getGuiTextured, CocktailBarICON, x, y, 0f, 0f, iconWidth, iconHeight, iconWidth, iconHeight);
-            drawContext.drawTexture(RenderLayer::getGuiTextured, PaintingICON, x - 32, y, 0f, 0f, iconWidth, iconHeight, iconWidth, iconHeight);
+        // Cocktail bar + Painting
+        if (total >= 2700 && total < 2925) {
+            drawIcon(drawContext, CocktailBarICON, xBase - (offsetIndex * (iconWidth + spacing)), y);
+            offsetIndex++;
+            drawIcon(drawContext, PaintingICON, xBase - (offsetIndex * (iconWidth + spacing)), y);
+            offsetIndex++;
         }
+
         // Italian restaurant
-        if (total > 2925 || total < 750) {
-            drawContext.drawTexture(RenderLayer::getGuiTextured, ItalianRestaurantICON, x, y, 0f, 0f, iconWidth, iconHeight, iconWidth, iconHeight);
-            isItalianRestaurantOpen = true;
-        }
-        else {
-            isItalianRestaurantOpen = false;
+        if (total >= 2925 || total < 750) {
+            drawIcon(drawContext, ItalianRestaurantICON, xBase - (offsetIndex * (iconWidth + spacing)), y);
+            offsetIndex++;
         }
 
-        // Full
-        if ((now.isAfter(FullMoonStart) && now.isBefore(FullMoonEnd))
-            || (now.isAfter(FullMoonStart.plusHours(8)) && now.isBefore(FullMoonStart.plusHours(8)))
-            || (now.isAfter(FullMoonStart.plusHours(16)) && now.isBefore(FullMoonStart.plusHours(16)))
-        ) {
-            // Purple Emperor
-            if (minute > 0 && minute < 15) {
-                drawContext.drawTexture(RenderLayer::getGuiTextured, PurpleEmperorICON, x, y, 0f, 0f, iconWidth, iconHeight, iconWidth, iconHeight);
-                isPurpleEmperor = true;
-            }
-            else {
-                isPurpleEmperor = false;
+        // Full moon cycles
+        if (isFullMoonTime(now)) {
+            if (total >= 0 && total < 900) {
+                drawIcon(drawContext, PurpleEmperorICON, xBase - (offsetIndex * (iconWidth + spacing)), y);
+                offsetIndex++;
             }
 
-            // Herb shop
-            if (minute > 0 && minute < 10 || minute > 50 && minute < 60) {
-                if (isPurpleEmperor || isItalianRestaurantOpen) {
-                    drawContext.drawTexture(RenderLayer::getGuiTextured, HerbShopICON, x - 32, y, 0f, 0f, iconWidth, iconHeight, iconWidth, iconHeight);
-                }
-                else {
-                    drawContext.drawTexture(RenderLayer::getGuiTextured, HerbShopICON, x, y, 0f, 0f, iconWidth, iconHeight, iconWidth, iconHeight);
-                }
+            if ((total >= 0 && total < 600) || (total >= 3000 && total <=3599)) {
+                drawIcon(drawContext, HerbShopICON, xBase - (offsetIndex * (iconWidth + spacing)), y);
+                offsetIndex++;
             }
         }
+    }
+
+    private static void drawIcon(DrawContext context, Identifier icon, int x, int y) {
+        context.drawTexture(RenderLayer::getGuiTextured, icon, x, y, 0f, 0f, 24, 24, 24, 24);
+    }
+
+    private static boolean isFullMoonTime(LocalTime now) {
+        return isBetween(now, FullMoonStart, FullMoonStart.plusHours(1))
+                || isBetween(now, FullMoonStart.plusHours(8), FullMoonStart.plusHours(9))
+                || isBetween(now, FullMoonStart.plusHours(16), FullMoonStart.plusHours(17));
+    }
+
+    private static boolean isBetween(LocalTime now, LocalTime start, LocalTime end) {
+        return !now.isBefore(start) && now.isBefore(end);
     }
 }

@@ -24,9 +24,7 @@ public class CustomItemDurabilityHandler {
             ClientPlayerEntity player = client.player;
             if (player != null) {
                 scanInventory(player.getInventory().main);
-
                 scanItem(player.getInventory().offHand.get(0));
-
                 if (player.currentScreenHandler != null) {
                     for (Slot slot : player.currentScreenHandler.slots) {
                         scanItem(slot.getStack());
@@ -47,8 +45,10 @@ public class CustomItemDurabilityHandler {
 
         NbtComponent nbtComponent = item.get(DataComponentTypes.CUSTOM_DATA);
         if (nbtComponent == null) return;
+
         NbtCompound nbt = nbtComponent.copyNbt();
         if (nbt == null) return;
+        
         if (nbt.getInt("mbitems:display") == 1 ) return;
 
         String id = nbt.getString("mbitems:id");
@@ -57,7 +57,7 @@ public class CustomItemDurabilityHandler {
             String[] amountInside = getHaverackAmountInside(item);
             Integer currentAmount = Integer.valueOf(amountInside[0]);
             Integer maxAmount = Integer.valueOf(amountInside[1]);
-            applyFakeDurability(item, currentAmount, maxAmount, id);
+            applyDurability(item, currentAmount, maxAmount, id);
         }
 
         if ((id.startsWith("harvester_") && !id.startsWith("harvester_lumberjack") && !id.startsWith("harvester_fisher"))
@@ -69,13 +69,11 @@ public class CustomItemDurabilityHandler {
 
             Integer currentDurability = persistent.getInt("mbitems:durability");
             Integer maxDurability = ItemStatsRangeLoader.getStatsFor(id).get("mbx.durability")[0];
-            applyFakeDurability(item, currentDurability, maxDurability, id);
+            applyDurability(item, currentDurability, maxDurability, id);
         }
     }
 
-    private static void applyFakeDurability(ItemStack item, Integer currentDurability, Integer maxDurability, String id) {
-        System.out.println("Applying fake durability for " + id + ": " + currentDurability + "/" + maxDurability);
-
+    private static void applyDurability(ItemStack item, Integer currentDurability, Integer maxDurability, String id) {
         if (currentDurability == null || currentDurability < 0) return;
         if (maxDurability == null || maxDurability <= 0 || maxDurability < currentDurability) return;
 
