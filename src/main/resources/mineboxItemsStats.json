@@ -5704,6 +5704,25 @@
     ],
     "mbx.durability": 0
   },
+  "mushroom_backpack": {
+    "mbx.stats.agility": [
+      25,
+      30
+    ],
+    "mbx.stats.fortune": [
+      35,
+      50
+    ],
+    "mbx.stats.health": [
+      30,
+      45
+    ],
+    "mbx.stats.intelligence": [
+      30,
+      55
+    ],
+    "mbx.durability": 0
+  },
   "mushroom_helmet": {
     "mbx.stats.agility": [
       25,
@@ -5883,6 +5902,25 @@
     "mbx.stats.intelligence": [
       35,
       50
+    ],
+    "mbx.durability": 0
+  },
+  "mushroom_leggings": {
+    "mbx.stats.agility": [
+      25,
+      30
+    ],
+    "mbx.stats.fortune": [
+      40,
+      55
+    ],
+    "mbx.stats.health": [
+      33,
+      47
+    ],
+    "mbx.stats.intelligence": [
+      40,
+      55
     ],
     "mbx.durability": 0
   },
@@ -6093,25 +6131,6 @@
     ],
     "mbx.durability": 50000
   },
-  "mushroom_leggings": {
-    "mbx.stats.agility": [
-      25,
-      30
-    ],
-    "mbx.stats.fortune": [
-      40,
-      55
-    ],
-    "mbx.stats.health": [
-      33,
-      47
-    ],
-    "mbx.stats.intelligence": [
-      40,
-      55
-    ],
-    "mbx.durability": 0
-  },
   "snail_helmet": {
     "mbx.stats.agility": [
       -10,
@@ -6132,25 +6151,6 @@
     "mbx.stats.strength": [
       25,
       35
-    ],
-    "mbx.durability": 0
-  },
-  "mushroom_backpack": {
-    "mbx.stats.agility": [
-      25,
-      30
-    ],
-    "mbx.stats.fortune": [
-      35,
-      50
-    ],
-    "mbx.stats.health": [
-      30,
-      45
-    ],
-    "mbx.stats.intelligence": [
-      30,
-      55
     ],
     "mbx.durability": 0
   },
@@ -6254,7 +6254,7 @@
     ],
     "mbx.stats.fortune": [
       30,
-      45
+      40
     ],
     "mbx.stats.health": [
       35,
@@ -6266,7 +6266,7 @@
     ],
     "mbx.stats.strength": [
       30,
-      45
+      40
     ],
     "mbx.stats.wisdom": [
       20,
@@ -6300,7 +6300,7 @@
     ],
     "mbx.stats.fortune": [
       25,
-      40
+      35
     ],
     "mbx.stats.health": [
       33,
@@ -6312,7 +6312,7 @@
     ],
     "mbx.stats.strength": [
       25,
-      38
+      35
     ],
     "mbx.stats.wisdom": [
       20,
@@ -6363,16 +6363,16 @@
   },
   "computer_chestplate": {
     "mbx.stats.agility": [
-      40,
-      55
-    ],
-    "mbx.stats.defense": [
-      40,
-      55
-    ],
-    "mbx.stats.fortune": [
       35,
       50
+    ],
+    "mbx.stats.defense": [
+      35,
+      50
+    ],
+    "mbx.stats.fortune": [
+      30,
+      45
     ],
     "mbx.stats.health": [
       40,
@@ -6400,16 +6400,16 @@
   },
   "computer_leggings": {
     "mbx.stats.agility": [
-      35,
+      30,
       40
     ],
     "mbx.stats.defense": [
-      35,
+      30,
       40
     ],
     "mbx.stats.fortune": [
       35,
-      50
+      45
     ],
     "mbx.stats.health": [
       38,
@@ -6421,7 +6421,7 @@
     ],
     "mbx.stats.strength": [
       30,
-      43
+      40
     ],
     "mbx.stats.wisdom": [
       23,
@@ -6452,7 +6452,7 @@
     ],
     "mbx.stats.strength": [
       28,
-      40
+      38
     ],
     "mbx.stats.wisdom": [
       20,
@@ -6471,7 +6471,7 @@
     ],
     "mbx.stats.fortune": [
       20,
-      30
+      25
     ],
     "mbx.stats.health": [
       30,

@@ -1,8 +1,9 @@
 package fr.silv.items;
 
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.*;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import fr.silv.utils.ItemStatsRangeLoader;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -17,7 +18,16 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableTextContent;
 
 public class CustomItemDurabilityHandler {
+    private static final Logger CustomItemDurabilityHandlerLogger = LogManager
+            .getLogger(CustomItemDurabilityHandler.class);
+
     private static final Map<ItemStack, Integer> durabilityCache = new WeakHashMap<>();
+    private static final Map<ItemStack, Integer> nbtHashCache = new WeakHashMap<>();
+    private static final Map<String, Map<String, int[]>> statsCache = new HashMap<>();
+
+    private static final List<String> SUPPORTED_PREFIXES = List.of(
+            "hammer_", "vein_", "watering_can_", "sponge_", "bucket_",
+            "laborer_", "basket_seeds_", "block_stick_", "leaf_blower");
 
     public static void register() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
@@ -41,51 +51,102 @@ public class CustomItemDurabilityHandler {
     }
 
     private static void scanItem(ItemStack item) {
-        if (item == null || item.isEmpty()) return;
+        if (item == null || item.isEmpty())
+            return;
 
         NbtComponent nbtComponent = item.get(DataComponentTypes.CUSTOM_DATA);
-        if (nbtComponent == null) return;
+        if (nbtComponent == null)
+            return;
 
         NbtCompound nbt = nbtComponent.copyNbt();
-        if (nbt == null) return;
-        
-        if (nbt.getInt("mbitems:display") == 1 ) return;
+        if (nbt == null)
+            return;
+
+        int nbtHash = nbt.toString().hashCode();
+        Integer previousHash = nbtHashCache.get(item);
+        if (previousHash != null && previousHash == nbtHash)
+            return;
+        nbtHashCache.put(item, nbtHash);
+
+        if (nbt.getInt("mbitems:display") == 1)
+            return;
 
         String id = nbt.getString("mbitems:id");
         NbtCompound persistent = nbt.getCompound("mbitems:persistent");
+
         if (id.contains("haversack") || id.contains("block_infinite_chest")) {
             String[] amountInside = getHaverackAmountInside(item);
-            Integer currentAmount = Integer.valueOf(amountInside[0]);
-            Integer maxAmount = Integer.valueOf(amountInside[1]);
-            applyDurability(item, currentAmount, maxAmount, id);
-        }
+            if (amountInside != null) {
+                try {
+                    int current = Integer.parseInt(amountInside[0]);
+                    int max = Integer.parseInt(amountInside[1]);
+                    CustomItemDurabilityHandlerLogger
+                            .info("[Durability] Haversack Detected: ID=" + id + " Current=" + current + " Max=" + max);
+                    applyDurability(item, current, max);
+                } catch (NumberFormatException e) {
+                    CustomItemDurabilityHandlerLogger
+                            .error("[Durability] Error parsing haversack values: " + Arrays.toString(amountInside));
+                }
+            }
+        } else if (startsWithSupportedPrefix(id)) {
+            Map<String, int[]> stats = statsCache.get(id);
+            if (stats == null) {
+                CustomItemDurabilityHandlerLogger.info("[Durability] Loading stats for: " + id);
+                stats = ItemStatsRangeLoader.getStatsFor(id);
+                statsCache.put(id, stats);
+            }
 
-        if ((id.startsWith("harvester_") && !id.startsWith("harvester_lumberjack") && !id.startsWith("harvester_fisher"))
-                && !id.startsWith("harvester_miner") && !id.startsWith("harvester_alchemist")
-                || id.startsWith("hammer_") || id.startsWith("vein_") || id.startsWith("watering_can_")
-                || id.startsWith("sponge_") || id.startsWith("bucket_") || id.startsWith("laborer_")
-                || id.startsWith("basket_seeds_")
-                || id.startsWith("block_stick_") || id.equals("leaf_blower")) {
-
-            Integer currentDurability = persistent.getInt("mbitems:durability");
-            Integer maxDurability = ItemStatsRangeLoader.getStatsFor(id).get("mbx.durability")[0];
-            applyDurability(item, currentDurability, maxDurability, id);
+            int[] durabilityRange = stats.get("mbx.durability");
+            if (durabilityRange != null && durabilityRange.length > 0) {
+                int max = durabilityRange[0];
+                int current = persistent.getInt("mbitems:durability");
+                CustomItemDurabilityHandlerLogger
+                        .info("[Durability] Tool Detected: ID=" + id + " Current=" + current + " Max=" + max);
+                applyDurability(item, current, max);
+            } else {
+                CustomItemDurabilityHandlerLogger.error("[Durability] No durability data found for: " + id);
+            }
         }
     }
 
-    private static void applyDurability(ItemStack item, Integer currentDurability, Integer maxDurability, String id) {
-        if (currentDurability == null || currentDurability < 0) return;
-        if (maxDurability == null || maxDurability <= 0 || maxDurability < currentDurability) return;
+    private static boolean startsWithSupportedPrefix(String id) {
+        for (String prefix : SUPPORTED_PREFIXES) {
+            if (id.startsWith(prefix))
+                return true;
+        }
+        if (id.startsWith("harvester_") &&
+                !(id.contains("lumberjack") || id.contains("fisher") || id.contains("miner")
+                        || id.contains("alchemist"))) {
+            return true;
+        }
+        return false;
+    }
+
+    private static void applyDurability(ItemStack item, int current, int max) {
+        if (current < 0 || max <= 0 || max < current) {
+            CustomItemDurabilityHandlerLogger
+                    .error("[Durability] Invalid durability values: current=" + current + ", max=" + max);
+            return;
+        }
 
         Integer previous = durabilityCache.get(item);
-        if (previous != null && previous.equals(currentDurability)) return;
+        int damage = max - current;
+        if (previous != null && previous == damage)
+            return;
+
         if (item.get(DataComponentTypes.UNBREAKABLE) != null) {
+            CustomItemDurabilityHandlerLogger.info("[Durability] Removing unbreakable flag for item.");
             item.remove(DataComponentTypes.UNBREAKABLE);
         }
-        int damage = maxDurability - currentDurability;
-        item.set(DataComponentTypes.MAX_DAMAGE, maxDurability);
+
+        Integer previousMax = item.get(DataComponentTypes.MAX_DAMAGE);
+        if (previousMax == null || previousMax != max) {
+            item.set(DataComponentTypes.MAX_DAMAGE, max);
+        }
         item.set(DataComponentTypes.DAMAGE, damage);
         durabilityCache.put(item, damage);
+        CustomItemDurabilityHandlerLogger
+                .info("[Durability] Set durability: " + current + "/" + max + " (Damage=" + damage + ")");
     }
 
     private static String[] getHaverackAmountInside(ItemStack item) {
@@ -93,17 +154,13 @@ public class CustomItemDurabilityHandler {
         if (loreComponent != null) {
             for (Text lore : loreComponent.lines()) {
                 if (lore.getContent() instanceof TranslatableTextContent translatable) {
-                    if (translatable.getKey().equals("mbx.items.infinite_bag.amount_inside")) {
+                    if ("mbx.items.infinite_bag.amount_inside".equals(translatable.getKey())) {
                         Object arg = translatable.getArgs()[0];
-                        String obj = null;
-                        if (arg instanceof Text text) {
-                            obj = text.getString();
-                        } else if (arg instanceof String str) {
-                            obj = str;
-                        }
-                        if (obj != null && obj.contains("/")) {
-                            String[] parts = obj.split("/");
+                        String text = (arg instanceof Text t) ? t.getString() : (arg instanceof String s ? s : null);
+                        if (text != null && text.contains("/")) {
+                            String[] parts = text.split("/");
                             if (parts.length == 2) {
+                                CustomItemDurabilityHandlerLogger.info("[Durability] Parsed haversack lore: " + text);
                                 return parts;
                             }
                         }

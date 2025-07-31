@@ -1,5 +1,8 @@
 package fr.silv;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import fr.silv.hud.DailyShopTimer;
 import fr.silv.items.CustomItemDurabilityHandler;
 import fr.silv.items.CustomItemTooltipHandler;
@@ -8,9 +11,11 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 
 public class MineboxToolsClient implements ClientModInitializer {
+	private static final Logger MineboxToolsLogger = LogManager.getLogger(MineboxToolsClient.class);
+
 	@Override
 	public void onInitializeClient() {
-		System.out.println("[MineboxToolsClient] Initializing client...");
+		MineboxToolsLogger.info("[MineboxToolsClient] Initializing client...");
 		ItemStatsRangeLoader.load();
 		CustomItemDurabilityHandler.register();
 		DailyShopTimer.register();

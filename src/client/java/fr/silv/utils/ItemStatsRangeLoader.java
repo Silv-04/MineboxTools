@@ -6,17 +6,22 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 public class ItemStatsRangeLoader {
+    private static final Logger ItemStatsRangeLoaderLogger = LogManager.getLogger(ItemStatsRangeLoader.class);
     private static final Map<String, Map<String, int[]>> statRanges = new HashMap<>();
 
     public static void load() {
         try (InputStream input = ItemStatsRangeLoader.class.getClassLoader()
                 .getResourceAsStream("mineboxItemsStats.json")) {
+            ItemStatsRangeLoaderLogger.info("Loading item stats ranges from JSON file...");
             if (input != null) {
                 String json = new String(input.readAllBytes(), StandardCharsets.UTF_8);
                 JsonObject root = JsonParser.parseString(json).getAsJsonObject();
@@ -43,6 +48,7 @@ public class ItemStatsRangeLoader {
                     statRanges.put(itemId, itemStats);
                 }
             }
+            ItemStatsRangeLoaderLogger.info("Item stats ranges loaded successfully.");
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -2,8 +2,6 @@ package fr.silv.hud;
 
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
 
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
@@ -13,7 +11,6 @@ import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.util.Identifier;
 
 public class DailyShopTimer {
-
     private static final Identifier BakeryICON = Identifier.of("mineboxtools", "textures/img/yellow_macaron.png");
     private static final Identifier ItalianRestaurantICON = Identifier.of("mineboxtools", "textures/img/cheese.png");
     private static final Identifier CocktailBarICON = Identifier.of("mineboxtools", "textures/img/yellow_cocktail.png");
