@@ -20,7 +20,7 @@ Features :
     Italian restaurant : 19:30 - 05
     Purple emperor : 0-6 on full moon
     Herb shop : 00-04 and 20-00 on full moon
-  <img width="272" height="136" alt="image" src="https://github.com/user-attachments/assets/01a5435b-05a8-4a0e-ad94-b3ce5cd576e7" />
+<img width="272" height="136" alt="image" src="https://github.com/user-attachments/assets/01a5435b-05a8-4a0e-ad94-b3ce5cd576e7" />
 
 What's comming next ?
 - A menu to enable / disable feature that you don't need
