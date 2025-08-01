@@ -28,3 +28,4 @@ Features :
 What's comming next ?
 - A menu to enable / disable feature that you don't need
 - An option to display every spot of a farming node you need
+- An option to show the most efficient path to farm a resource based on your speed
