@@ -59,10 +59,6 @@ public class CustomItemTooltipHandler {
         if (persistent == null || persistent.toString().equals("{}"))
             return;
 
-        NbtCompound stats = persistent.getCompound("mbitems:stats");
-        if (stats == null || stats.toString().equals("{}"))
-            return;
-
         String itemId = nbt.getString("mbitems:id");
         long now = System.currentTimeMillis();
         Long lastLogTime = recentLogs.get(stack);
@@ -89,10 +85,11 @@ public class CustomItemTooltipHandler {
                 if (range != null) {
                     StringBuilder suffix = new StringBuilder(" [");
                     suffix.append(range[0]);
-                    if (range[0] != range[1])
+                    if (range[0] != range[1]) {
                         suffix.append(" | ")
-                                .append(range[1])
-                                .append("]");
+                                .append(range[1]);
+                    }
+                    suffix.append("]");
 
                     Text newLine = line.copy()
                             .append(TooltipStatColor.statColor(suffix.toString(), stat.stat().toUpperCase()));
@@ -102,7 +99,10 @@ public class CustomItemTooltipHandler {
                 }
             }
         }
-
+        NbtCompound stats = persistent.getCompound("mbitems:stats");
+        if (stats == null || stats.toString().equals("{}"))
+            return;
+            
         if (!actualStats.isEmpty()) {
             int score = (int) computeGlobalStatScore(actualStats, statRanges);
             Style style = getColorFromScore(score);
