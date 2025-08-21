@@ -1,5 +1,7 @@
 package fr.silv.items;
 
+import fr.silv.constants.StatValue;
+import fr.silv.utils.ModConfig;
 import net.minecraft.item.ItemStack;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
@@ -26,47 +28,52 @@ import fr.silv.utils.ItemStatsRangeLoader;
 import fr.silv.utils.TooltipStatColor;
 
 public class CustomItemTooltipHandler {
-    private static final Logger CustomItemDurabilityHandlerLogger = LogManager
+    private static final Logger CustomItemTooltipHandler = LogManager
             .getLogger(CustomItemTooltipHandler.class);
     private static final Map<ItemStack, Long> recentLogs = new WeakHashMap<>();
     private static final long LOG_THROTTLE_MS = 5000;
 
     private static final Map<String, Integer> STAT_WEIGHTS = Map.of(
-            "mbx.stats.fortune", 15,
-            "mbx.stats.agility", 5,
-            "mbx.stats.strength", 5,
-            "mbx.stats.luck", 7,
-            "mbx.stats.intelligence", 9,
-            "mbx.stats.wisdom", 12,
-            "mbx.stats.defense", 1,
-            "mbx.stats.health", 1);
+            "mbx.stats.fortune", StatValue.FORTUNE,
+            "mbx.stats.agility", StatValue.AGILITY,
+            "mbx.stats.strength", StatValue.STRENGTH,
+            "mbx.stats.luck", StatValue.LUCK,
+            "mbx.stats.intelligence", StatValue.INTELLIGENCE,
+            "mbx.stats.wisdom", StatValue.WISDOM,
+            "mbx.stats.defense", StatValue.DEFENSE,
+            "mbx.stats.health", StatValue.HEALTH);
 
     public static void addStatRangesToTooltip(ItemStack stack, Item.TooltipContext context, TooltipType type,
             List<Text> lines) {
+        if (!ModConfig.tooltipToggle) return;
 
         NbtComponent nbtComponent = stack.get(DataComponentTypes.CUSTOM_DATA);
         if (nbtComponent == null)
             return;
 
         NbtCompound nbt = nbtComponent.copyNbt();
-        if (nbt == null || !nbt.contains("mbitems:id"))
+        if (!nbt.contains("mbitems:id"))
             return;
 
-        if (nbt.getInt("mbitems:display") == 1)
+        if (nbt.getInt("mbitems:display").isPresent() && nbt.getInt("mbitems:display").get() == 1)
             return;
 
-        NbtCompound persistent = nbt.getCompound("mbitems:persistent");
-        if (persistent == null || persistent.toString().equals("{}"))
+        if (nbt.getCompound("mbitems:persistent").isEmpty())
             return;
 
-        String itemId = nbt.getString("mbitems:id");
+        NbtCompound persistent = nbt.getCompound("mbitems:persistent").get();
+        if (persistent.toString().equals("{}"))
+            return;
+
+        if (nbt.getString("mbitems:id").isEmpty()) return;
+        String itemId = nbt.getString("mbitems:id").get();
         long now = System.currentTimeMillis();
         Long lastLogTime = recentLogs.get(stack);
 
         boolean canLog = lastLogTime == null || now - lastLogTime > LOG_THROTTLE_MS;
 
         if (canLog) {
-            CustomItemDurabilityHandlerLogger.info("[Tooltip] Processing item: " + itemId);
+            CustomItemTooltipHandler.info("[Tooltip] Processing item: " + itemId);
             recentLogs.put(stack, now);
         }
 
@@ -99,8 +106,10 @@ public class CustomItemTooltipHandler {
                 }
             }
         }
-        NbtCompound stats = persistent.getCompound("mbitems:stats");
-        if (stats == null || stats.toString().equals("{}"))
+        if (persistent.getCompound("mbitems:stats").isEmpty())
+            return;
+        NbtCompound stats = persistent.getCompound("mbitems:stats").get();
+        if (stats.toString().equals("{}"))
             return;
             
         if (!actualStats.isEmpty()) {
@@ -110,7 +119,7 @@ public class CustomItemTooltipHandler {
                     .append(Text.literal(" " + score + "%").setStyle(style.withBold(true)));
             lines.set(0, scoreLine);
             if (canLog) {
-                CustomItemDurabilityHandlerLogger
+                CustomItemTooltipHandler
                         .info("[Tooltip] Global score for item " + itemId + ": " + score + "%");
             }
         }

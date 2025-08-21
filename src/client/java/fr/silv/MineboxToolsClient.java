@@ -1,9 +1,12 @@
 package fr.silv;
 
+import fr.silv.commands.MenuCommand;
+import fr.silv.utils.ModConfig;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import fr.silv.hud.DailyShopTimer;
+import fr.silv.hud.DisplayIcons;
 import fr.silv.items.CustomItemDurabilityHandler;
 import fr.silv.items.CustomItemTooltipHandler;
 import fr.silv.utils.ItemStatsRangeLoader;
@@ -16,11 +19,14 @@ public class MineboxToolsClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		MineboxToolsLogger.info("[MineboxToolsClient] Initializing client...");
+		ModConfig.load();
+		ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
+			MenuCommand.register(dispatcher);
+		});
 		ItemStatsRangeLoader.load();
 		CustomItemDurabilityHandler.register();
-		DailyShopTimer.register();
-		ItemTooltipCallback.EVENT.register((stack, context, type, lines) -> {
-			CustomItemTooltipHandler.addStatRangesToTooltip(stack, context, type, lines);
-		});
+		DisplayIcons.register();
+		ItemTooltipCallback.EVENT.register(CustomItemTooltipHandler::addStatRangesToTooltip);
+
 	}
 }

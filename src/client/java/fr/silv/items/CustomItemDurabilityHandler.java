@@ -2,6 +2,7 @@ package fr.silv.items;
 
 import java.util.*;
 
+import fr.silv.utils.ModConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -31,10 +32,11 @@ public class CustomItemDurabilityHandler {
 
     public static void register() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            if (!ModConfig.durabilityToggle) return;
             ClientPlayerEntity player = client.player;
             if (player != null) {
-                scanInventory(player.getInventory().main);
-                scanItem(player.getInventory().offHand.get(0));
+                scanInventory(player.getInventory().getMainStacks());
+                scanItem(player.getOffHandStack());
                 if (player.currentScreenHandler != null) {
                     for (Slot slot : player.currentScreenHandler.slots) {
                         scanItem(slot.getStack());
@@ -55,12 +57,9 @@ public class CustomItemDurabilityHandler {
             return;
 
         NbtComponent nbtComponent = item.get(DataComponentTypes.CUSTOM_DATA);
-        if (nbtComponent == null)
-            return;
+        if (nbtComponent == null) return;
 
         NbtCompound nbt = nbtComponent.copyNbt();
-        if (nbt == null)
-            return;
 
         int nbtHash = nbt.toString().hashCode();
         Integer previousHash = nbtHashCache.get(item);
@@ -68,11 +67,14 @@ public class CustomItemDurabilityHandler {
             return;
         nbtHashCache.put(item, nbtHash);
 
-        if (nbt.getInt("mbitems:display") == 1)
+        if (nbt.getInt("mbitems:display").isPresent() && nbt.getInt("mbitems:display").get() == 1)
             return;
 
-        String id = nbt.getString("mbitems:id");
-        NbtCompound persistent = nbt.getCompound("mbitems:persistent");
+        if (nbt.getString("mbitems:id").isEmpty()) return;
+        String id = nbt.getString("mbitems:id").get();
+
+        if (nbt.getCompound("mbitems:persistent").isEmpty()) return;
+        NbtCompound persistent = nbt.getCompound("mbitems:persistent").get();
 
         if (id.contains("haversack") || id.contains("block_infinite_chest")) {
             String[] amountInside = getHaverackAmountInside(item);
@@ -99,7 +101,8 @@ public class CustomItemDurabilityHandler {
             int[] durabilityRange = stats.get("mbx.durability");
             if (durabilityRange != null && durabilityRange.length > 0) {
                 int max = durabilityRange[0];
-                int current = persistent.getInt("mbitems:durability");
+                if (persistent.getInt("mbitems:durability").isEmpty()) return;
+                int current = persistent.getInt("mbitems:durability").get();
                 CustomItemDurabilityHandlerLogger
                         .info("[Durability] Tool Detected: ID=" + id + " Current=" + current + " Max=" + max);
                 applyDurability(item, current, max);
@@ -114,12 +117,9 @@ public class CustomItemDurabilityHandler {
             if (id.startsWith(prefix))
                 return true;
         }
-        if (id.startsWith("harvester_") &&
+        return id.startsWith("harvester_") &&
                 !(id.contains("lumberjack") || id.contains("fisher") || id.contains("miner")
-                        || id.contains("alchemist"))) {
-            return true;
-        }
-        return false;
+                        || id.contains("alchemist"));
     }
 
     private static void applyDurability(ItemStack item, int current, int max) {
