@@ -20,7 +20,7 @@ public class ItemStatsRangeLoader {
 
     public static void load() {
         try (InputStream input = ItemStatsRangeLoader.class.getClassLoader()
-                .getResourceAsStream("mineboxItemsStats.json")) {
+                .getResourceAsStream("assets/mineboxtools/mineboxItemsStats.json")) {
             ItemStatsRangeLoaderLogger.info("Loading item stats ranges from JSON file...");
             if (input != null) {
                 String json = new String(input.readAllBytes(), StandardCharsets.UTF_8);
@@ -50,7 +50,7 @@ public class ItemStatsRangeLoader {
             }
             ItemStatsRangeLoaderLogger.info("Item stats ranges loaded successfully.");
         } catch (Exception e) {
-            e.printStackTrace();
+            ItemStatsRangeLoaderLogger.error("Failed to load item stats ranges from JSON file.", e);
         }
     }
 
