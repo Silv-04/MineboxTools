@@ -160,7 +160,6 @@ public class CustomItemDurabilityHandler {
                         if (text != null && text.contains("/")) {
                             String[] parts = text.split("/");
                             if (parts.length == 2) {
-                                CustomItemDurabilityHandlerLogger.info("[Durability] Parsed haversack lore: " + text);
                                 return parts;
                             }
                         }

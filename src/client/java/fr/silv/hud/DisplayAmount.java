@@ -42,7 +42,7 @@ public class DisplayAmount {
                         int max = Integer.parseInt(amountInside[1]);
                         String text = "Amount inside: " + current + "/" + max;
                         int x = 2;
-                        int y = client.getWindow().getScaledHeight() - 20;
+                        int y = client.getWindow().getScaledHeight() - 12;
                         drawContext.drawTextWithShadow(client.textRenderer, Text.literal(text), x, y, Colors.WHITE);
                     } catch (NumberFormatException e) {
                         DisplayAmountLogger.error("Invalid number format in haversack amount: " + e.getMessage());

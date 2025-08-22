@@ -74,12 +74,12 @@ public class DisplayStats {
 
         ItemStack slot9 = client.player.getInventory().getStack(9);
         if (!slot9.isEmpty()) {
-            statsPlayer = getStats(slot9);
+            statsPlayer = getStats(slot9, false);
         }
 
         ItemStack main = client.player.getMainHandStack();
         if (!main.isEmpty()) {
-            statsItem = getStats(main);
+            statsItem = getStats(main, true);
         }
 
         if (ItemStatUtils.areEquals(cachedPlayerStats,statsPlayer) && ItemStatUtils.areEquals(cachedHandStats,statsItem)) {
@@ -97,12 +97,11 @@ public class DisplayStats {
                 }
             }
         }
-
         cachedStatsTotal = new ArrayList<>(statsPlayer);
         return statsPlayer;
     }
 
-    private static List<MineboxStat> getStats(ItemStack stack) {
+    private static List<MineboxStat> getStats(ItemStack stack, boolean includeBonus) {
         LoreComponent lore = stack.get(DataComponentTypes.LORE);
         if (lore == null) return new ArrayList<>();
 
@@ -110,7 +109,13 @@ public class DisplayStats {
         List<MineboxStat> stats = new ArrayList<>();
 
         for (Text line : lines) {
-            MineboxStat stat = ItemStatUtils.extractStatsFromLine(line, ALL_STATS);
+            MineboxStat stat;
+            if (includeBonus) {
+                stat = ItemStatUtils.extractStatsFromLineWithBonus(line, ALL_STATS);
+            }
+            else {
+                stat = ItemStatUtils.extractStatsFromLine(line, ALL_STATS);
+            }
             if (stat != null) {
                 stats.add(stat);
             }

@@ -93,6 +93,58 @@ public class ItemStatUtils {
         return null;
     }
 
+    public static MineboxStat extractStatsFromLineWithBonus(Text line, Set<String> validKeys) {
+        TranslatableTextContent content = findTranslatable(line, validKeys);
+        if (content == null) return null;
+
+        String key = content.getKey();
+        if (!validKeys.contains(key)) return null;
+
+        List<Text> flat = flattenText(line);
+
+        Integer baseValue = null;
+        Integer bonusValue = null;
+        Integer pendingNumber = null;
+
+        Pattern intPat = Pattern.compile("[+-]?\\d+");
+
+        for (Text segment : flat) {
+            String raw = segment.getString();
+            Matcher m = intPat.matcher(raw);
+            if (m.find()) {
+                try {
+                    pendingNumber = Integer.parseInt(m.group());
+                } catch (NumberFormatException ignored) {}
+            }
+
+            if (segment.getContent() instanceof TranslatableTextContent tr) {
+                String k = tr.getKey();
+
+                if (k.startsWith("mbx.stats.")) {
+                    if (pendingNumber != null && baseValue == null) {
+                        baseValue = pendingNumber;
+                        pendingNumber = null;
+                    }
+                } else if (k.equals("mbx.bonus")) {
+                    if (pendingNumber != null && bonusValue == null) {
+                        bonusValue = pendingNumber;
+                        pendingNumber = null;
+                    }
+                }
+            }
+        }
+
+        if (baseValue == null && pendingNumber != null) {
+            baseValue = pendingNumber;
+        }
+
+        if (baseValue == null) return null;
+
+        int total = baseValue + (bonusValue != null ? bonusValue : 0);
+        return new MineboxStat(key, total);
+    }
+
+
     private static List<Text> flattenText(Text text) {
         List<Text> result = new java.util.ArrayList<>();
         result.add(text);
