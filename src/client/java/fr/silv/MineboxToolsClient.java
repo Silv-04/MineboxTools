@@ -1,6 +1,7 @@
 package fr.silv;
 
 import fr.silv.commands.MenuCommand;
+import fr.silv.hud.DisplayAmount;
 import fr.silv.hud.DisplayStats;
 import fr.silv.utils.ModConfig;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
@@ -20,6 +21,7 @@ public class MineboxToolsClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		MineboxToolsLogger.info("[MineboxToolsClient] Initializing client...");
+
 		ModConfig.load();
 		ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
 			MenuCommand.register(dispatcher);
@@ -28,6 +30,7 @@ public class MineboxToolsClient implements ClientModInitializer {
 		CustomItemDurabilityHandler.register();
 		DisplayIcons.register();
 		DisplayStats.register();
+		DisplayAmount.register();
 		ItemTooltipCallback.EVENT.register(CustomItemTooltipHandler::addStatRangesToTooltip);
 
 	}

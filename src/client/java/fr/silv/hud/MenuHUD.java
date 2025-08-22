@@ -9,7 +9,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 
 public class MenuHUD extends Screen {
     public MenuHUD() {
@@ -41,6 +40,14 @@ public class MenuHUD extends Screen {
                 .build(20, 60, 130, 20, Text.literal("Stat Toggle"),
                         (button, value) -> {
                             ModConfig.statToggle = value;
+                            ModConfig.save();
+                        });
+
+        // Off hand haversack amount inside toggle
+        CyclingButtonWidget<Boolean> toggleButtonOffHand = CyclingButtonWidget.onOffBuilder(ModConfig.offHandToggle)
+                .build(20, 80, 130, 20, Text.literal("OffHand Toggle"),
+                        (button, value) -> {
+                            ModConfig.offHandToggle = value;
                             ModConfig.save();
                         });
 
@@ -206,6 +213,8 @@ public class MenuHUD extends Screen {
         this.addDrawableChild(toggleButtonDurability);
         this.addDrawableChild(toggleButtonTooltip);
         this.addDrawableChild(toggleButtonStats);
+        this.addDrawableChild(toggleButtonOffHand);
+
         this.addDrawableChild(insectList);
         this.addDrawableChild(shopList);
 

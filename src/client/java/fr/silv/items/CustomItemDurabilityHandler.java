@@ -149,7 +149,7 @@ public class CustomItemDurabilityHandler {
                 .info("[Durability] Set durability: " + current + "/" + max + " (Damage=" + damage + ")");
     }
 
-    private static String[] getHaverackAmountInside(ItemStack item) {
+    public static String[] getHaverackAmountInside(ItemStack item) {
         LoreComponent loreComponent = item.get(DataComponentTypes.LORE);
         if (loreComponent != null) {
             for (Text lore : loreComponent.lines()) {

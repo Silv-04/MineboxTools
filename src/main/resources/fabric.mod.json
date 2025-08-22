@@ -3,12 +3,9 @@
   "id": "mineboxtools",
   "version": "${version}",
   "name": "MineboxTools",
-  "description": "A set of tools for Minebox",
+  "description": "A set of tools for Minebox. For any issue, contact me on discord _silv",
   "authors": [
     "Silverhn!"
-  ],
-  "contributors" : [
-    ""
   ],
   "contact": {
     "sources": "https://github.com/Silv-04/MineboxTools/"
@@ -33,7 +30,7 @@
   ],
   "depends": {
     "fabricloader": ">=0.16.14",
-    "minecraft": "~1.21.3",
+    "minecraft": "~1.21.8",
     "java": ">=21",
     "fabric-api": "*"
   },

@@ -20,6 +20,7 @@ public class ModConfig {
     public static boolean durabilityToggle = true;
     public static boolean tooltipToggle = true;
     public static boolean statToggle = true;
+    public static boolean offHandToggle = true;
 
     // Insect toggles
     public static boolean antToggle = false;
@@ -72,6 +73,7 @@ public class ModConfig {
                 durabilityToggle = data.durabilityToggle;
                 tooltipToggle = data.tooltipToggle;
                 statToggle = data.statToggle;
+                offHandToggle = data.offHandToggle;
 
                 // Insect toggles
                 antToggle = data.antToggle;
@@ -128,6 +130,7 @@ public class ModConfig {
             data.durabilityToggle = durabilityToggle;
             data.tooltipToggle = tooltipToggle;
             data.statToggle = statToggle;
+            data.offHandToggle = offHandToggle;
 
             // Insect toggles
             data.antToggle = antToggle;
@@ -182,6 +185,7 @@ public class ModConfig {
         boolean durabilityToggle;
         boolean tooltipToggle;
         boolean statToggle;
+        boolean offHandToggle;
 
         // Insect toggles
         boolean antToggle;

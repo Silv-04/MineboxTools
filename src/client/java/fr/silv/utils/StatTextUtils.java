@@ -35,20 +35,4 @@ public class StatTextUtils {
             default -> (stat);
         };
     }
-
-    public static int getStatColor(String stat) {
-        return switch (stat.toUpperCase()) {
-            case "MBX.STATS.HEALTH" ->
-                    0xE24A63;
-            case "MBX.STATS.STRENGTH" -> 0xA55F26;
-            case "MBX.STATS.AGILITY" -> 0x6BC047;
-            case "MBX.STATS.INTELLIGENCE" -> 0xE24A2E;
-            case "MBX.STATS.DEFENSE" -> 0x1F8ECD;
-            case "MBX.STATS.WISDOM" -> 0x9457D3;
-            case "MBX.STATS.LUCK" -> 0x3D84A8;
-            case "MBX.STATS.FORTUNE" -> 0xEC8C2E;
-            default -> 0xFFFFFF;
-        };
-    }
-
 }

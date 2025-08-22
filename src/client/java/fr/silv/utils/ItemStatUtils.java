@@ -7,7 +7,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import fr.silv.model.MineboxStat;
-import net.minecraft.component.type.LoreComponent;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableTextContent;
 import org.apache.logging.log4j.LogManager;
@@ -113,5 +112,20 @@ public class ItemStatUtils {
                 return result;
         }
         return null;
+    }
+
+    public static boolean areEquals(List<MineboxStat> listA, List<MineboxStat> listB) {
+        if (listA.size() != listB.size()) return false;
+        for (MineboxStat statA : listA) {
+            boolean found = false;
+            for (MineboxStat statB : listB) {
+                if (statA.getStat().equals(statB.getStat()) && statA.getValue() == statB.getValue()) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) return false;
+        }
+        return true;
     }
 }
