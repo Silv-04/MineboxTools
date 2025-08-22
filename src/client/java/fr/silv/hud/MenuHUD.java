@@ -36,6 +36,14 @@ public class MenuHUD extends Screen {
                             ModConfig.save();
                         });
 
+        // Stats
+        CyclingButtonWidget<Boolean> toggleButtonStats = CyclingButtonWidget.onOffBuilder(ModConfig.statToggle)
+                .build(20, 60, 130, 20, Text.literal("Stat Toggle"),
+                        (button, value) -> {
+                            ModConfig.statToggle = value;
+                            ModConfig.save();
+                        });
+
         // Insects
         int areaWidthInsect = 140;
         int areaHeightInsect = this.height - 80;
@@ -197,6 +205,7 @@ public class MenuHUD extends Screen {
 
         this.addDrawableChild(toggleButtonDurability);
         this.addDrawableChild(toggleButtonTooltip);
+        this.addDrawableChild(toggleButtonStats);
         this.addDrawableChild(insectList);
         this.addDrawableChild(shopList);
 

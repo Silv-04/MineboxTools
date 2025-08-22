@@ -3,13 +3,15 @@
   "id": "mineboxtools",
   "version": "${version}",
   "name": "MineboxTools",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "description": "A set of tools for Minebox",
   "authors": [
-    "Me!"
+    "Silverhn!"
+  ],
+  "contributors" : [
+    ""
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "sources": "https://github.com/Silv-04/MineboxTools/"
   },
   "license": "CC0-1.0",
   "icon": "assets/mineboxtools/icon.png",

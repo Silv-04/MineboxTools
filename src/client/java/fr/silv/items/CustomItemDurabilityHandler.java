@@ -6,7 +6,7 @@ import fr.silv.utils.ModConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import fr.silv.utils.ItemStatsRangeLoader;
+import fr.silv.utils.ItemStatUtils;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.component.DataComponentTypes;
@@ -94,7 +94,7 @@ public class CustomItemDurabilityHandler {
             Map<String, int[]> stats = statsCache.get(id);
             if (stats == null) {
                 CustomItemDurabilityHandlerLogger.info("[Durability] Loading stats for: " + id);
-                stats = ItemStatsRangeLoader.getStatsFor(id);
+                stats = ItemStatUtils.getStatsFor(id);
                 statsCache.put(id, stats);
             }
 

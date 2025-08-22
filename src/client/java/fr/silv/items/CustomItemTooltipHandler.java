@@ -1,7 +1,7 @@
 package fr.silv.items;
 
 import fr.silv.constants.StatValue;
-import fr.silv.utils.ModConfig;
+import fr.silv.model.MineboxStat;
 import net.minecraft.item.ItemStack;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
@@ -11,21 +11,18 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
-import net.minecraft.text.TranslatableTextContent;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import fr.silv.utils.ItemStatsRangeLoader;
-import fr.silv.utils.TooltipStatColor;
+import fr.silv.utils.ItemStatUtils;
+import fr.silv.utils.StatTextUtils;
 
 public class CustomItemTooltipHandler {
     private static final Logger CustomItemTooltipHandler = LogManager
@@ -44,8 +41,8 @@ public class CustomItemTooltipHandler {
             "mbx.stats.health", StatValue.HEALTH);
 
     public static void addStatRangesToTooltip(ItemStack stack, Item.TooltipContext context, TooltipType type,
-            List<Text> lines) {
-        if (!ModConfig.tooltipToggle) return;
+                                              List<Text> lines) {
+        //if (!ModConfig.tooltipToggle) return;
 
         NbtComponent nbtComponent = stack.get(DataComponentTypes.CUSTOM_DATA);
         if (nbtComponent == null)
@@ -77,7 +74,7 @@ public class CustomItemTooltipHandler {
             recentLogs.put(stack, now);
         }
 
-        Map<String, int[]> statRanges = ItemStatsRangeLoader.getStatsFor(itemId);
+        Map<String, int[]> statRanges = ItemStatUtils.getStatsFor(itemId);
         if (statRanges.isEmpty())
             return;
 
@@ -86,9 +83,9 @@ public class CustomItemTooltipHandler {
 
         for (int i = 0; i < lines.size(); i++) {
             Text line = lines.get(i);
-            Stat stat = extractStatsFromLine(line, statKeys);
+            MineboxStat stat = ItemStatUtils.extractStatsFromLine(line, statKeys);
             if (stat != null) {
-                int[] range = statRanges.get(stat.stat.toLowerCase());
+                int[] range = statRanges.get(stat.getStat().toLowerCase());
                 if (range != null) {
                     StringBuilder suffix = new StringBuilder(" [");
                     suffix.append(range[0]);
@@ -99,10 +96,10 @@ public class CustomItemTooltipHandler {
                     suffix.append("]");
 
                     Text newLine = line.copy()
-                            .append(TooltipStatColor.statColor(suffix.toString(), stat.stat().toUpperCase()));
+                            .append(StatTextUtils.statColor(suffix.toString(), stat.getStat().toUpperCase()));
                     lines.set(i, newLine);
 
-                    actualStats.put(stat.stat.toLowerCase(), stat.value);
+                    actualStats.put(stat.getStat().toLowerCase(), stat.getValue());
                 }
             }
         }
@@ -111,7 +108,7 @@ public class CustomItemTooltipHandler {
         NbtCompound stats = persistent.getCompound("mbitems:stats").get();
         if (stats.toString().equals("{}"))
             return;
-            
+
         if (!actualStats.isEmpty()) {
             int score = (int) computeGlobalStatScore(actualStats, statRanges);
             Style style = getColorFromScore(score);
@@ -123,62 +120,6 @@ public class CustomItemTooltipHandler {
                         .info("[Tooltip] Global score for item " + itemId + ": " + score + "%");
             }
         }
-    }
-
-    private record Stat(String stat, Integer value) {
-    }
-
-    private static Stat extractStatsFromLine(Text line, Set<String> validKeys) {
-        TranslatableTextContent content = findTranslatable(line, validKeys);
-        if (content == null)
-            return null;
-
-        String key = content.getKey();
-        if (!validKeys.contains(key))
-            return null;
-
-        List<Text> flat = flattenText(line);
-
-        for (Text segment : flat) {
-            if (segment.getContent() instanceof TranslatableTextContent trContent) {
-                if (trContent.getKey().equals("mbx.bonus"))
-                    continue;
-            }
-
-            String raw = segment.getString();
-            Matcher matcher = Pattern.compile("-?\\d+").matcher(raw);
-            if (matcher.find()) {
-                try {
-                    int value = Integer.parseInt(matcher.group());
-                    return new Stat(key, value);
-                } catch (NumberFormatException e) {
-                    return null;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private static List<Text> flattenText(Text text) {
-        List<Text> result = new java.util.ArrayList<>();
-        result.add(text);
-        for (Text sibling : text.getSiblings()) {
-            result.addAll(flattenText(sibling));
-        }
-        return result;
-    }
-
-    private static TranslatableTextContent findTranslatable(Text text, Set<String> validKeys) {
-        if (text.getContent() instanceof TranslatableTextContent content && validKeys.contains(content.getKey())) {
-            return content;
-        }
-        for (Text sibling : text.getSiblings()) {
-            TranslatableTextContent result = findTranslatable(sibling, validKeys);
-            if (result != null)
-                return result;
-        }
-        return null;
     }
 
     private static double computeGlobalStatScore(Map<String, Integer> actualStats, Map<String, int[]> statRanges) {

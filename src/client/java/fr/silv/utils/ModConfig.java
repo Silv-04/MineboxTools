@@ -19,6 +19,7 @@ public class ModConfig {
     // Feature toggles
     public static boolean durabilityToggle = true;
     public static boolean tooltipToggle = true;
+    public static boolean statToggle = true;
 
     // Insect toggles
     public static boolean antToggle = false;
@@ -70,6 +71,7 @@ public class ModConfig {
                 // Feature toggles
                 durabilityToggle = data.durabilityToggle;
                 tooltipToggle = data.tooltipToggle;
+                statToggle = data.statToggle;
 
                 // Insect toggles
                 antToggle = data.antToggle;
@@ -125,6 +127,7 @@ public class ModConfig {
             // Feature toggles
             data.durabilityToggle = durabilityToggle;
             data.tooltipToggle = tooltipToggle;
+            data.statToggle = statToggle;
 
             // Insect toggles
             data.antToggle = antToggle;
@@ -178,6 +181,7 @@ public class ModConfig {
         // Feature toggles
         boolean durabilityToggle;
         boolean tooltipToggle;
+        boolean statToggle;
 
         // Insect toggles
         boolean antToggle;
