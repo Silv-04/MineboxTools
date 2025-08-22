@@ -1,5 +1,6 @@
 package fr.silv.hud;
 
+import fr.silv.model.ConfigOption;
 import fr.silv.model.MineboxStat;
 import fr.silv.utils.ItemStatUtils;
 import fr.silv.utils.ModConfig;
@@ -39,7 +40,7 @@ public class DisplayStats {
 
     public static void register() {
         HudRenderCallback.EVENT.register((drawContext, tickDelta) -> {
-            if (!ModConfig.statToggle) return;
+            if (ModConfig.statToggle == ConfigOption.OFF) return;
             MinecraftClient client = MinecraftClient.getInstance();
             TextRenderer textRenderer = client.textRenderer;
 
@@ -53,7 +54,12 @@ public class DisplayStats {
             int x = 4;
 
             for (MineboxStat stat : stats) {
-                String statString = StatTextUtils.formatStat(stat.getStat()) + ": " + stat.getValue();
+                String statString = "";
+                if (ModConfig.statToggle == ConfigOption.SIMPLE) {
+                    statString = StatTextUtils.formatStatSimple(stat.getStat()) + " " + stat.getValue();
+                } else if (ModConfig.statToggle == ConfigOption.ADVANCED) {
+                    statString = StatTextUtils.formatStatAdvanced(stat.getStat()) + ": " + stat.getValue();
+                }
                 Text text = StatTextUtils.statColor(statString, stat.getStat());
                 drawContext.drawTextWithShadow(textRenderer, text, x, y, Colors.WHITE);
                 y += lineHeight;

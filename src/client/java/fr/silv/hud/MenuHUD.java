@@ -2,6 +2,7 @@ package fr.silv.hud;
 
 import fr.silv.constants.Icons;
 import fr.silv.hud.widget.CheckboxListWidget;
+import fr.silv.model.ConfigOption;
 import fr.silv.utils.ModConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -35,15 +36,17 @@ public class MenuHUD extends Screen {
                             ModConfig.save();
                         });
 
-        // Stats
-        CyclingButtonWidget<Boolean> toggleButtonStats = CyclingButtonWidget.onOffBuilder(ModConfig.statToggle)
+        // Off hand haversack amount inside toggle
+        CyclingButtonWidget<ConfigOption> toggleButtonStats = CyclingButtonWidget.builder(ConfigOption::getDisplayName)
+                .values(ConfigOption.values())
+                .initially(ModConfig.statToggle)
                 .build(20, 60, 130, 20, Text.literal("Stat Toggle"),
                         (button, value) -> {
                             ModConfig.statToggle = value;
                             ModConfig.save();
                         });
 
-        // Off hand haversack amount inside toggle
+        // Stats
         CyclingButtonWidget<Boolean> toggleButtonOffHand = CyclingButtonWidget.onOffBuilder(ModConfig.offHandToggle)
                 .build(20, 80, 130, 20, Text.literal("OffHand Toggle"),
                         (button, value) -> {

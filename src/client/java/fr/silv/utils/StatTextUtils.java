@@ -22,7 +22,7 @@ public class StatTextUtils {
         };
     }
 
-    public static String formatStat(String stat) {
+    public static String formatStatAdvanced(String stat) {
         return switch (stat.toUpperCase()) {
             case "MBX.STATS.FORTUNE" -> ("🔱 Fortune");
             case "MBX.STATS.LUCK" -> ("🌊 Luck");
@@ -32,6 +32,20 @@ public class StatTextUtils {
             case "MBX.STATS.AGILITY" -> ("☄ Agility");
             case "MBX.STATS.WISDOM" -> ("☽ Wisdom");
             case "MBX.STATS.DEFENSE" -> ("🛡 Defense");
+            default -> (stat);
+        };
+    }
+
+    public static String formatStatSimple(String stat) {
+        return switch (stat.toUpperCase()) {
+            case "MBX.STATS.FORTUNE" -> ("🔱");
+            case "MBX.STATS.LUCK" -> ("🌊");
+            case "MBX.STATS.INTELLIGENCE" -> ("🔥");
+            case "MBX.STATS.STRENGTH" -> ("₪");
+            case "MBX.STATS.HEALTH" -> ("❤");
+            case "MBX.STATS.AGILITY" -> ("☄");
+            case "MBX.STATS.WISDOM" -> ("☽");
+            case "MBX.STATS.DEFENSE" -> ("🛡");
             default -> (stat);
         };
     }

@@ -2,6 +2,7 @@ package fr.silv.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import fr.silv.model.ConfigOption;
 import net.fabricmc.loader.api.FabricLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,7 +20,7 @@ public class ModConfig {
     // Feature toggles
     public static boolean durabilityToggle = true;
     public static boolean tooltipToggle = true;
-    public static boolean statToggle = true;
+    public static ConfigOption statToggle = ConfigOption.ADVANCED;
     public static boolean offHandToggle = true;
 
     // Insect toggles
@@ -184,7 +185,7 @@ public class ModConfig {
         // Feature toggles
         boolean durabilityToggle;
         boolean tooltipToggle;
-        boolean statToggle;
+        ConfigOption statToggle;
         boolean offHandToggle;
 
         // Insect toggles
