@@ -42,6 +42,7 @@ public class DisplayStats {
         HudRenderCallback.EVENT.register((drawContext, tickDelta) -> {
             if (ModConfig.statToggle == ConfigOption.OFF) return;
             MinecraftClient client = MinecraftClient.getInstance();
+            if (client.options.hudHidden) return;
             TextRenderer textRenderer = client.textRenderer;
 
             List<MineboxStat> stats = getCombinedStats(client);

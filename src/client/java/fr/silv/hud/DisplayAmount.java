@@ -20,6 +20,7 @@ public class DisplayAmount {
         HudRenderCallback.EVENT.register((drawContext, tickDelta) -> {
             if (!ModConfig.offHandToggle) return;
             MinecraftClient client = MinecraftClient.getInstance();
+            if (client.options.hudHidden) return;
             ItemStack stack = client.player.getOffHandStack();
             if (stack == null || stack.isEmpty()) return;
 
