@@ -11,7 +11,7 @@
     "sources": "https://github.com/Silv-04/MineboxTools/"
   },
   "license": "GPL-3.0",
-  "icon": "assets/mineboxtools/icon.png",
+  "icon": "icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
