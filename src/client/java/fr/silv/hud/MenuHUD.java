@@ -150,6 +150,10 @@ public class MenuHUD extends Screen {
             ModConfig.stickInsectToggle = checked;
             ModConfig.save();
         }, Icons.StickInsectICON);
+        insectList.addOption("Snail", ModConfig.snailToggle, checked -> {
+            ModConfig.snailToggle = checked;
+            ModConfig.save();
+        }, Icons.SnailICON);
         insectList.addOption("Sunset moth", ModConfig.sunsetMothToggle, checked -> {
             ModConfig.sunsetMothToggle = checked;
             ModConfig.save();

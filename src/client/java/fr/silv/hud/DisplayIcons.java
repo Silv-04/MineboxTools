@@ -12,6 +12,7 @@ import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.World;
 
 public class DisplayIcons {
     public static void register() {
@@ -20,6 +21,8 @@ public class DisplayIcons {
 
     public static void onHudRender(DrawContext drawContext, RenderTickCounter tickDelta) {
         MinecraftClient client = MinecraftClient.getInstance();
+        World world = client.world;
+
         if (client.player == null || client.options.hudHidden)
             return;
 
@@ -34,7 +37,13 @@ public class DisplayIcons {
         LocalTime now = LocalTime.now(ZoneId.of("Europe/Paris"));
 
         // Insects
-        if (DaylightCycle.isMorning(now)) {
+        if (world.isRaining() || world.isThundering()) {
+            if (ModConfig.snailToggle) {
+                drawIcon(drawContext, Icons.SnailICON, xBase - (offsetIndex * (iconWidth + spacing)), y);
+                offsetIndex++;
+            }
+        }
+        if (DaylightCycle.isMorning(now) && !world.isRaining() && !world.isThundering()) {
             if (ModConfig.antToggle) {
                 drawIcon(drawContext, Icons.AntICON, xBase - (offsetIndex * (iconWidth + spacing)), y);
                 offsetIndex++;
@@ -77,7 +86,7 @@ public class DisplayIcons {
             }
         }
 
-        if (DaylightCycle.isAfternoon(now)) {
+        if (DaylightCycle.isAfternoon(now) && !world.isRaining() && !world.isThundering()) {
             if (ModConfig.antToggle) {
                 drawIcon(drawContext, Icons.AntICON, xBase - (offsetIndex * (iconWidth + spacing)), y);
                 offsetIndex++;
@@ -132,7 +141,7 @@ public class DisplayIcons {
             }
         }
 
-        if (DaylightCycle.isEvening(now)) {
+        if (DaylightCycle.isEvening(now) && !world.isRaining() && !world.isThundering()) {
             if (ModConfig.cricketToggle) {
                 drawIcon(drawContext, Icons.CricketICON, xBase - (offsetIndex * (iconWidth + spacing)), y);
                 offsetIndex++;
@@ -181,13 +190,9 @@ public class DisplayIcons {
                 drawIcon(drawContext, Icons.SunsetMothICON, xBase - (offsetIndex * (iconWidth + spacing)), y);
                 offsetIndex++;
             }
-            if (ModConfig.scorpionToggle) {
-                drawIcon(drawContext, Icons.ScorpionICON, xBase - (offsetIndex * (iconWidth + spacing)), y);
-                offsetIndex++;
-            }
         }
 
-        if (DaylightCycle.isNight(now)) {
+        if (DaylightCycle.isNight(now) && !world.isRaining() && !world.isThundering()) {
             if (ModConfig.cricketToggle) {
                 drawIcon(drawContext, Icons.CricketICON, xBase - (offsetIndex * (iconWidth + spacing)), y);
                 offsetIndex++;
@@ -232,6 +237,16 @@ public class DisplayIcons {
                 drawIcon(drawContext, Icons.AtlasMothButterflyICON, xBase - (offsetIndex * (iconWidth + spacing)), y);
                 offsetIndex++;
             }
+        }
+
+        if (DaylightCycle.isEvening(now)) {
+            if (ModConfig.scorpionToggle) {
+                drawIcon(drawContext, Icons.ScorpionICON, xBase - (offsetIndex * (iconWidth + spacing)), y);
+                offsetIndex++;
+            }
+        }
+
+        if (DaylightCycle.isNight(now)){
             if (ModConfig.scorpionToggle) {
                 drawIcon(drawContext, Icons.ScorpionICON, xBase - (offsetIndex * (iconWidth + spacing)), y);
                 offsetIndex++;
@@ -243,19 +258,19 @@ public class DisplayIcons {
         }
 
         // Coffee shop
-        if (DaylightCycle.isMorning(now) && ModConfig.coffeeShopToggle) {
+        if (DaylightCycle.isMorning(now) && ModConfig.coffeeShopToggle && !world.isThundering()) {
             drawIcon(drawContext, Icons.CoffeeShopICON, xBase - (offsetIndex * (iconWidth + spacing)), y);
             offsetIndex++;
         }
 
         // Bakery
-        if (DaylightCycle.isAfternoon(now) && ModConfig.bakeryToggle) {
+        if (DaylightCycle.isAfternoon(now) && ModConfig.bakeryToggle && !world.isThundering()) {
             drawIcon(drawContext, Icons.BakeryICON, xBase - (offsetIndex * (iconWidth + spacing)), y);
             offsetIndex++;
         }
 
         // Cocktail bar + Painting
-        if (DaylightCycle.isCocktailAndMonkeyShopOpen(now)) {
+        if (DaylightCycle.isCocktailAndMonkeyShopOpen(now) && !world.isThundering()) {
             if (ModConfig.cocktailBarToggle) {
                 drawIcon(drawContext, Icons.CocktailBarICON, xBase - (offsetIndex * (iconWidth + spacing)), y);
                 offsetIndex++;
