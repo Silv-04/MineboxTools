@@ -5,11 +5,11 @@ import java.time.LocalTime;
 public class DaylightCycle {
     // Fullmoon
     private static final LocalTime FullMoonStart1 = LocalTime.of(2, 0);
-    private static final LocalTime FullMoonEnd1 = LocalTime.of(2, 15);
+    private static final LocalTime FullMoonEnd1 = LocalTime.of(3, 0);
     private static final LocalTime FullMoonStart2 = LocalTime.of(10, 0);
-    private static final LocalTime FullMoonEnd2 = LocalTime.of(10, 15);
+    private static final LocalTime FullMoonEnd2 = LocalTime.of(11, 0);
     private static final LocalTime FullMoonStart3 = LocalTime.of(18, 0);
-    private static final LocalTime FullMoonEnd3 = LocalTime.of(18, 15);
+    private static final LocalTime FullMoonEnd3 = LocalTime.of(19, 0);
 
     public static boolean isFullMoon(LocalTime now) {
         return (now.isAfter(FullMoonStart1) && now.isBefore(FullMoonEnd1)) ||
@@ -44,9 +44,7 @@ public class DaylightCycle {
     // Herb shop timer
     public static boolean isHerbShopOpen(LocalTime now) {
         int minute = now.getMinute();
-        int second = now.getSecond();
-        int total = minute * 60 + second;
-        return (total < 600) || (total >= 3000);
+        return (minute < 10) || (minute >= 50);
     }
 
     // Cocktail shop and monkey shop timer
