@@ -1,14 +1,16 @@
 package fr.silv;
 
 import fr.silv.commands.MenuCommand;
-import fr.silv.hud.DisplayAmount;
-import fr.silv.hud.DisplayStats;
-import fr.silv.utils.ModConfig;
+import fr.silv.hud.widget.DurabilityWidget;
+import fr.silv.hud.widget.HudWidgetManager;
+import fr.silv.hud.widget.StatWidget;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.minecraft.client.MinecraftClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import fr.silv.hud.DisplayIcons;
+import fr.silv.hud.widget.IconWidget;
 import fr.silv.items.CustomItemDurabilityHandler;
 import fr.silv.items.CustomItemTooltipHandler;
 import fr.silv.utils.ItemStatUtils;
@@ -28,10 +30,15 @@ public class MineboxToolsClient implements ClientModInitializer {
 		});
 		ItemStatUtils.load();
 		CustomItemDurabilityHandler.register();
-		DisplayIcons.register();
-		DisplayStats.register();
-		DisplayAmount.register();
+
 		ItemTooltipCallback.EVENT.register(CustomItemTooltipHandler::addStatRangesToTooltip);
 
+		HudWidgetManager.init();
+		HudRenderCallback.EVENT.register((context, tickDelta) -> {
+			MinecraftClient client = MinecraftClient.getInstance();
+			for (var widget : HudWidgetManager.getWidgets()) {
+				widget.render(context, client);
+			}
+		});
 	}
 }

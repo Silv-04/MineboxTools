@@ -1,9 +1,10 @@
 package fr.silv.hud;
 
 import fr.silv.constants.Icons;
-import fr.silv.hud.widget.CheckboxListWidget;
-import fr.silv.model.ConfigOption;
-import fr.silv.utils.ModConfig;
+import fr.silv.hud.widget.HudWidgetManager;
+import fr.silv.hud.widget.config.CheckboxListWidget;
+import fr.silv.hud.widget.config.ConfigOption;
+import fr.silv.ModConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -36,7 +37,7 @@ public class MenuHUD extends Screen {
                             ModConfig.save();
                         });
 
-        // Off hand haversack amount inside toggle
+        // Stats
         CyclingButtonWidget<ConfigOption> toggleButtonStats = CyclingButtonWidget.builder(ConfigOption::getDisplayName)
                 .values(ConfigOption.values())
                 .initially(ModConfig.statToggle)
@@ -46,13 +47,18 @@ public class MenuHUD extends Screen {
                             ModConfig.save();
                         });
 
-        // Stats
+        // Off hand haversack amount inside toggle
         CyclingButtonWidget<Boolean> toggleButtonOffHand = CyclingButtonWidget.onOffBuilder(ModConfig.offHandToggle)
                 .build(20, 80, 130, 20, Text.literal("OffHand Toggle"),
                         (button, value) -> {
                             ModConfig.offHandToggle = value;
                             ModConfig.save();
                         });
+
+        // Custom HUD
+        ButtonWidget customHUDButton = ButtonWidget.builder(Text.literal("Custom HUD"), button -> {
+            MinecraftClient.getInstance().setScreen(new HudConfigScreen(HudWidgetManager.getWidgets()));
+        }).dimensions(20, 100, 130, 20).build();
 
         // Insects
         int areaWidthInsect = 140;
@@ -224,6 +230,7 @@ public class MenuHUD extends Screen {
 
         this.addDrawableChild(insectList);
         this.addDrawableChild(shopList);
+        this.addDrawableChild(customHUDButton);
 
         // Close button
         this.addDrawableChild(ButtonWidget.builder(Text.literal("Close"), b -> this.close())
@@ -233,10 +240,9 @@ public class MenuHUD extends Screen {
 
     @Override
     public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
-        drawContext.fill(0, 0, this.width, this.height, 0x90000000); // fond bleu opaque
+        drawContext.fill(0, 0, this.width, this.height, 0x90000000);
 
         super.render(drawContext, mouseX, mouseY, delta);
-        drawContext.drawText(this.textRenderer, "TEST", 10, 10, 0xFFFFFF, false);
     }
 
     @Override

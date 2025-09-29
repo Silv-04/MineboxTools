@@ -1,4 +1,4 @@
-package fr.silv.model;
+package fr.silv.hud.widget.config;
 
 import net.minecraft.text.Text;
 

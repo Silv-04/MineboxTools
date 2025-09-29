@@ -1,4 +1,4 @@
-package fr.silv.hud.widget;
+package fr.silv.hud.widget.config;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;

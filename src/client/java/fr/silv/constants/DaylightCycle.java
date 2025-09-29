@@ -44,7 +44,9 @@ public class DaylightCycle {
     // Herb shop timer
     public static boolean isHerbShopOpen(LocalTime now) {
         int minute = now.getMinute();
-        return (minute < 10) || (minute >= 50);
+        int second = now.getSecond();
+        int total = minute * 60 + second;
+        return (total < 600) || (total >= 2925);
     }
 
     // Cocktail shop and monkey shop timer

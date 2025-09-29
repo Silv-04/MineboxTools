@@ -1,13 +1,13 @@
-package fr.silv.hud;
+package fr.silv.hud.widget;
 
-import fr.silv.model.ConfigOption;
+import fr.silv.hud.widget.config.ConfigOption;
 import fr.silv.model.MineboxStat;
 import fr.silv.utils.ItemStatUtils;
-import fr.silv.utils.ModConfig;
+import fr.silv.ModConfig;
 import fr.silv.utils.StatTextUtils;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.LoreComponent;
 import net.minecraft.item.ItemStack;
@@ -20,12 +20,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-
-public class DisplayStats {
+public class StatWidget extends HudWidget {
     private static List<MineboxStat> cachedStatsTotal = new ArrayList<>();
     private static List<MineboxStat> cachedHandStats = new ArrayList<>();
     private static List<MineboxStat> cachedPlayerStats = new ArrayList<>();
-    private static Logger DisplayStatsLogger = LogManager.getLogger(DisplayStats.class);
+    private static Logger DisplayStatsLogger = LogManager.getLogger(StatWidget.class);
+
+    public StatWidget() {
+        super("stat_widget",
+                ModConfig.getWidgetPosition("stat_widget")[0],
+                ModConfig.getWidgetPosition("stat_widget")[1],
+                40, 90);
+    }
 
     public static final Set<String> ALL_STATS = Set.of(
             "mbx.stats.fortune",
@@ -38,21 +44,18 @@ public class DisplayStats {
             "mbx.stats.defense"
     );
 
-    public static void register() {
-        HudRenderCallback.EVENT.register((drawContext, tickDelta) -> {
+    @Override
+    public void render(DrawContext context, MinecraftClient client) {
             if (ModConfig.statToggle == ConfigOption.OFF) return;
-            MinecraftClient client = MinecraftClient.getInstance();
             if (client.options.hudHidden) return;
             TextRenderer textRenderer = client.textRenderer;
 
             List<MineboxStat> stats = getCombinedStats(client);
             if (stats.isEmpty()) return;
 
-            int screenHeight = client.getWindow().getScaledHeight();
             int lineHeight = textRenderer.fontHeight + 2;
-            int totalHeight = stats.size() * lineHeight;
-            int y = Math.abs(screenHeight - totalHeight) / 2;
-            int x = 4;
+            int y = this.y;
+            int x = this.x;
 
             for (MineboxStat stat : stats) {
                 String statString = "";
@@ -62,10 +65,9 @@ public class DisplayStats {
                     statString = StatTextUtils.formatStatAdvanced(stat.getStat()) + ": " + stat.getValue();
                 }
                 Text text = StatTextUtils.statColor(statString, stat.getStat());
-                drawContext.drawTextWithShadow(textRenderer, text, x, y, Colors.WHITE);
+                context.drawTextWithShadow(textRenderer, text, x, y, Colors.WHITE);
                 y += lineHeight;
             }
-        });
     }
 
     public static List<MineboxStat> getCombinedStats(MinecraftClient client) {

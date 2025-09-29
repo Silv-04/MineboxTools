@@ -1,5 +1,6 @@
 package fr.silv.items;
 
+import fr.silv.ModConfig;
 import fr.silv.constants.StatValue;
 import fr.silv.model.MineboxStat;
 import net.minecraft.item.ItemStack;
@@ -42,7 +43,7 @@ public class CustomItemTooltipHandler {
 
     public static void addStatRangesToTooltip(ItemStack stack, Item.TooltipContext context, TooltipType type,
                                               List<Text> lines) {
-        //if (!ModConfig.tooltipToggle) return;
+        if (!ModConfig.tooltipToggle) return;
 
         NbtComponent nbtComponent = stack.get(DataComponentTypes.CUSTOM_DATA);
         if (nbtComponent == null)

@@ -2,7 +2,7 @@ package fr.silv.items;
 
 import java.util.*;
 
-import fr.silv.utils.ModConfig;
+import fr.silv.ModConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,7 +28,7 @@ public class CustomItemDurabilityHandler {
 
     private static final List<String> SUPPORTED_PREFIXES = List.of(
             "hammer_", "vein_", "watering_can_", "sponge_", "bucket_",
-            "laborer_", "basket_seeds_", "block_stick_", "leaf_blower");
+            "laborer_", "basket_seeds_", "block_stick_", "leaf_blower", "silk_touch");
 
     public static void register() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
