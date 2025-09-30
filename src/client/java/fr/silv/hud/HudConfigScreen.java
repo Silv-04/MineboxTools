@@ -37,8 +37,9 @@ public class HudConfigScreen extends Screen {
             context.drawBorder(widget.getX(), widget.getY(),
                     widget.getWidth(), widget.getHeight(),
                     Colors.WHITE);
-            context.drawTextWithShadow(this.textRenderer, Text.literal(widget.getId().replace("_widget", "")),
-                    widget.getX() + (widget.getWidth() /2), widget.getY() + (widget.getHeight() /2), Colors.WHITE);
+            String id = widget.getId().replace("_widget", "");
+            context.drawTextWithShadow(this.textRenderer, Text.literal(id),
+                    widget.getX() + (widget.getWidth() /2) - id.length()/2, widget.getY() + (widget.getHeight() /2) - 6, Colors.WHITE);
             if (widget.isMouseOver(mouseX, mouseY)) {
                 context.drawBorder(widget.getX(), widget.getY(),
                         widget.getWidth(), widget.getHeight(),
