@@ -26,7 +26,7 @@ public class DurabilityWidget extends HudWidget {
         super("durability_widget",
                 ModConfig.getWidgetPosition("durability_widget")[0],
                 ModConfig.getWidgetPosition("durability_widget")[1],
-                140, 30);
+                160, 30);
     }
 
     @Override
@@ -37,20 +37,21 @@ public class DurabilityWidget extends HudWidget {
         try {
             ItemStack offHandStack = client.player.getOffHandStack();
             String offHandDurability = getOffHandDurability(offHandStack);
-            System.out.println("Offhand durability: " + offHandDurability);
             ItemStack mainHandStack = client.player.getMainHandStack();
             String mainHandDurability = getMainHandDurability(mainHandStack);
-            System.out.println("Mainhand durability: " + mainHandDurability);
 
             TextRenderer textRenderer = client.textRenderer;
             if (!mainHandDurability.equals("")) {
-                context.drawTextWithShadow(textRenderer, Text.literal(mainHandDurability), this.x, this.y, Colors.WHITE);
+                context.drawItem(mainHandStack, this.x, this.y);
+                context.drawTextWithShadow(textRenderer, Text.literal(mainHandDurability), this.x+18, this.y+4, Colors.WHITE);
                 if (!offHandDurability.equals("")) {
-                    context.drawTextWithShadow(textRenderer, Text.literal(offHandDurability), this.x, this.y + 12, Colors.WHITE);
+                    context.drawItem(offHandStack, this.x, this.y + 16);
+                    context.drawTextWithShadow(textRenderer, Text.literal(offHandDurability), this.x+18, this.y + 20, Colors.WHITE);
                 }
             }
             else {
-                context.drawTextWithShadow(textRenderer, Text.literal(offHandDurability), this.x, this.y, Colors.WHITE);
+                context.drawItem(offHandStack, this.x, this.y);
+                context.drawTextWithShadow(textRenderer, Text.literal(offHandDurability), this.x+18, this.y+4, Colors.WHITE);
             }
         }
         catch (NullPointerException npe) {
@@ -76,7 +77,7 @@ public class DurabilityWidget extends HudWidget {
         if (persistent.getInt("mbitems:durability").isEmpty()) return "";
         String mainHandCurrent = String.valueOf(persistent.getInt("mbitems:durability").get());
         String mainHandMax = String.valueOf(ItemStatUtils.getStatsFor(id).get("mbx.durability")[0]);
-        return "Main hand: " + mainHandCurrent + "/" + mainHandMax;
+        return mainHandCurrent + "/" + mainHandMax;
     }
 
     private String getOffHandDurability(ItemStack stack) {
@@ -96,7 +97,7 @@ public class DurabilityWidget extends HudWidget {
                 try {
                     int current = Integer.parseInt(amountInside[0]);
                     int max = Integer.parseInt(amountInside[1]);
-                    String text = "Off hand: " + current + "/" + max;
+                    String text = current + "/" + max;
                     return text;
                 } catch (NumberFormatException e) {
                     DisplayAmountLogger.error("Invalid number format in haversack amount: " + e.getMessage());
