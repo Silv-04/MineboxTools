@@ -20,11 +20,12 @@ public class ModConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final File CONFIG_FILE = new File(FabricLoader.getInstance().getConfigDir().toFile(), "mineboxtools.settings.json");
 
+    public static String language = "en_us";
     // Feature toggles
     public static boolean durabilityToggle = true;
     public static boolean tooltipToggle = true;
     public static ConfigOption statToggle = ConfigOption.SIMPLE;
-    public static boolean offHandToggle = true;
+    public static boolean handToggle = true;
 
     // Insect toggles
     public static boolean antToggle = false;
@@ -93,11 +94,13 @@ public class ModConfig {
             try (FileReader reader = new FileReader(CONFIG_FILE)) {
                 ModConfigData data = GSON.fromJson(reader, ModConfigData.class);
 
+                language = data.language;
+
                 // Feature toggles
                 durabilityToggle = data.durabilityToggle;
                 tooltipToggle = data.tooltipToggle;
                 statToggle = data.statToggle;
-                offHandToggle = data.offHandToggle;
+                handToggle = data.handToggle;
 
                 // Insect toggles
                 antToggle = data.antToggle;
@@ -155,11 +158,12 @@ public class ModConfig {
         try (FileWriter writer = new FileWriter(CONFIG_FILE)) {
             ModConfigData data = new ModConfigData();
 
+            data.language = language;
             // Feature toggles
             data.durabilityToggle = durabilityToggle;
             data.tooltipToggle = tooltipToggle;
             data.statToggle = statToggle;
-            data.offHandToggle = offHandToggle;
+            data.handToggle = handToggle;
 
             // Insect toggles
             data.antToggle = antToggle;
@@ -213,11 +217,12 @@ public class ModConfig {
 
     private static class ModConfigData {
 
+        String language;
         // Feature toggles
         boolean durabilityToggle;
         boolean tooltipToggle;
         ConfigOption statToggle;
-        boolean offHandToggle;
+        boolean handToggle;
 
         // Insect toggles
         boolean antToggle;

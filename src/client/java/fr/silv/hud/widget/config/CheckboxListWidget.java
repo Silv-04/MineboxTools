@@ -23,7 +23,7 @@ public class CheckboxListWidget extends ElementListWidget<CheckboxListWidget.Ent
         this.setDimensionsAndPosition(width, height, x, y);
     }
 
-    public void addOption(String label, boolean initial, Consumer<Boolean> onChange, Identifier icon) {
+    public void addOption(Text label, boolean initial, Consumer<Boolean> onChange, Identifier icon) {
         this.addEntry(new Entry(label, initial, onChange, textRenderer, icon));
     }
 
@@ -31,9 +31,9 @@ public class CheckboxListWidget extends ElementListWidget<CheckboxListWidget.Ent
         private final CheckboxWidget checkbox;
         private final Identifier icon;
 
-        public Entry(String label, boolean initial, Consumer<Boolean> onChange, TextRenderer tr, Identifier icon) {
+        public Entry(Text label, boolean initial, Consumer<Boolean> onChange, TextRenderer tr, Identifier icon) {
             this.icon = icon;
-            this.checkbox = CheckboxWidget.builder(Text.literal(label), tr)
+            this.checkbox = CheckboxWidget.builder(label, tr)
                     .checked(initial)
                     .callback((cb, checked) -> onChange.accept(checked))
                     .pos(5, 5)

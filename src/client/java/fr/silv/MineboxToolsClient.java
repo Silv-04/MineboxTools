@@ -25,6 +25,7 @@ public class MineboxToolsClient implements ClientModInitializer {
 		MineboxToolsLogger.info("[MineboxToolsClient] Initializing client...");
 
 		ModConfig.load();
+
 		ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
 			MenuCommand.register(dispatcher);
 		});

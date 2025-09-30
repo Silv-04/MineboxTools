@@ -31,7 +31,7 @@ public class DurabilityWidget extends HudWidget {
 
     @Override
     public void render(DrawContext context, MinecraftClient client) {
-        if (!ModConfig.offHandToggle) return;
+        if (!ModConfig.handToggle) return;
         if (client.options.hudHidden) return;
 
         try {

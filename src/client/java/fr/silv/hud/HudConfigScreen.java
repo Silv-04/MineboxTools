@@ -1,5 +1,6 @@
 package fr.silv.hud;
 
+import fr.silv.Lang;
 import fr.silv.ModConfig;
 import fr.silv.hud.widget.HudWidget;
 import net.minecraft.client.gui.DrawContext;
@@ -23,7 +24,7 @@ public class HudConfigScreen extends Screen {
 
     @Override
     protected void init() {
-        this.addDrawableChild(ButtonWidget.builder(Text.literal("Done"), button -> {
+        this.addDrawableChild(ButtonWidget.builder(Text.literal(Lang.get("mineboxtools.menu.close")),button -> {
             this.close();
         }).dimensions(this.width / 2 - 50, this.height - 30, 100, 20).build());
     }
@@ -39,7 +40,7 @@ public class HudConfigScreen extends Screen {
                     Colors.WHITE);
             String id = widget.getId().replace("_widget", "");
             context.drawTextWithShadow(this.textRenderer, Text.literal(id),
-                    widget.getX() + (widget.getWidth() /2) - id.length()/2, widget.getY() + (widget.getHeight() /2) - 6, Colors.WHITE);
+                    widget.getX() + (widget.getWidth() /2) - id.length()*2, widget.getY() + (widget.getHeight() /2) - 6, Colors.WHITE);
             if (widget.isMouseOver(mouseX, mouseY)) {
                 context.drawBorder(widget.getX(), widget.getY(),
                         widget.getWidth(), widget.getHeight(),

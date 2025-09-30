@@ -1,5 +1,6 @@
 package fr.silv.hud;
 
+import fr.silv.Lang;
 import fr.silv.constants.Icons;
 import fr.silv.hud.widget.HudWidgetManager;
 import fr.silv.hud.widget.config.CheckboxListWidget;
@@ -20,10 +21,21 @@ public class MenuHUD extends Screen {
     @Override
     public void init() {
         super.init();
+        Lang.load(ModConfig.language);
+
+        ButtonWidget langButton = ButtonWidget.builder(
+                Text.of(ModConfig.language.equals("en_us") ? "EN" : "FR"),
+                b -> {
+                    ModConfig.language = ModConfig.language.equals("en_us") ? "fr_fr" : "en_us";
+                    Lang.load(ModConfig.language);
+                    ModConfig.save();
+                    this.clearAndInit();
+                }
+        ).dimensions(20, 20, 130, 20).build();
 
         // Durability
         CyclingButtonWidget<Boolean> toggleButtonDurability = CyclingButtonWidget.onOffBuilder(ModConfig.durabilityToggle)
-                .build(20, 20, 130, 20, Text.literal("Durability Toggle"),
+                .build(20, 60, 130, 20, Text.literal(Lang.get("mineboxtools.menu.durability")),
                         (button, value) -> {
                     ModConfig.durabilityToggle = value;
                     ModConfig.save();
@@ -31,7 +43,7 @@ public class MenuHUD extends Screen {
 
         // Tooltip
         CyclingButtonWidget<Boolean> toggleButtonTooltip = CyclingButtonWidget.onOffBuilder(ModConfig.tooltipToggle)
-                .build(20, 40, 130, 20, Text.literal("Tooltip Toggle"),
+                .build(20, 80, 130, 20, Text.literal(Lang.get("mineboxtools.menu.tooltip")),
                         (button, value) -> {
                             ModConfig.tooltipToggle = value;
                             ModConfig.save();
@@ -41,24 +53,24 @@ public class MenuHUD extends Screen {
         CyclingButtonWidget<ConfigOption> toggleButtonStats = CyclingButtonWidget.builder(ConfigOption::getDisplayName)
                 .values(ConfigOption.values())
                 .initially(ModConfig.statToggle)
-                .build(20, 60, 130, 20, Text.literal("Stat Toggle"),
+                .build(20, 100, 130, 20, Text.literal(Lang.get("mineboxtools.menu.stats")),
                         (button, value) -> {
                             ModConfig.statToggle = value;
                             ModConfig.save();
                         });
 
         // Off hand haversack amount inside toggle
-        CyclingButtonWidget<Boolean> toggleButtonOffHand = CyclingButtonWidget.onOffBuilder(ModConfig.offHandToggle)
-                .build(20, 80, 130, 20, Text.literal("OffHand Toggle"),
+        CyclingButtonWidget<Boolean> toggleButtonOffHand = CyclingButtonWidget.onOffBuilder(ModConfig.handToggle)
+                .build(20, 120, 130, 20, Text.literal(Lang.get("mineboxtools.menu.hand")),
                         (button, value) -> {
-                            ModConfig.offHandToggle = value;
+                            ModConfig.handToggle = value;
                             ModConfig.save();
                         });
 
         // Custom HUD
-        ButtonWidget customHUDButton = ButtonWidget.builder(Text.literal("Custom HUD"), button -> {
+        ButtonWidget customHUDButton = ButtonWidget.builder(Text.literal(Lang.get("mineboxtools.menu.hud")), button -> {
             MinecraftClient.getInstance().setScreen(new HudConfigScreen(HudWidgetManager.getWidgets()));
-        }).dimensions(20, 100, 130, 20).build();
+        }).dimensions(20, 160, 130, 20).build();
 
         // Insects
         int areaWidthInsect = 140;
@@ -68,123 +80,123 @@ public class MenuHUD extends Screen {
         int yInsect = 20;
 
         CheckboxListWidget insectList = new CheckboxListWidget(MinecraftClient.getInstance(), xInsect, yInsect, areaWidthInsect, areaHeightInsect, rowHeightInsect);
-        insectList.addOption("Ant", ModConfig.antToggle, checked -> {
+        insectList.addOption(Text.of(Lang.get("mineboxtools.insect.ant")), ModConfig.antToggle, checked -> {
             ModConfig.antToggle = checked;
             ModConfig.save();
         }, Icons.AntICON);
-        insectList.addOption("Atlas moth", ModConfig.atlasMothToggle, checked -> {
+        insectList.addOption(Text.of(Lang.get("mineboxtools.insect.atlas_moth")), ModConfig.atlasMothToggle, checked -> {
             ModConfig.atlasMothToggle = checked;
             ModConfig.save();
         }, Icons.AtlasMothButterflyICON);
-        insectList.addOption("Birdwing", ModConfig.birdwingToggle, checked -> {
+        insectList.addOption(Text.of(Lang.get("mineboxtools.insect.birdwing")), ModConfig.birdwingToggle, checked -> {
             ModConfig.birdwingToggle = checked;
             ModConfig.save();
         }, Icons.BirdwingICON);
-        insectList.addOption("Blue butterfly", ModConfig.blueButterflyToggle, checked -> {
+        insectList.addOption(Text.of(Lang.get("mineboxtools.insect.blue_butterfly")), ModConfig.blueButterflyToggle, checked -> {
             ModConfig.blueButterflyToggle = checked;
             ModConfig.save();
         }, Icons.BlueButterflyICON);
-        insectList.addOption("Blue dragonfly", ModConfig.blueDragonflyToggle, checked -> {
+        insectList.addOption(Text.of(Lang.get("mineboxtools.insect.blue_dragonfly")), ModConfig.blueDragonflyToggle, checked -> {
             ModConfig.blueDragonflyToggle = checked;
             ModConfig.save();
         }, Icons.BlueDragonflyICON);
-        insectList.addOption("Brown ant", ModConfig.brownAntToggle, checked -> {
+        insectList.addOption(Text.of(Lang.get("mineboxtools.insect.brown_ant")), ModConfig.brownAntToggle, checked -> {
             ModConfig.brownAntToggle = checked;
             ModConfig.save();
         }, Icons.BrownAntICON);
-        insectList.addOption("Centipede", ModConfig.centipedeToggle, checked -> {
+        insectList.addOption(Text.of(Lang.get("mineboxtools.insect.centipede")), ModConfig.centipedeToggle, checked -> {
             ModConfig.centipedeToggle = checked;
             ModConfig.save();
         }, Icons.CentipedeICON);
-        insectList.addOption("Cricket", ModConfig.cricketToggle, checked -> {
+        insectList.addOption(Text.of(Lang.get("mineboxtools.insect.cricket")), ModConfig.cricketToggle, checked -> {
             ModConfig.cricketToggle = checked;
             ModConfig.save();
         }, Icons.CricketICON);
-        insectList.addOption("Cyclommatus", ModConfig.cyclommatusToggle, checked -> {
+        insectList.addOption(Text.of(Lang.get("mineboxtools.insect.cyclommatus")), ModConfig.cyclommatusToggle, checked -> {
             ModConfig.cyclommatusToggle = checked;
             ModConfig.save();
         }, Icons.CyclommatusICON);
-        insectList.addOption("Dung beetle", ModConfig.dungBeetleToggle, checked -> {
+        insectList.addOption(Text.of(Lang.get("mineboxtools.insect.dung_bettle")), ModConfig.dungBeetleToggle, checked -> {
             ModConfig.dungBeetleToggle = checked;
             ModConfig.save();
         }, Icons.DungleBeetleICON);
-        insectList.addOption("Firefly", ModConfig.fireflyToggle, checked -> {
+        insectList.addOption(Text.of(Lang.get("mineboxtools.insect.firefly")), ModConfig.fireflyToggle, checked -> {
             ModConfig.fireflyToggle = checked;
             ModConfig.save();
         }, Icons.FireflyICON);
-        insectList.addOption("Green butterfly", ModConfig.greenButterflyToggle, checked -> {
+        insectList.addOption(Text.of(Lang.get("mineboxtools.insect.green_butterfly")), ModConfig.greenButterflyToggle, checked -> {
             ModConfig.greenButterflyToggle = checked;
             ModConfig.save();
         }, Icons.GreenButterflyICON);
-        insectList.addOption("Green dragonfly", ModConfig.greenDragonflyToggle, checked -> {
+        insectList.addOption(Text.of(Lang.get("mineboxtools.insect.green_dragonfly")), ModConfig.greenDragonflyToggle, checked -> {
             ModConfig.greenDragonflyToggle = checked;
             ModConfig.save();
         }, Icons.GreenDragonflyICON);
-        insectList.addOption("Ladybug", ModConfig.ladybugToggle, checked -> {
+        insectList.addOption(Text.of(Lang.get("mineboxtools.insect.ladybug")), ModConfig.ladybugToggle, checked -> {
             ModConfig.ladybugToggle = checked;
             ModConfig.save();
         }, Icons.LadybugICON);
-        insectList.addOption("Locust", ModConfig.locustToggle, checked -> {
+        insectList.addOption(Text.of(Lang.get("mineboxtools.insect.locust")), ModConfig.locustToggle, checked -> {
             ModConfig.locustToggle = checked;
             ModConfig.save();
         }, Icons.LocustICON);
-        insectList.addOption("Mantis", ModConfig.mantisToggle, checked -> {
+        insectList.addOption(Text.of(Lang.get("mineboxtools.insect.mantis")), ModConfig.mantisToggle, checked -> {
             ModConfig.mantisToggle = checked;
             ModConfig.save();
         }, Icons.MantisICON);
-        insectList.addOption("Night butterfly", ModConfig.nightButterflyToggle, checked -> {
+        insectList.addOption(Text.of(Lang.get("mineboxtools.insect.night_butterfly")), ModConfig.nightButterflyToggle, checked -> {
             ModConfig.nightButterflyToggle = checked;
             ModConfig.save();
         }, Icons.NightButterflyICON);
-        insectList.addOption("Purple emperor", ModConfig.purpleEmperorToggle, checked -> {
+        insectList.addOption(Text.of(Lang.get("mineboxtools.insect.purple_emperor")), ModConfig.purpleEmperorToggle, checked -> {
             ModConfig.purpleEmperorToggle = checked;
             ModConfig.save();
         }, Icons.PurpleEmperorICON);
-        insectList.addOption("Red dragonfly", ModConfig.redDragonflyToggle, checked -> {
+        insectList.addOption(Text.of(Lang.get("mineboxtools.insect.red_dragonfly")), ModConfig.redDragonflyToggle, checked -> {
             ModConfig.redDragonflyToggle = checked;
             ModConfig.save();
         }, Icons.RedDragonflyICON);
-        insectList.addOption("Scorpion", ModConfig.scorpionToggle, checked -> {
+        insectList.addOption(Text.of(Lang.get("mineboxtools.insect.scorpion")), ModConfig.scorpionToggle, checked -> {
             ModConfig.scorpionToggle = checked;
             ModConfig.save();
         }, Icons.ScorpionICON);
-        insectList.addOption("Spider", ModConfig.spiderToggle, checked -> {
+        insectList.addOption(Text.of(Lang.get("mineboxtools.insect.spider")), ModConfig.spiderToggle, checked -> {
             ModConfig.spiderToggle = checked;
             ModConfig.save();
         }, Icons.SpiderICON);
-        insectList.addOption("Stick insect", ModConfig.stickInsectToggle, checked -> {
+        insectList.addOption(Text.of(Lang.get("mineboxtools.insect.stick_insect")), ModConfig.stickInsectToggle, checked -> {
             ModConfig.stickInsectToggle = checked;
             ModConfig.save();
         }, Icons.StickInsectICON);
-        insectList.addOption("Snail", ModConfig.snailToggle, checked -> {
+        insectList.addOption(Text.of(Lang.get("mineboxtools.insect.snail")), ModConfig.snailToggle, checked -> {
             ModConfig.snailToggle = checked;
             ModConfig.save();
         }, Icons.SnailICON);
-        insectList.addOption("Sunset moth", ModConfig.sunsetMothToggle, checked -> {
+        insectList.addOption(Text.of(Lang.get("mineboxtools.insect.sunset_moth")), ModConfig.sunsetMothToggle, checked -> {
             ModConfig.sunsetMothToggle = checked;
             ModConfig.save();
         }, Icons.SunsetMothICON);
-        insectList.addOption("Tarantula", ModConfig.tarantulaToggle, checked -> {
+        insectList.addOption(Text.of(Lang.get("mineboxtools.insect.tarantula")), ModConfig.tarantulaToggle, checked -> {
             ModConfig.tarantulaToggle = checked;
             ModConfig.save();
         }, Icons.TarantulaICON);
-        insectList.addOption("Tiger butterfly", ModConfig.tigerButterflyToggle, checked -> {
+        insectList.addOption(Text.of(Lang.get("mineboxtools.insect.tiger_butterfly")), ModConfig.tigerButterflyToggle, checked -> {
             ModConfig.tigerButterflyToggle = checked;
             ModConfig.save();
         }, Icons.TigerButterflyICON);
-        insectList.addOption("Wasp", ModConfig.waspToggle, checked -> {
+        insectList.addOption(Text.of(Lang.get("mineboxtools.insect.wasp")), ModConfig.waspToggle, checked -> {
             ModConfig.waspToggle = checked;
             ModConfig.save();
         }, Icons.WaspICON);
-        insectList.addOption("White butterfly", ModConfig.whiteButterflyToggle, checked -> {
+        insectList.addOption(Text.of(Lang.get("mineboxtools.insect.white_butterfly")), ModConfig.whiteButterflyToggle, checked -> {
             ModConfig.whiteButterflyToggle = checked;
             ModConfig.save();
         }, Icons.WhiteButterflyICON);
-        insectList.addOption("Yellow butterfly", ModConfig.yellowButterflyToggle, checked -> {
+        insectList.addOption(Text.of(Lang.get("mineboxtools.insect.yellow_butterfly")), ModConfig.yellowButterflyToggle, checked -> {
             ModConfig.yellowButterflyToggle = checked;
             ModConfig.save();
         }, Icons.YellowButterflyICON);
-        insectList.addOption("Yellow dragonfly", ModConfig.yellowDragonflyToggle, checked -> {
+        insectList.addOption(Text.of(Lang.get("mineboxtools.insect.yellow_dragonfly")), ModConfig.yellowDragonflyToggle, checked -> {
             ModConfig.yellowDragonflyToggle = checked;
             ModConfig.save();
         }, Icons.YellowDragonflyICON);
@@ -197,32 +209,33 @@ public class MenuHUD extends Screen {
         int yShop = 20;
 
         CheckboxListWidget shopList = new CheckboxListWidget(MinecraftClient.getInstance(), xShop, yShop, areaWidthShop, areaHeightShop, rowHeightShop);
-        shopList.addOption("Coffee Shop", ModConfig.coffeeShopToggle, checked -> {
+        shopList.addOption(Text.of(Lang.get("mineboxtools.shop.coffee")), ModConfig.coffeeShopToggle, checked -> {
             ModConfig.coffeeShopToggle = checked;
             ModConfig.save();
         }, Icons.CoffeeShopICON);
-        shopList.addOption("Bakery", ModConfig.bakeryToggle, checked -> {
+        shopList.addOption(Text.of(Lang.get("mineboxtools.shop.bakery")), ModConfig.bakeryToggle, checked -> {
             ModConfig.bakeryToggle = checked;
             ModConfig.save();
         }, Icons.BakeryICON);
-        shopList.addOption("Cocktail Bar", ModConfig.cocktailBarToggle, checked -> {
+        shopList.addOption(Text.of(Lang.get("mineboxtools.shop.bar")), ModConfig.cocktailBarToggle, checked -> {
             ModConfig.cocktailBarToggle = checked;
             ModConfig.save();
         }, Icons.CocktailBarICON);
-        shopList.addOption("Painting Shop", ModConfig.paintingShopToggle, checked -> {
+        shopList.addOption(Text.of(Lang.get("mineboxtools.shop.paint")), ModConfig.paintingShopToggle, checked -> {
             ModConfig.paintingShopToggle = checked;
             ModConfig.save();
         }, Icons.PaintingICON);
-        shopList.addOption("Italian Restaurant", ModConfig.italianRestaurantToggle, checked -> {
+        shopList.addOption(Text.of(Lang.get("mineboxtools.shop.restaurant")), ModConfig.italianRestaurantToggle, checked -> {
             ModConfig.italianRestaurantToggle = checked;
             ModConfig.save();
         }, Icons.ItalianRestaurantICON);
-        shopList.addOption("Herb Shop", ModConfig.herbShopToggle, checked -> {
+        shopList.addOption(Text.of(Lang.get("mineboxtools.shop.herb")), ModConfig.herbShopToggle, checked -> {
             ModConfig.herbShopToggle = checked;
             ModConfig.save();
         }, Icons.HerbShopICON);
 
 
+        this.addDrawableChild(langButton);
         this.addDrawableChild(toggleButtonDurability);
         this.addDrawableChild(toggleButtonTooltip);
         this.addDrawableChild(toggleButtonStats);
@@ -233,7 +246,7 @@ public class MenuHUD extends Screen {
         this.addDrawableChild(customHUDButton);
 
         // Close button
-        this.addDrawableChild(ButtonWidget.builder(Text.literal("Close"), b -> this.close())
+        this.addDrawableChild(ButtonWidget.builder(Text.literal(Lang.get("mineboxtools.menu.close")), b -> this.close())
                 .dimensions(xInsect + areaWidthInsect - 80, yInsect + areaHeightInsect + 20, 80, 20)
                 .build());
     }
