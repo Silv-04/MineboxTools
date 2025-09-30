@@ -1,5 +1,6 @@
 package fr.silv.utils;
 
+import fr.silv.Lang;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -24,14 +25,14 @@ public class StatTextUtils {
 
     public static String formatStatAdvanced(String stat) {
         return switch (stat.toUpperCase()) {
-            case "MBX.STATS.FORTUNE" -> ("🔱 Fortune");
-            case "MBX.STATS.LUCK" -> ("🌊 Luck");
-            case "MBX.STATS.INTELLIGENCE" -> ("🔥 Intelligence");
-            case "MBX.STATS.STRENGTH" -> ("₪ Strength");
-            case "MBX.STATS.HEALTH" -> ("❤ Health");
-            case "MBX.STATS.AGILITY" -> ("☄ Agility");
-            case "MBX.STATS.WISDOM" -> ("☽ Wisdom");
-            case "MBX.STATS.DEFENSE" -> ("🛡 Defense");
+            case "MBX.STATS.FORTUNE" -> ("🔱 " + Lang.get("mineboxtools.stat.fortune"));
+            case "MBX.STATS.LUCK" -> ("🌊 " + Lang.get("mineboxtools.stat.luck"));
+            case "MBX.STATS.INTELLIGENCE" -> ("🔥 " + Lang.get("mineboxtools.stat.intelligence"));
+            case "MBX.STATS.STRENGTH" -> ("₪ " + Lang.get("mineboxtools.stat.strength"));
+            case "MBX.STATS.HEALTH" -> ("❤ " + Lang.get("mineboxtools.stat.health"));
+            case "MBX.STATS.AGILITY" -> ("☄ " + Lang.get("mineboxtools.stat.agility"));
+            case "MBX.STATS.WISDOM" -> ("☽ " + Lang.get("mineboxtools.stat.wisdom"));
+            case "MBX.STATS.DEFENSE" -> ("🛡 " + Lang.get("mineboxtools.stat.defense"));
             default -> (stat);
         };
     }

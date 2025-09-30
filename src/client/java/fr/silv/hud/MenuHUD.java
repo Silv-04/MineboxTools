@@ -31,11 +31,11 @@ public class MenuHUD extends Screen {
                     ModConfig.save();
                     this.clearAndInit();
                 }
-        ).dimensions(20, 20, 130, 20).build();
+        ).dimensions(20, 20, 160, 20).build();
 
         // Durability
         CyclingButtonWidget<Boolean> toggleButtonDurability = CyclingButtonWidget.onOffBuilder(ModConfig.durabilityToggle)
-                .build(20, 60, 130, 20, Text.literal(Lang.get("mineboxtools.menu.durability")),
+                .build(20, 60, 160, 20, Text.literal(Lang.get("mineboxtools.menu.durability")),
                         (button, value) -> {
                     ModConfig.durabilityToggle = value;
                     ModConfig.save();
@@ -43,7 +43,7 @@ public class MenuHUD extends Screen {
 
         // Tooltip
         CyclingButtonWidget<Boolean> toggleButtonTooltip = CyclingButtonWidget.onOffBuilder(ModConfig.tooltipToggle)
-                .build(20, 80, 130, 20, Text.literal(Lang.get("mineboxtools.menu.tooltip")),
+                .build(20, 80, 160, 20, Text.literal(Lang.get("mineboxtools.menu.tooltip")),
                         (button, value) -> {
                             ModConfig.tooltipToggle = value;
                             ModConfig.save();
@@ -53,7 +53,7 @@ public class MenuHUD extends Screen {
         CyclingButtonWidget<ConfigOption> toggleButtonStats = CyclingButtonWidget.builder(ConfigOption::getDisplayName)
                 .values(ConfigOption.values())
                 .initially(ModConfig.statToggle)
-                .build(20, 100, 130, 20, Text.literal(Lang.get("mineboxtools.menu.stats")),
+                .build(20, 100, 160, 20, Text.literal(Lang.get("mineboxtools.menu.stats")),
                         (button, value) -> {
                             ModConfig.statToggle = value;
                             ModConfig.save();
@@ -61,7 +61,7 @@ public class MenuHUD extends Screen {
 
         // Off hand haversack amount inside toggle
         CyclingButtonWidget<Boolean> toggleButtonOffHand = CyclingButtonWidget.onOffBuilder(ModConfig.handToggle)
-                .build(20, 120, 130, 20, Text.literal(Lang.get("mineboxtools.menu.hand")),
+                .build(20, 120, 160, 20, Text.literal(Lang.get("mineboxtools.menu.hand")),
                         (button, value) -> {
                             ModConfig.handToggle = value;
                             ModConfig.save();
@@ -70,7 +70,7 @@ public class MenuHUD extends Screen {
         // Custom HUD
         ButtonWidget customHUDButton = ButtonWidget.builder(Text.literal(Lang.get("mineboxtools.menu.hud")), button -> {
             MinecraftClient.getInstance().setScreen(new HudConfigScreen(HudWidgetManager.getWidgets()));
-        }).dimensions(20, 160, 130, 20).build();
+        }).dimensions(20, 160, 160, 20).build();
 
         // Insects
         int areaWidthInsect = 140;
