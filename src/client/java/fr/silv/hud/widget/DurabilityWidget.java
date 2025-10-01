@@ -1,23 +1,19 @@
 package fr.silv.hud.widget;
 
-import fr.silv.items.CustomItemDurabilityHandler;
+import fr.silv.items.DurabilityBarHandler;
 import fr.silv.ModConfig;
-import fr.silv.utils.ItemStatUtils;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import fr.silv.utils.MineboxItemStatUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.Optional;
 
 public class DurabilityWidget extends HudWidget {
     private static final Logger DisplayAmountLogger = LogManager.getLogger(DurabilityWidget.class);
@@ -76,7 +72,7 @@ public class DurabilityWidget extends HudWidget {
 
         if (persistent.getInt("mbitems:durability").isEmpty()) return "";
         String mainHandCurrent = String.valueOf(persistent.getInt("mbitems:durability").get());
-        String mainHandMax = String.valueOf(ItemStatUtils.getStatsFor(id).get("mbx.durability")[0]);
+        String mainHandMax = String.valueOf(MineboxItemStatUtils.getStatsFor(id).get("mbx.durability")[0]);
         return mainHandCurrent + "/" + mainHandMax;
     }
 
@@ -92,7 +88,7 @@ public class DurabilityWidget extends HudWidget {
         String id = nbtCompound.getString("mbitems:id").get();
 
         if (id.contains("haversack")) {
-            String[] amountInside = CustomItemDurabilityHandler.getHaverackAmountInside(stack);
+            String[] amountInside = DurabilityBarHandler.getHaverackAmountInside(stack);
             if (amountInside != null) {
                 try {
                     int current = Integer.parseInt(amountInside[0]);

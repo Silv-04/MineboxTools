@@ -1,8 +1,9 @@
 package fr.silv.hud.widget;
 
+import fr.silv.Lang;
 import fr.silv.hud.widget.config.ConfigOption;
 import fr.silv.model.MineboxStat;
-import fr.silv.utils.ItemStatUtils;
+import fr.silv.utils.MineboxItemStatUtils;
 import fr.silv.ModConfig;
 import fr.silv.utils.StatTextUtils;
 import net.minecraft.client.MinecraftClient;
@@ -48,6 +49,8 @@ public class StatWidget extends HudWidget {
     public void render(DrawContext context, MinecraftClient client) {
             if (ModConfig.statToggle == ConfigOption.OFF) return;
             if (client.options.hudHidden) return;
+            Lang.load(ModConfig.language);
+
             TextRenderer textRenderer = client.textRenderer;
 
             List<MineboxStat> stats = getCombinedStats(client);
@@ -85,7 +88,7 @@ public class StatWidget extends HudWidget {
             statsItem = getStats(main, true);
         }
 
-        if (ItemStatUtils.areEquals(cachedPlayerStats,statsPlayer) && ItemStatUtils.areEquals(cachedHandStats,statsItem)) {
+        if (MineboxItemStatUtils.areEquals(cachedPlayerStats,statsPlayer) && MineboxItemStatUtils.areEquals(cachedHandStats,statsItem)) {
             return cachedStatsTotal;
         }
 
@@ -114,10 +117,10 @@ public class StatWidget extends HudWidget {
         for (Text line : lines) {
             MineboxStat stat;
             if (includeBonus) {
-                stat = ItemStatUtils.extractStatsFromLineWithBonus(line, ALL_STATS);
+                stat = MineboxItemStatUtils.extractStatsFromLineWithBonus(line, ALL_STATS);
             }
             else {
-                stat = ItemStatUtils.extractStatsFromLine(line, ALL_STATS);
+                stat = MineboxItemStatUtils.extractStatsFromLine(line, ALL_STATS);
             }
             if (stat != null) {
                 stats.add(stat);

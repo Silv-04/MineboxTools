@@ -17,12 +17,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-public class ItemStatUtils {
-    private static final Logger ItemStatsRangeLoaderLogger = LogManager.getLogger(ItemStatUtils.class);
+public class MineboxItemStatUtils {
+    private static final Logger ItemStatsRangeLoaderLogger = LogManager.getLogger(MineboxItemStatUtils.class);
     private static final Map<String, Map<String, int[]>> statRanges = new HashMap<>();
 
     public static void load() {
-        try (InputStream input = ItemStatUtils.class.getClassLoader()
+        try (InputStream input = MineboxItemStatUtils.class.getClassLoader()
                 .getResourceAsStream("assets/mineboxtools/mineboxItemsStats.json")) {
             ItemStatsRangeLoaderLogger.info("Loading item stats ranges from JSON file...");
             if (input != null) {

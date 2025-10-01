@@ -260,8 +260,8 @@ public class IconWidget extends HudWidget {
             }
         }
 
-        // Coffee shop
         if (!world.isThundering()) {
+            // Coffee shop
             if (DaylightCycle.isMorning(now) && ModConfig.coffeeShopToggle) {
                 drawIcon(drawContext, Icons.CoffeeShopICON, x - (offsetIndex * (iconWidth + spacing)), y);
                 offsetIndex++;
@@ -273,29 +273,33 @@ public class IconWidget extends HudWidget {
                 offsetIndex++;
             }
 
-            // Cocktail bar + Painting
+            // Cocktail bar
             if (DaylightCycle.isCocktailAndMonkeyShopOpen(now)) {
                 if (ModConfig.cocktailBarToggle) {
                     drawIcon(drawContext, Icons.CocktailBarICON, x - (offsetIndex * (iconWidth + spacing)), y);
                     offsetIndex++;
                 }
-                if (ModConfig.paintingShopToggle) {
-                    drawIcon(drawContext, Icons.PaintingICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
             }
+        }
 
-            // Italian restaurant
-            if (DaylightCycle.isItalianRestaurantOpen(now) && ModConfig.italianRestaurantToggle) {
-                drawIcon(drawContext, Icons.ItalianRestaurantICON, x - (offsetIndex * (iconWidth + spacing)), y);
+        // Painting
+        if (DaylightCycle.isCocktailAndMonkeyShopOpen(now)) {
+            if (ModConfig.paintingShopToggle) {
+                drawIcon(drawContext, Icons.PaintingICON, x - (offsetIndex * (iconWidth + spacing)), y);
                 offsetIndex++;
             }
+        }
 
-            // Full moon cycles
-            if (DaylightCycle.isFullMoon(now) && DaylightCycle.isHerbShopOpen(now) && ModConfig.herbShopToggle) {
-                drawIcon(drawContext, Icons.HerbShopICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                offsetIndex++;
-            }
+        // Italian restaurant
+        if (DaylightCycle.isItalianRestaurantOpen(now) && ModConfig.italianRestaurantToggle) {
+            drawIcon(drawContext, Icons.ItalianRestaurantICON, x - (offsetIndex * (iconWidth + spacing)), y);
+            offsetIndex++;
+        }
+
+        // Full moon cycles
+        if (DaylightCycle.isFullMoon(now) && DaylightCycle.isHerbShopOpen(now) && ModConfig.herbShopToggle) {
+            drawIcon(drawContext, Icons.HerbShopICON, x - (offsetIndex * (iconWidth + spacing)), y);
+            offsetIndex++;
         }
     }
 

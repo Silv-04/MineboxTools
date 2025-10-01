@@ -2,7 +2,9 @@ package fr.silv.items;
 
 import fr.silv.ModConfig;
 import fr.silv.constants.StatValue;
+import fr.silv.model.MineboxItem;
 import fr.silv.model.MineboxStat;
+import fr.silv.utils.MineboxItemUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
@@ -22,12 +24,12 @@ import java.util.WeakHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import fr.silv.utils.ItemStatUtils;
+import fr.silv.utils.MineboxItemStatUtils;
 import fr.silv.utils.StatTextUtils;
 
-public class CustomItemTooltipHandler {
-    private static final Logger CustomItemTooltipHandler = LogManager
-            .getLogger(CustomItemTooltipHandler.class);
+public class TooltipHandler {
+    private static final Logger TooltipHandlerLogger = LogManager
+            .getLogger(TooltipHandler.class);
     private static final Map<ItemStack, Long> recentLogs = new WeakHashMap<>();
     private static final long LOG_THROTTLE_MS = 5000;
 
@@ -71,11 +73,11 @@ public class CustomItemTooltipHandler {
         boolean canLog = lastLogTime == null || now - lastLogTime > LOG_THROTTLE_MS;
 
         if (canLog) {
-            CustomItemTooltipHandler.info("[Tooltip] Processing item: " + itemId);
+            TooltipHandlerLogger.info("[Tooltip] Processing item: " + itemId);
             recentLogs.put(stack, now);
         }
 
-        Map<String, int[]> statRanges = ItemStatUtils.getStatsFor(itemId);
+        Map<String, int[]> statRanges = MineboxItemStatUtils.getStatsFor(itemId);
         if (statRanges.isEmpty())
             return;
 
@@ -84,7 +86,7 @@ public class CustomItemTooltipHandler {
 
         for (int i = 0; i < lines.size(); i++) {
             Text line = lines.get(i);
-            MineboxStat stat = ItemStatUtils.extractStatsFromLine(line, statKeys);
+            MineboxStat stat = MineboxItemStatUtils.extractStatsFromLine(line, statKeys);
             if (stat != null) {
                 int[] range = statRanges.get(stat.getStat().toLowerCase());
                 if (range != null) {
@@ -117,8 +119,31 @@ public class CustomItemTooltipHandler {
                     .append(Text.literal(" " + score + "%").setStyle(style.withBold(true)));
             lines.set(0, scoreLine);
             if (canLog) {
-                CustomItemTooltipHandler
+                TooltipHandlerLogger
                         .info("[Tooltip] Global score for item " + itemId + ": " + score + "%");
+            }
+        }
+    }
+
+    public static void addInfoToTooltip(ItemStack stack, Item.TooltipContext context, TooltipType type,
+                                        List<Text> lines) {
+        NbtComponent nbtComponent = stack.get(DataComponentTypes.CUSTOM_DATA);
+        if (nbtComponent == null)
+            return;
+        NbtCompound nbt = nbtComponent.copyNbt();
+        String itemId = nbt.getString("mbitems:id").orElse("");
+        if (itemId.isEmpty())
+            return;
+        MineboxItem item = MineboxItemUtils.get(itemId);
+
+        if (item != null) {
+            lines.add(Text.literal("§6Location:"));
+            for (String location : item.getLocation()) {
+                lines.add(Text.literal("§7- " + location));
+            }
+            String condition = item.getCondition();
+            if (!condition.isEmpty()) {
+                lines.add(Text.literal("§eCondition: " + item.getCondition()));
             }
         }
     }

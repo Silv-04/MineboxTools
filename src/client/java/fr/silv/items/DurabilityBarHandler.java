@@ -6,7 +6,7 @@ import fr.silv.ModConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import fr.silv.utils.ItemStatUtils;
+import fr.silv.utils.MineboxItemStatUtils;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.component.DataComponentTypes;
@@ -18,9 +18,9 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableTextContent;
 
-public class CustomItemDurabilityHandler {
+public class DurabilityBarHandler {
     private static final Logger CustomItemDurabilityHandlerLogger = LogManager
-            .getLogger(CustomItemDurabilityHandler.class);
+            .getLogger(DurabilityBarHandler.class);
 
     private static final Map<ItemStack, Integer> durabilityCache = new WeakHashMap<>();
     private static final Map<ItemStack, Integer> nbtHashCache = new WeakHashMap<>();
@@ -94,7 +94,7 @@ public class CustomItemDurabilityHandler {
             Map<String, int[]> stats = statsCache.get(id);
             if (stats == null) {
                 CustomItemDurabilityHandlerLogger.info("[Durability] Loading stats for: " + id);
-                stats = ItemStatUtils.getStatsFor(id);
+                stats = MineboxItemStatUtils.getStatsFor(id);
                 statsCache.put(id, stats);
             }
 
