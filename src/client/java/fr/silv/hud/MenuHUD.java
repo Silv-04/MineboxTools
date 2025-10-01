@@ -78,7 +78,7 @@ public class MenuHUD extends Screen {
         // Custom HUD
         ButtonWidget customHUDButton = ButtonWidget.builder(Text.literal(Lang.get("mineboxtools.menu.hud")), button -> {
             MinecraftClient.getInstance().setScreen(new HudConfigScreen(HudWidgetManager.getWidgets()));
-        }).dimensions(20, 200, 160, 20).build();
+        }).dimensions(20, 180, 160, 20).build();
 
         // Insects
         int areaWidthInsect = 140;

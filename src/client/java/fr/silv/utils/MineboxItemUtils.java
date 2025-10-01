@@ -38,8 +38,9 @@ public class MineboxItemUtils {
                 }
 
                 String condition = obj.get("condition").getAsString();
+                String boost = obj.get("boost").getAsString();
 
-                MineboxItem item = new MineboxItem(id, location, condition);
+                MineboxItem item = new MineboxItem(id, location, condition, boost);
                 mineboxItems.put(id, item);
             }
 

@@ -165,8 +165,15 @@ public class TooltipHandler {
             }
             String condition = item.getCondition();
             if (!condition.isEmpty()) {
+                lines.add(Text.literal(""));
                 lines.add(Text.literal(Lang.get("mineboxtools.menu.tooltip.condition")).setStyle(Style.EMPTY.withColor(0xFFFF00).withBold(true)));
                 lines.add(Text.literal("• " + Lang.get(item.getCondition())).setStyle(Style.EMPTY.withColor(0xFFFFFF)));
+            }
+            String boost = item.getBoost();
+            if (!boost.isEmpty()) {
+                lines.add(Text.literal(""));
+                lines.add(Text.literal(Lang.get("mineboxtools.menu.tooltip.boost")).setStyle(Style.EMPTY.withColor(0x00FF00).withBold(true)));
+                lines.add(Text.literal("• " + Lang.get(item.getBoost())).setStyle(Style.EMPTY.withColor(0xFFFFFF)));
             }
         }
     }

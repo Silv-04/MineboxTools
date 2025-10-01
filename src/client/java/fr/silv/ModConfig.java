@@ -86,8 +86,8 @@ public class ModConfig {
         }
         return switch (id) {
             case "durability_widget" -> new int[]{10, 10};
-            case "stat_widget" -> new int[]{10, 150};
-            case "icon_widget" -> new int[]{690, 10};
+            case "stat_widget" -> new int[]{10, 80};
+            case "icon_widget" -> new int[]{10, 40};
             default -> new int[]{0, 0};
         };
     }
