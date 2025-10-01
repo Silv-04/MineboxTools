@@ -20,7 +20,7 @@ public class MineboxItemUtils {
         try (InputStream input = MineboxItemUtils.class.getClassLoader()
                 .getResourceAsStream("assets/mineboxtools/mineboxItems.json")) {
             if (input == null) {
-                LOGGER.error("Impossible de trouver le fichier mineboxItems.json !");
+                LOGGER.error("Cannot find mineboxItems.json !");
                 return;
             }
 
@@ -41,12 +41,10 @@ public class MineboxItemUtils {
 
                 MineboxItem item = new MineboxItem(id, location, condition);
                 mineboxItems.put(id, item);
-
-                LOGGER.info("Loaded Minebox item: " + id);
             }
 
         } catch (Exception e) {
-            LOGGER.error("Erreur lors du chargement du JSON Minebox items", e);
+            LOGGER.error("Error loading harvestable file", e);
         }
     }
 

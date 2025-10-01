@@ -1,5 +1,6 @@
 package fr.silv.items;
 
+import fr.silv.Lang;
 import fr.silv.ModConfig;
 import fr.silv.constants.StatValue;
 import fr.silv.model.MineboxItem;
@@ -21,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import net.minecraft.text.TranslatableTextContent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -127,23 +129,44 @@ public class TooltipHandler {
 
     public static void addInfoToTooltip(ItemStack stack, Item.TooltipContext context, TooltipType type,
                                         List<Text> lines) {
+        if (!ModConfig.locationToggle) return;
         NbtComponent nbtComponent = stack.get(DataComponentTypes.CUSTOM_DATA);
         if (nbtComponent == null)
             return;
         NbtCompound nbt = nbtComponent.copyNbt();
-        String itemId = nbt.getString("mbitems:id").orElse("");
-        if (itemId.isEmpty())
-            return;
-        MineboxItem item = MineboxItemUtils.get(itemId);
+        String itemId1 = nbt.getString("mbitems:id").orElse("");
+        String itemId2 = "";
+        Text textId = stack.get(DataComponentTypes.CUSTOM_NAME);
+        if (textId != null) {
+            for (Text sibling : textId.getSiblings()) {
+                if (sibling.getContent() instanceof TranslatableTextContent transContent) {
+                    if (transContent.getKey().startsWith("mbx.items.")) {
+                        itemId2 = transContent.getKey()
+                                .replace("mbx.items.", "")
+                                .replace(".name", "");
+                        break;
+                    }
+                }
+            }
+        }
+        MineboxItem item1 = MineboxItemUtils.get(itemId1);
+        MineboxItem item2 = MineboxItemUtils.get(itemId2);
+        MineboxItem item;
+        if (item1 == null) {
+            item = item2;
+        } else {
+            item = item1;
+        }
 
         if (item != null) {
-            lines.add(Text.literal("§6Location:"));
+            lines.add(Text.literal(Lang.get("mineboxtools.menu.tooltip.location")).setStyle(Style.EMPTY.withColor(0xFFA500).withBold(true)));
             for (String location : item.getLocation()) {
-                lines.add(Text.literal("§7- " + location));
+                lines.add(Text.literal("• " + Lang.get(location)).setStyle(Style.EMPTY.withColor(0xFFFFFF)));
             }
             String condition = item.getCondition();
             if (!condition.isEmpty()) {
-                lines.add(Text.literal("§eCondition: " + item.getCondition()));
+                lines.add(Text.literal(Lang.get("mineboxtools.menu.tooltip.condition")).setStyle(Style.EMPTY.withColor(0xFFFF00).withBold(true)));
+                lines.add(Text.literal("• " + Lang.get(item.getCondition())).setStyle(Style.EMPTY.withColor(0xFFFFFF)));
             }
         }
     }

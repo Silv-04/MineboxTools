@@ -15,13 +15,7 @@ public class MenuCommand {
                     MinecraftClient client = MinecraftClient.getInstance();
                     if (client != null && client.player != null) {
                         client.send(() -> {
-                            System.out.println("Opening MenuHUD...");
                             client.setScreenAndRender(new MenuHUD());
-                            System.out.println("SCREEN SET : " + client.currentScreen);
-
-                            if (client.player != null) {
-                                client.player.sendMessage(Text.literal("§aMenu opened!"), false);
-                            }
                         });
                     }
                     return Command.SINGLE_SUCCESS;

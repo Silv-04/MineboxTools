@@ -26,6 +26,7 @@ public class ModConfig {
     public static boolean tooltipToggle = true;
     public static ConfigOption statToggle = ConfigOption.SIMPLE;
     public static boolean handToggle = true;
+    public static boolean locationToggle = true;
 
     // Insect toggles
     public static boolean antToggle = false;
@@ -101,6 +102,7 @@ public class ModConfig {
                 tooltipToggle = data.tooltipToggle;
                 statToggle = data.statToggle;
                 handToggle = data.handToggle;
+                locationToggle = data.locationToggle;
 
                 // Insect toggles
                 antToggle = data.antToggle;
@@ -164,6 +166,7 @@ public class ModConfig {
             data.tooltipToggle = tooltipToggle;
             data.statToggle = statToggle;
             data.handToggle = handToggle;
+            data.locationToggle = locationToggle;
 
             // Insect toggles
             data.antToggle = antToggle;
@@ -223,6 +226,7 @@ public class ModConfig {
         boolean tooltipToggle;
         ConfigOption statToggle;
         boolean handToggle;
+        boolean locationToggle;
 
         // Insect toggles
         boolean antToggle;

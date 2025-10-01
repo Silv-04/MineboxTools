@@ -67,10 +67,18 @@ public class MenuHUD extends Screen {
                             ModConfig.save();
                         });
 
+        // Location of the harvestable on the item tooltip
+        CyclingButtonWidget<Boolean> toggleLocation = CyclingButtonWidget.onOffBuilder(ModConfig.locationToggle)
+                .build(20, 140, 160, 20, Text.literal(Lang.get("mineboxtools.menu.location")),
+                        (button, value) -> {
+                            ModConfig.locationToggle = value;
+                            ModConfig.save();
+                        });
+
         // Custom HUD
         ButtonWidget customHUDButton = ButtonWidget.builder(Text.literal(Lang.get("mineboxtools.menu.hud")), button -> {
             MinecraftClient.getInstance().setScreen(new HudConfigScreen(HudWidgetManager.getWidgets()));
-        }).dimensions(20, 160, 160, 20).build();
+        }).dimensions(20, 180, 160, 20).build();
 
         // Insects
         int areaWidthInsect = 140;
@@ -240,6 +248,7 @@ public class MenuHUD extends Screen {
         this.addDrawableChild(toggleButtonTooltip);
         this.addDrawableChild(toggleButtonStats);
         this.addDrawableChild(toggleButtonOffHand);
+        this.addDrawableChild(toggleLocation);
 
         this.addDrawableChild(insectList);
         this.addDrawableChild(shopList);

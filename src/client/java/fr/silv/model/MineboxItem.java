@@ -9,6 +9,8 @@ public class MineboxItem {
     private List<String> location;
     private String condition;
 
+    public MineboxItem(){}
+
     public MineboxItem(String id, List<String> location, String condition) {
         this.id = id;
         this.location = location;
