@@ -27,6 +27,8 @@ public class ModConfig {
     public static ConfigOption statToggle = ConfigOption.SIMPLE;
     public static boolean handToggle = true;
     public static boolean locationToggle = true;
+    public static boolean thunderToggle = true;
+    public static boolean rainToggle = true;
 
     // Insect toggles
     public static boolean antToggle = false;
@@ -103,6 +105,8 @@ public class ModConfig {
                 statToggle = data.statToggle;
                 handToggle = data.handToggle;
                 locationToggle = data.locationToggle;
+                thunderToggle = data.thunderToggle;
+                rainToggle = data.rainToggle;
 
                 // Insect toggles
                 antToggle = data.antToggle;
@@ -167,6 +171,8 @@ public class ModConfig {
             data.statToggle = statToggle;
             data.handToggle = handToggle;
             data.locationToggle = locationToggle;
+            data.thunderToggle = thunderToggle;
+            data.rainToggle = rainToggle;
 
             // Insect toggles
             data.antToggle = antToggle;
@@ -227,6 +233,8 @@ public class ModConfig {
         ConfigOption statToggle;
         boolean handToggle;
         boolean locationToggle;
+        boolean thunderToggle;
+        boolean rainToggle;
 
         // Insect toggles
         boolean antToggle;

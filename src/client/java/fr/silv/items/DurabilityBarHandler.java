@@ -28,7 +28,7 @@ public class DurabilityBarHandler {
 
     private static final List<String> SUPPORTED_PREFIXES = List.of(
             "hammer_", "vein_", "watering_can_", "sponge_", "bucket_",
-            "laborer_", "basket_seeds_", "block_stick_", "leaf_blower", "silk_touch");
+            "laborer_", "basket_seeds_", "block_stick_", "leaf_blower", "silk_touch_");
 
     public static void register() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {

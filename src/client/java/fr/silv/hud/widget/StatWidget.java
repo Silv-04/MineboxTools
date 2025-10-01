@@ -11,7 +11,9 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.LoreComponent;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import org.apache.logging.log4j.LogManager;
@@ -85,7 +87,15 @@ public class StatWidget extends HudWidget {
 
         ItemStack main = client.player.getMainHandStack();
         if (!main.isEmpty()) {
-            statsItem = getStats(main, true);
+            NbtComponent nbtComponent = main.get(DataComponentTypes.CUSTOM_DATA);
+            if (nbtComponent != null) {
+                NbtCompound nbt = nbtComponent.copyNbt();
+                String itemId = nbt.getString("mbitems:id").orElse("");
+                if (!itemId.contains("helmet") && !itemId.contains("chestplate") && !itemId.contains("leggings") && !itemId.contains("boots")
+                && !itemId.contains("ring") && !itemId.contains("belt") && !itemId.contains("back") && !itemId.contains("necklace") && !itemId.contains("pet")) {
+                    statsItem = getStats(main, true);
+                }
+            }
         }
 
         if (MineboxItemStatUtils.areEquals(cachedPlayerStats,statsPlayer) && MineboxItemStatUtils.areEquals(cachedHandStats,statsItem)) {

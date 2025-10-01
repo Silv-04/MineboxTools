@@ -78,7 +78,7 @@ public class MenuHUD extends Screen {
         // Custom HUD
         ButtonWidget customHUDButton = ButtonWidget.builder(Text.literal(Lang.get("mineboxtools.menu.hud")), button -> {
             MinecraftClient.getInstance().setScreen(new HudConfigScreen(HudWidgetManager.getWidgets()));
-        }).dimensions(20, 180, 160, 20).build();
+        }).dimensions(20, 200, 160, 20).build();
 
         // Insects
         int areaWidthInsect = 140;
@@ -217,6 +217,14 @@ public class MenuHUD extends Screen {
         int yShop = 20;
 
         CheckboxListWidget shopList = new CheckboxListWidget(MinecraftClient.getInstance(), xShop, yShop, areaWidthShop, areaHeightShop, rowHeightShop);
+        shopList.addOption(Text.of(Lang.get("mineboxtools.weather.thunder")), ModConfig.thunderToggle, checked -> {
+            ModConfig.thunderToggle = checked;
+            ModConfig.save();
+        }, Icons.ThunderICON);
+        shopList.addOption(Text.of(Lang.get("mineboxtools.weather.rain")), ModConfig.rainToggle, checked -> {
+            ModConfig.rainToggle = checked;
+            ModConfig.save();
+        }, Icons.RainICON);
         shopList.addOption(Text.of(Lang.get("mineboxtools.shop.coffee")), ModConfig.coffeeShopToggle, checked -> {
             ModConfig.coffeeShopToggle = checked;
             ModConfig.save();

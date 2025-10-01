@@ -37,6 +37,19 @@ public class IconWidget extends HudWidget {
 
         LocalTime now = LocalTime.now(ZoneId.of("Europe/Paris"));
 
+        if (ModConfig.thunderToggle) {
+            if (world.isThundering()) {
+                drawIcon(drawContext, Icons.ThunderICON, x - (offsetIndex * (iconWidth + spacing)), y);
+                offsetIndex++;
+            }
+        }
+        if (ModConfig.rainToggle) {
+            if (world.isRaining() && !world.isThundering()) {
+                drawIcon(drawContext, Icons.RainICON, x - (offsetIndex * (iconWidth + spacing)), y);
+                offsetIndex++;
+            }
+        }
+
         // Insects
         if (world.isRaining() || world.isThundering()) {
             if (ModConfig.snailToggle) {

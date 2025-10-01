@@ -10,6 +10,8 @@ public class Icons {
     public static final Identifier CoffeeShopICON = Identifier.of("mineboxtools", "textures/shops/yellow_coffee.png");
     public static final Identifier HerbShopICON = Identifier.of("mineboxtools", "textures/shops/herb.png");
     public static final Identifier PaintingICON = Identifier.of("mineboxtools", "textures/shops/painting.png");
+    public static final Identifier ThunderICON = Identifier.of("mineboxtools", "textures/lightning.png");
+    public static final Identifier RainICON = Identifier.of("mineboxtools", "textures/rain.png");
 
     // Insects
     public static final Identifier AntICON = Identifier.of("mineboxtools", "textures/insects/ant.png");
