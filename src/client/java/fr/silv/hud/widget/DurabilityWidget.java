@@ -37,17 +37,19 @@ public class DurabilityWidget extends HudWidget {
             String mainHandDurability = getMainHandDurability(mainHandStack);
 
             TextRenderer textRenderer = client.textRenderer;
-            if (!mainHandDurability.equals("")) {
+            if (!mainHandDurability.isEmpty()) {
                 context.drawItem(mainHandStack, this.x, this.y);
                 context.drawTextWithShadow(textRenderer, Text.literal(mainHandDurability), this.x+18, this.y+4, Colors.WHITE);
-                if (!offHandDurability.equals("")) {
+                if (!offHandDurability.isEmpty()) {
                     context.drawItem(offHandStack, this.x, this.y + 16);
                     context.drawTextWithShadow(textRenderer, Text.literal(offHandDurability), this.x+18, this.y + 20, Colors.WHITE);
                 }
             }
             else {
-                context.drawItem(offHandStack, this.x, this.y);
-                context.drawTextWithShadow(textRenderer, Text.literal(offHandDurability), this.x+18, this.y+4, Colors.WHITE);
+                if (!offHandDurability.isEmpty()) {
+                    context.drawItem(offHandStack, this.x, this.y);
+                    context.drawTextWithShadow(textRenderer, Text.literal(offHandDurability), this.x + 18, this.y + 4, Colors.WHITE);
+                }
             }
         }
         catch (NullPointerException npe) {
