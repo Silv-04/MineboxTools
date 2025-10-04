@@ -16,11 +16,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.WeakHashMap;
+import java.util.*;
 
 import net.minecraft.text.TranslatableTextContent;
 import org.apache.logging.log4j.LogManager;
@@ -146,7 +142,6 @@ public class TooltipHandler {
                                 .replace(".name", "");
                         break;
                     }
-                }
             }
         }
         MineboxItem item1 = MineboxItemUtils.get(itemId1);
@@ -159,6 +154,19 @@ public class TooltipHandler {
         }
 
         if (item != null) {
+            int line = findIndexOfTranslateKey(lines, "mbx.see_more");
+            Text seeMoreText = Text.literal("");
+
+            if (line != -1) {
+                seeMoreText = lines.remove(line);
+            }
+            else {
+                line = findIndexOfTranslateKey(lines, "mbx.actions.open");
+                if (line != -1) {
+                    seeMoreText = lines.remove(line);
+                }
+            }
+
             lines.add(Text.literal(Lang.get("mineboxtools.menu.tooltip.location")).setStyle(Style.EMPTY.withColor(0xFFA500).withBold(true)));
             for (String location : item.getLocation()) {
                 lines.add(Text.literal("• " + Lang.get(location)).setStyle(Style.EMPTY.withColor(0xFFFFFF)));
@@ -175,7 +183,11 @@ public class TooltipHandler {
                 lines.add(Text.literal(Lang.get("mineboxtools.menu.tooltip.boost")).setStyle(Style.EMPTY.withColor(0x00FF00).withBold(true)));
                 lines.add(Text.literal("• " + Lang.get(item.getBoost())).setStyle(Style.EMPTY.withColor(0xFFFFFF)));
             }
-        }
+            if (line != -1) {
+                lines.add(Text.literal(""));
+                lines.add(seeMoreText);
+            }
+        }}
     }
 
     private static double computeGlobalStatScore(Map<String, Integer> actualStats, Map<String, int[]> statRanges) {
@@ -208,5 +220,30 @@ public class TooltipHandler {
         int green = (int) (255 * score / 100.0);
         int rgb = (red << 16) | (green << 8);
         return Style.EMPTY.withColor(TextColor.fromRgb(rgb)).withBold(true);
+    }
+
+    public static boolean containsTranslateKey(Text text, String keyToFind) {
+        if (text.getContent() instanceof TranslatableTextContent translatable) {
+            if (keyToFind.equals(translatable.getKey())) {
+                return true;
+            }
+        }
+
+        for (Text sibling : text.getSiblings()) {
+            if (containsTranslateKey(sibling, keyToFind)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static int findIndexOfTranslateKey(List<Text> lines, String keyToFind) {
+        for (int i = 0; i < lines.size(); i++) {
+            if (containsTranslateKey(lines.get(i), keyToFind)) {
+                return i;
+            }
+        }
+        return -1;
     }
 }
