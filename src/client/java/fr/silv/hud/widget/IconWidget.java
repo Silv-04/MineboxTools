@@ -285,13 +285,13 @@ public class IconWidget extends HudWidget {
                 drawIcon(drawContext, Icons.BakeryICON, x - (offsetIndex * (iconWidth + spacing)), y);
                 offsetIndex++;
             }
+        }
 
-            // Cocktail bar
-            if (DaylightCycle.isCocktailAndMonkeyShopOpen(now)) {
-                if (ModConfig.cocktailBarToggle) {
-                    drawIcon(drawContext, Icons.CocktailBarICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
+        // Cocktail bar
+        if (DaylightCycle.isCocktailAndMonkeyShopOpen(now)) {
+            if (ModConfig.cocktailBarToggle) {
+                drawIcon(drawContext, Icons.CocktailBarICON, x - (offsetIndex * (iconWidth + spacing)), y);
+                offsetIndex++;
             }
         }
 

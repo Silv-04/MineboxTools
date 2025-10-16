@@ -46,7 +46,7 @@ public class DaylightCycle {
         int minute = now.getMinute();
         int second = now.getSecond();
         int total = minute * 60 + second;
-        return (total < 600) || (total >= 2925);
+        return (total < 750) || (total >= 2925);
     }
 
     // Cocktail shop and monkey shop timer
