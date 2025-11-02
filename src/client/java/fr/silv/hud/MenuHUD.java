@@ -23,10 +23,22 @@ public class MenuHUD extends Screen {
         super.init();
         Lang.load(ModConfig.language);
 
+        String language = ModConfig.language;
+        Text languageText = switch (language) {
+            case "en_us" -> Text.of("Language: EN");
+            case "fr_fr" -> Text.of("Langue : FR");
+            case "pl_pl" -> Text.of("Język: PL");
+            default -> Text.of("Language: EN");
+        };
         ButtonWidget langButton = ButtonWidget.builder(
-                Text.of(ModConfig.language.equals("en_us") ? "EN" : "FR"),
+                languageText,
                 b -> {
-                    ModConfig.language = ModConfig.language.equals("en_us") ? "fr_fr" : "en_us";
+                    ModConfig.language = switch (ModConfig.language) {
+                        case "en_us" -> "fr_fr";
+                        case "fr_fr" -> "pl_pl";
+                        case "pl_pl" -> "en_us";
+                        default -> "en_us";
+                    };
                     Lang.load(ModConfig.language);
                     ModConfig.save();
                     this.clearAndInit();

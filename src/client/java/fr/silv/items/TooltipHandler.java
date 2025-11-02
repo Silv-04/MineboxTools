@@ -28,7 +28,6 @@ import fr.silv.utils.StatTextUtils;
 public class TooltipHandler {
     private static final Logger TooltipHandlerLogger = LogManager
             .getLogger(TooltipHandler.class);
-    private static final Map<ItemStack, Long> recentLogs = new WeakHashMap<>();
     private static final long LOG_THROTTLE_MS = 5000;
 
     private static final Map<String, Integer> STAT_WEIGHTS = Map.of(
@@ -66,14 +65,6 @@ public class TooltipHandler {
         if (nbt.getString("mbitems:id").isEmpty()) return;
         String itemId = nbt.getString("mbitems:id").get();
         long now = System.currentTimeMillis();
-        Long lastLogTime = recentLogs.get(stack);
-
-        boolean canLog = lastLogTime == null || now - lastLogTime > LOG_THROTTLE_MS;
-
-        if (canLog) {
-            TooltipHandlerLogger.info("[Tooltip] Processing item: " + itemId);
-            recentLogs.put(stack, now);
-        }
 
         Map<String, int[]> statRanges = MineboxItemStatUtils.getStatsFor(itemId);
         if (statRanges.isEmpty())
@@ -116,10 +107,6 @@ public class TooltipHandler {
             Text scoreLine = lines.getFirst().copy()
                     .append(Text.literal(" " + score + "%").setStyle(style.withBold(true)));
             lines.set(0, scoreLine);
-            if (canLog) {
-                TooltipHandlerLogger
-                        .info("[Tooltip] Global score for item " + itemId + ": " + score + "%");
-            }
         }
     }
 

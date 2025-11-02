@@ -4,12 +4,12 @@ import java.time.LocalTime;
 
 public class DaylightCycle {
     // Fullmoon
-    private static final LocalTime FullMoonStart1 = LocalTime.of(2, 0);
-    private static final LocalTime FullMoonEnd1 = LocalTime.of(3, 0);
-    private static final LocalTime FullMoonStart2 = LocalTime.of(10, 0);
-    private static final LocalTime FullMoonEnd2 = LocalTime.of(11, 0);
-    private static final LocalTime FullMoonStart3 = LocalTime.of(18, 0);
-    private static final LocalTime FullMoonEnd3 = LocalTime.of(19, 0);
+    private static final LocalTime FullMoonStart1 = LocalTime.of(0, 0);
+    private static final LocalTime FullMoonEnd1 = LocalTime.of(1, 0);
+    private static final LocalTime FullMoonStart2 = LocalTime.of(8, 0);
+    private static final LocalTime FullMoonEnd2 = LocalTime.of(9, 0);
+    private static final LocalTime FullMoonStart3 = LocalTime.of(16, 0);
+    private static final LocalTime FullMoonEnd3 = LocalTime.of(17, 0);
 
     public static boolean isFullMoon(LocalTime now) {
         return (now.isAfter(FullMoonStart1) && now.isBefore(FullMoonEnd1)) ||

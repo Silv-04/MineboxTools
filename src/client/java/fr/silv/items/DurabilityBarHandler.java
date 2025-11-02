@@ -82,9 +82,7 @@ public class DurabilityBarHandler {
                 try {
                     int current = Integer.parseInt(amountInside[0]);
                     int max = Integer.parseInt(amountInside[1]);
-                    CustomItemDurabilityHandlerLogger
-                            .info("[Durability] Haversack Detected: ID=" + id + " Current=" + current + " Max=" + max);
-                    applyDurability(item, current, max);
+                      applyDurability(item, current, max);
                 } catch (NumberFormatException e) {
                     CustomItemDurabilityHandlerLogger
                             .error("[Durability] Error parsing haversack values: " + Arrays.toString(amountInside));
@@ -93,7 +91,6 @@ public class DurabilityBarHandler {
         } else if (startsWithSupportedPrefix(id)) {
             Map<String, int[]> stats = statsCache.get(id);
             if (stats == null) {
-                CustomItemDurabilityHandlerLogger.info("[Durability] Loading stats for: " + id);
                 stats = MineboxItemStatUtils.getStatsFor(id);
                 statsCache.put(id, stats);
             }
@@ -103,8 +100,6 @@ public class DurabilityBarHandler {
                 int max = durabilityRange[0];
                 if (persistent.getInt("mbitems:durability").isEmpty()) return;
                 int current = persistent.getInt("mbitems:durability").get();
-                CustomItemDurabilityHandlerLogger
-                        .info("[Durability] Tool Detected: ID=" + id + " Current=" + current + " Max=" + max);
                 applyDurability(item, current, max);
             } else {
                 CustomItemDurabilityHandlerLogger.error("[Durability] No durability data found for: " + id);
@@ -135,7 +130,6 @@ public class DurabilityBarHandler {
             return;
 
         if (item.get(DataComponentTypes.UNBREAKABLE) != null) {
-            CustomItemDurabilityHandlerLogger.info("[Durability] Removing unbreakable flag for item.");
             item.remove(DataComponentTypes.UNBREAKABLE);
         }
 
@@ -145,8 +139,6 @@ public class DurabilityBarHandler {
         }
         item.set(DataComponentTypes.DAMAGE, damage);
         durabilityCache.put(item, damage);
-        CustomItemDurabilityHandlerLogger
-                .info("[Durability] Set durability: " + current + "/" + max + " (Damage=" + damage + ")");
     }
 
     public static String[] getHaverackAmountInside(ItemStack item) {

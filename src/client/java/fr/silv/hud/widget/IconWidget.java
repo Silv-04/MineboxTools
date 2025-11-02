@@ -35,7 +35,7 @@ public class IconWidget extends HudWidget {
         int spacing = 2;
         int offsetIndex = 0;
 
-        LocalTime now = LocalTime.now(ZoneId.of("Europe/Paris"));
+        LocalTime now = LocalTime.now(ZoneId.of("UTC"));
 
         if (ModConfig.thunderToggle) {
             if (world.isThundering()) {

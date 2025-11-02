@@ -27,7 +27,6 @@ public class StatWidget extends HudWidget {
     private static List<MineboxStat> cachedStatsTotal = new ArrayList<>();
     private static List<MineboxStat> cachedHandStats = new ArrayList<>();
     private static List<MineboxStat> cachedPlayerStats = new ArrayList<>();
-    private static Logger DisplayStatsLogger = LogManager.getLogger(StatWidget.class);
 
     public StatWidget() {
         super("stat_widget",
