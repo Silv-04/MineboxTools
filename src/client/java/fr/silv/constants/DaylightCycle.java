@@ -11,12 +11,29 @@ public class DaylightCycle {
     private static final LocalTime FullMoonStart3 = LocalTime.of(16, 0);
     private static final LocalTime FullMoonEnd3 = LocalTime.of(17, 0);
 
+    private static final LocalTime NewMoonStart1 = LocalTime.of(4, 0);
+    private static final LocalTime NewMoonEnd1 = LocalTime.of(5, 0);
+    private static final LocalTime NewMoonStart2 = LocalTime.of(12, 0);
+    private static final LocalTime NewMoonEnd2 = LocalTime.of(13, 0);
+    private static final LocalTime NewMoonStart3 = LocalTime.of(20, 0);
+    private static final LocalTime NewMoonEnd3 = LocalTime.of(21, 0);
+
     public static boolean isFullMoon(LocalTime now) {
         return (now.isAfter(FullMoonStart1) && now.isBefore(FullMoonEnd1)) ||
                (now.isAfter(FullMoonStart2) && now.isBefore(FullMoonEnd2)) ||
                (now.isAfter(FullMoonStart3) && now.isBefore(FullMoonEnd3));
     }
 
+    public static boolean isNewMoon(LocalTime now) {
+        return (now.isAfter(NewMoonStart1) && now.isBefore(NewMoonEnd1)) ||
+               (now.isAfter(NewMoonStart2) && now.isBefore(NewMoonEnd2)) ||
+               (now.isAfter(NewMoonStart3) && now.isBefore(NewMoonEnd3));
+    }
+
+    public static boolean isNewDay(LocalTime now) {
+        int minute = now.getMinute();
+        return minute <= 15;
+    }
     // Night
     public static boolean isNight(LocalTime now) {
         int minute = now.getMinute();

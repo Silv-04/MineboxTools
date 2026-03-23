@@ -267,7 +267,7 @@ public class IconWidget extends HudWidget {
                 drawIcon(drawContext, Icons.ScorpionICON, x - (offsetIndex * (iconWidth + spacing)), y);
                 offsetIndex++;
             }
-            if (DaylightCycle.isFullMoon(now) && ModConfig.purpleEmperorToggle) {
+            if ((DaylightCycle.isFullMoon(now) || DaylightCycle.isNewMoon(now)) && ModConfig.purpleEmperorToggle) {
                 drawIcon(drawContext, Icons.PurpleEmperorICON, x - (offsetIndex * (iconWidth + spacing)), y);
                 offsetIndex++;
             }
@@ -312,6 +312,12 @@ public class IconWidget extends HudWidget {
         // Full moon cycles
         if (DaylightCycle.isFullMoon(now) && DaylightCycle.isHerbShopOpen(now) && ModConfig.herbShopToggle) {
             drawIcon(drawContext, Icons.HerbShopICON, x - (offsetIndex * (iconWidth + spacing)), y);
+            offsetIndex++;
+        }
+
+        // Temp
+        if (DaylightCycle.isNewDay(now)) {
+            drawIcon(drawContext, Icons.CandyICON, x - (offsetIndex * (iconWidth + spacing)), y);
             offsetIndex++;
         }
     }
