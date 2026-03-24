@@ -2,6 +2,9 @@ package fr.silv.constants;
 
 import net.minecraft.util.Identifier;
 
+/**
+ * Holds texture identifiers used by HUD elements and shop/insect icons.
+ */
 public class Icons {
     // Shops
     public static final Identifier BakeryICON = Identifier.of("mineboxtools", "textures/shops/yellow_macaron.png");
@@ -12,7 +15,6 @@ public class Icons {
     public static final Identifier PaintingICON = Identifier.of("mineboxtools", "textures/shops/painting.png");
     public static final Identifier ThunderICON = Identifier.of("mineboxtools", "textures/lightning.png");
     public static final Identifier RainICON = Identifier.of("mineboxtools", "textures/rain.png");
-    public static final Identifier CandyICON = Identifier.of("mineboxtools", "textures/candy.png");
 
     // Insects
     public static final Identifier AntICON = Identifier.of("mineboxtools", "textures/insects/ant.png");
@@ -24,7 +26,7 @@ public class Icons {
     public static final Identifier CentipedeICON = Identifier.of("mineboxtools", "textures/insects/centipede.png");
     public static final Identifier CricketICON = Identifier.of("mineboxtools", "textures/insects/cricket.png");
     public static final Identifier CyclommatusICON = Identifier.of("mineboxtools", "textures/insects/cyclommatus.png");
-    public static final Identifier DungleBeetleICON = Identifier.of("mineboxtools", "textures/insects/dung_beetle.png");
+    public static final Identifier DungBeetleICON = Identifier.of("mineboxtools", "textures/insects/dung_beetle.png");
     public static final Identifier FireflyICON = Identifier.of("mineboxtools", "textures/insects/firefly.png");
     public static final Identifier GreenButterflyICON = Identifier.of("mineboxtools", "textures/insects/green_butterfly.png");
     public static final Identifier GreenDragonflyICON = Identifier.of("mineboxtools", "textures/insects/green_dragonfly.png");

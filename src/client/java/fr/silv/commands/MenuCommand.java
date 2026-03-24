@@ -6,9 +6,15 @@ import fr.silv.hud.MenuHUD;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.Text;
 
+/**
+ * Registers the client command that opens the MineboxTools menu.
+ */
 public class MenuCommand {
+    /**
+     * Registers command handlers.
+     * @param dispatcher value for dispatcher
+     */
     public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher) {
         dispatcher.register(ClientCommandManager.literal("mbt")
                 .executes(context -> {

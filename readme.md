@@ -1,49 +1,73 @@
-# 🌿 MineboxTools - A set of tool for a better experience on Minebox
+# MineboxTools
 
-## 📦 Requirements
-- Minecraft: 1.21.7
-- Fabric Loader: >= 0.16.14
+MineboxTools is a client-side Fabric mod for Minebox focused on quality of life, item inspection, and HUD information.
 
----
+It helps players:
+- inspect Minebox custom items and their hidden value ranges
+- display durability for special items and containers
+- track insects, weather, and shop availability with timed HUD icons
+- show total player stats directly on screen
+- configure all of those features in game
 
-## 🎮 Features
+## Requirements
 
-### ⚙️ Configuration & Menu
-- Open the mod menu with:
-  **/mbt**
-- Customize all display options directly from the in-game menu.
+- Minecraft `1.21.8`
+- Fabric Loader `>= 0.16.14`
 
----
+## Main Features
 
-### 🛠️ Item System
-- Durability bar for special/custom items (including those from treasures)
-- Item Stats Tooltip: Displays min/max values next to each stat in the tooltip.
-- Item Score: Calculates a global score for each item based on its stats.
-- Durability Bar for items in inventory
-- Dual Durability Display: Durability shown for both main hand and off hand items.
+### In-game configuration
 
----
+- Open the MineboxTools menu with `/mbt`
+- Enable or disable each major feature independently
+- Configure weather, insect, and shop reminder icons
+- Move HUD widgets with the HUD configuration screen
+- Switch language directly from the menu
 
-### 🌍 World Interaction
-- Timed Icons: Icons appear depending on specific conditions:
-    - Weather conditions
-    - Insect availability
-    - Shops
-- Harvest Info: Tooltip shows harvest location, spawn conditions, and boost conditions for relevant items.
+### Item helpers
 
----
+- Adds a durability bar to supported Minebox custom items
+- Displays main hand and off hand durability information on the HUD
+- Supports container-like items such as haversacks / infinite chest style items
+- Shows stat min/max ranges directly inside item tooltips
+- Calculates a global item score from detected stats
 
-### 👤 Player Stats
-- Display of total player stats directly on the in-game HUD.
+### Harvest and loot information
 
----
+- Adds tooltip information for supported items:
+- harvest location
+- spawn or availability condition
+- boost condition
 
-### 🌐 Localization
-- Full translation available in:
-    - English
-    - French
+### World reminders
 
----
+- Weather icons for rain and thunder
+- Time-based insect availability icons
+- Time-based shop availability icons
+- Special cycle reminders such as moon-related availability
 
-## 🚀 Installation
-https://modrinth.com/mod/mineboxtools
+### Player stats
+
+- Displays combined player stats on the HUD
+- Supports compact and advanced display modes
+
+## Languages
+
+Current bundled translations:
+- English
+- French
+- Polish
+
+## Data and configuration
+
+The mod relies on bundled Minebox data files for item metadata and stat ranges:
+- `src/main/resources/assets/mineboxtools/mineboxItems.json`
+- `src/main/resources/assets/mineboxtools/mineboxItemsStats.json`
+
+Runtime settings are saved in:
+- `config/mineboxtools.settings.json`
+
+## Installation
+
+Modrinth:
+- https://modrinth.com/mod/mineboxtools

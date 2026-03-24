@@ -1,6 +1,7 @@
 # gradle
 
 .gradle/
+.gradle-user-home/
 build/
 out/
 classes/
@@ -40,3 +41,5 @@ replay_*.log
 *.jfr
 
 .assets/
+src/main/resources/assets/mineboxtools/
+PRIVATE_CLASS_METHODS.md

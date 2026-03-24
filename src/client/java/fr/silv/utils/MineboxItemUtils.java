@@ -2,8 +2,7 @@ package fr.silv.utils;
 
 import com.google.gson.*;
 import fr.silv.model.MineboxItem;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -12,10 +11,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Utility methods for loading and querying minebox item metadata.
+ */
 public class MineboxItemUtils {
-    private static final Logger LOGGER = LogManager.getLogger(MineboxItemUtils.class);
-    private static Map<String, MineboxItem> mineboxItems = new HashMap<>();
+    private static final Logger LOGGER = ModLog.getLogger(MineboxItemUtils.class);
+    private static final Map<String, MineboxItem> mineboxItems = new HashMap<>();
 
+    /**
+     * Loads persisted data into memory.
+     */
     public static void load() {
         try (InputStream input = MineboxItemUtils.class.getClassLoader()
                 .getResourceAsStream("assets/mineboxtools/mineboxItems.json")) {
@@ -26,6 +31,7 @@ public class MineboxItemUtils {
 
             String json = new String(input.readAllBytes(), StandardCharsets.UTF_8);
             JsonArray itemsArray = JsonParser.parseString(json).getAsJsonArray();
+            mineboxItems.clear();
 
             for (JsonElement element : itemsArray) {
                 JsonObject obj = element.getAsJsonObject();
@@ -49,6 +55,11 @@ public class MineboxItemUtils {
         }
     }
 
+    /**
+     * Executes the get operation.
+     * @param itemId value for itemId
+     * @return the computed get value
+     */
     public static MineboxItem get(String itemId) {
         return mineboxItems.get(itemId);
     }

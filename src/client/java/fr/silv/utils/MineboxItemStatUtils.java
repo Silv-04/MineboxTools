@@ -9,18 +9,23 @@ import java.util.regex.Pattern;
 import fr.silv.model.MineboxStat;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableTextContent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+/**
+ * Parses and caches per-item statistics from resources.
+ */
 public class MineboxItemStatUtils {
-    private static final Logger ItemStatsRangeLoaderLogger = LogManager.getLogger(MineboxItemStatUtils.class);
+    private static final Logger ItemStatsRangeLoaderLogger = ModLog.getLogger(MineboxItemStatUtils.class);
     private static final Map<String, Map<String, int[]>> statRanges = new HashMap<>();
 
+    /**
+     * Loads persisted data into memory.
+     */
     public static void load() {
         try (InputStream input = MineboxItemStatUtils.class.getClassLoader()
                 .getResourceAsStream("assets/mineboxtools/mineboxItemsStats.json")) {
@@ -28,6 +33,7 @@ public class MineboxItemStatUtils {
             if (input != null) {
                 String json = new String(input.readAllBytes(), StandardCharsets.UTF_8);
                 JsonObject root = JsonParser.parseString(json).getAsJsonObject();
+                statRanges.clear();
 
                 for (Map.Entry<String, JsonElement> itemEntry : root.entrySet()) {
                     String itemId = itemEntry.getKey();
@@ -57,10 +63,21 @@ public class MineboxItemStatUtils {
         }
     }
 
+    /**
+     * Returns the stats for.
+     * @param itemId value for itemId
+     * @return the stats for
+     */
     public static Map<String, int[]> getStatsFor(String itemId) {
         return statRanges.getOrDefault(itemId, Collections.emptyMap());
     }
 
+    /**
+     * Executes the extract stats from line operation.
+     * @param line value for line
+     * @param validKeys value for validKeys
+     * @return the computed extract stats from line value
+     */
     public static MineboxStat extractStatsFromLine(Text line, Set<String> validKeys) {
         TranslatableTextContent content = findTranslatable(line, validKeys);
         if (content == null)
@@ -93,6 +110,12 @@ public class MineboxItemStatUtils {
         return null;
     }
 
+    /**
+     * Executes the extract stats from line with bonus operation.
+     * @param line value for line
+     * @param validKeys value for validKeys
+     * @return the computed extract stats from line with bonus value
+     */
     public static MineboxStat extractStatsFromLineWithBonus(Text line, Set<String> validKeys) {
         TranslatableTextContent content = findTranslatable(line, validKeys);
         if (content == null) return null;
@@ -166,6 +189,12 @@ public class MineboxItemStatUtils {
         return null;
     }
 
+    /**
+     * Executes the are equals operation.
+     * @param listA value for listA
+     * @param listB value for listB
+     * @return true when the operation succeeds; otherwise false
+     */
     public static boolean areEquals(List<MineboxStat> listA, List<MineboxStat> listB) {
         if (listA.size() != listB.size()) return false;
         for (MineboxStat statA : listA) {

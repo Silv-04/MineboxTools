@@ -3,292 +3,679 @@ package fr.silv;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import fr.silv.hud.widget.config.ConfigOption;
+import fr.silv.utils.ModLog;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.MinecraftClient;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
-public class ModConfig {
-    private static final Logger ModConfigLogger = LogManager.getLogger(ModConfig.class);
+/**
+ * Manages persistent configuration state for MineboxTools.
+ */
+public final class ModConfig {
+    private static final Logger LOGGER = ModLog.getLogger(ModConfig.class);
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final File CONFIG_FILE = new File(FabricLoader.getInstance().getConfigDir().toFile(), "mineboxtools.settings.json");
+    private static final Path CONFIG_FILE = FabricLoader.getInstance()
+            .getConfigDir()
+            .resolve("mineboxtools.settings.json");
+    private static final Map<String, WidgetPos> DEFAULT_WIDGET_POSITIONS = Map.of(
+            "durability_widget", new WidgetPos(10, 10),
+            "icon_widget", new WidgetPos(10, 40),
+            "stat_widget", new WidgetPos(10, 80)
+    );
 
-    public static String language = "en_us";
-    // Feature toggles
-    public static boolean durabilityToggle = true;
-    public static boolean tooltipToggle = true;
-    public static ConfigOption statToggle = ConfigOption.SIMPLE;
-    public static boolean handToggle = true;
-    public static boolean locationToggle = true;
-    public static boolean thunderToggle = true;
-    public static boolean rainToggle = true;
+    private static ConfigState state = new ConfigState();
 
-    // Insect toggles
-    public static boolean antToggle = false;
-    public static boolean atlasMothToggle = false;
-    public static boolean birdwingToggle = false;
-    public static boolean blueButterflyToggle = false;
-    public static boolean blueDragonflyToggle = false;
-    public static boolean brownAntToggle = false;
-    public static boolean centipedeToggle = false;
-    public static boolean cricketToggle = false;
-    public static boolean cyclommatusToggle = false;
-    public static boolean dungBeetleToggle = false;
-    public static boolean fireflyToggle = false;
-    public static boolean greenButterflyToggle = false;
-    public static boolean greenDragonflyToggle = false;
-    public static boolean ladybugToggle = false;
-    public static boolean locustToggle = false;
-    public static boolean mantisToggle = false;
-    public static boolean mosquitoToggle = false;
-    public static boolean nightButterflyToggle = false;
-    public static boolean purpleEmperorToggle = false;
-    public static boolean redDragonflyToggle = false;
-    public static boolean scorpionToggle = false;
-    public static boolean snailToggle = false;
-    public static boolean spiderToggle = false;
-    public static boolean stickInsectToggle = false;
-    public static boolean sunsetMothToggle = false;
-    public static boolean tarantulaToggle = false;
-    public static boolean tigerButterflyToggle = false;
-    public static boolean waspToggle = false;
-    public static boolean whiteButterflyToggle = false;
-    public static boolean yellowButterflyToggle = false;
-    public static boolean yellowDragonflyToggle = false;
+    private ModConfig() {
+    }
 
-    // Shop toggles
-    public static boolean coffeeShopToggle = false;
-    public static boolean bakeryToggle = false;
-    public static boolean cocktailBarToggle = false;
-    public static boolean paintingShopToggle = false;
-    public static boolean italianRestaurantToggle = false;
-    public static boolean herbShopToggle = false;
+    /**
+     * Executes the general operation.
+     * @return the computed general value
+     */
+    public static General general() {
+        return state.general;
+    }
 
-    // Widget toggles
-    private static final Map<String, WidgetPos> widgetPositions = new HashMap<>();
+    /**
+     * Executes the features operation.
+     * @return the computed features value
+     */
+    public static Features features() {
+        return state.features;
+    }
 
+    /**
+     * Executes the insects operation.
+     * @return the computed insects value
+     */
+    public static Insects insects() {
+        return state.insects;
+    }
+
+    /**
+     * Executes the shops operation.
+     * @return the computed shops value
+     */
+    public static Shops shops() {
+        return state.shops;
+    }
+
+    /**
+     * Executes the hud operation.
+     * @return the computed hud value
+     */
+    public static Hud hud() {
+        return state.hud;
+    }
+
+    /**
+     * Returns the configured HUD icon size preset.
+     * @return the HUD icon size preset
+     */
+    public static IconSize getHudIconSize() {
+        return hud().iconSize != null ? hud().iconSize : IconSize.NORMAL;
+    }
+
+    /**
+     * Updates the HUD icon size preset.
+     * @param iconSize the selected icon size preset
+     */
+    public static void setHudIconSize(IconSize iconSize) {
+        hud().iconSize = iconSize != null ? iconSize : IconSize.NORMAL;
+    }
+
+    /**
+     * Returns the configured HUD icon orientation.
+     * @return the HUD icon orientation
+     */
+    public static IconOrientation getHudIconOrientation() {
+        return hud().iconOrientation != null ? hud().iconOrientation : IconOrientation.HORIZONTAL;
+    }
+
+    /**
+     * Updates the HUD icon orientation.
+     * @param iconOrientation the selected icon orientation
+     */
+    public static void setHudIconOrientation(IconOrientation iconOrientation) {
+        hud().iconOrientation = iconOrientation != null ? iconOrientation : IconOrientation.HORIZONTAL;
+    }
+
+    /**
+     * Returns the configured HUD icon growth direction.
+     * @return the HUD icon growth direction
+     */
+    public static IconDirection getHudIconDirection() {
+        return hud().iconDirection != null ? hud().iconDirection : IconDirection.AUTO;
+    }
+
+    /**
+     * Updates the HUD icon growth direction.
+     * @param iconDirection the selected icon growth direction
+     */
+    public static void setHudIconDirection(IconDirection iconDirection) {
+        hud().iconDirection = iconDirection != null ? iconDirection : IconDirection.AUTO;
+    }
+
+    /**
+     * Returns the language.
+     * @return the language
+     */
+    public static String getLanguage() {
+        return general().language;
+    }
+
+    /**
+     * Updates the language.
+     * @param language the l an gu ag e
+     */
+    public static void setLanguage(String language) {
+        general().language = language;
+    }
+
+    /**
+     * Returns the stat display.
+     * @return the stat display
+     */
+    public static ConfigOption getStatDisplay() {
+        return features().statDisplay;
+    }
+
+    /**
+     * Updates the stat display.
+     * @param statDisplay the s ta td is pl ay
+     */
+    public static void setStatDisplay(ConfigOption statDisplay) {
+        features().statDisplay = statDisplay;
+    }
+
+    /**
+     * Checks whether enabled.
+     * @return true if the condition is met; otherwise false
+     * @param flag the f la g
+     */
+    public static boolean isEnabled(FeatureFlag flag) {
+        return flag.get(state);
+    }
+
+    /**
+     * Updates the enabled.
+     * @param flag the f la g
+     * @param value the v al ue
+     */
+    public static void setEnabled(FeatureFlag flag, boolean value) {
+        flag.set(state, value);
+    }
+
+    /**
+     * Checks whether enabled.
+     * @return true if the condition is met; otherwise false
+     * @param flag the f la g
+     */
+    public static boolean isEnabled(InsectFlag flag) {
+        return flag.get(state);
+    }
+
+    /**
+     * Updates the enabled.
+     * @param flag the f la g
+     * @param value the v al ue
+     */
+    public static void setEnabled(InsectFlag flag, boolean value) {
+        flag.set(state, value);
+    }
+
+    /**
+     * Checks whether enabled.
+     * @return true if the condition is met; otherwise false
+     * @param flag the f la g
+     */
+    public static boolean isEnabled(ShopFlag flag) {
+        return flag.get(state);
+    }
+
+    /**
+     * Updates the enabled.
+     * @param flag the f la g
+     * @param value the v al ue
+     */
+    public static void setEnabled(ShopFlag flag, boolean value) {
+        flag.set(state, value);
+    }
+
+    /**
+     * Updates the widget position.
+     * @param id the i d
+     * @param x the x
+     * @param y the y
+     */
     public static void setWidgetPosition(String id, int x, int y) {
-        widgetPositions.put(id, new WidgetPos(x, y));
+        hud().widgetPositions.put(id, new WidgetPos(x, y));
         save();
     }
 
+    /**
+     * Returns the widget position.
+     * @return an array containing the X and Y coordinates
+     * @param id the i d
+     */
     public static int[] getWidgetPosition(String id) {
-        WidgetPos pos = widgetPositions.get(id);
-        if (pos != null) {
-            return new int[]{pos.x, pos.y};
+        WidgetPos pos = hud().widgetPositions.getOrDefault(id, DEFAULT_WIDGET_POSITIONS.get(id));
+        if (pos == null) {
+            return new int[]{0, 0};
         }
-        return switch (id) {
-            case "durability_widget" -> new int[]{10, 10};
-            case "stat_widget" -> new int[]{10, 80};
-            case "icon_widget" -> new int[]{10, 40};
-            default -> new int[]{0, 0};
-        };
+        return new int[]{pos.x, pos.y};
     }
 
+    /**
+     * Loads persisted data into memory.
+     */
     public static void load() {
-        if (CONFIG_FILE.exists()) {
-            try (FileReader reader = new FileReader(CONFIG_FILE)) {
-                ModConfigData data = GSON.fromJson(reader, ModConfigData.class);
+        if (!Files.exists(CONFIG_FILE)) {
+            return;
+        }
 
-                language = data.language;
+        try (Reader reader = Files.newBufferedReader(CONFIG_FILE, StandardCharsets.UTF_8)) {
+            ConfigState loadedState = GSON.fromJson(reader, ConfigState.class);
+            if (loadedState == null) {
+                LOGGER.warn("Config file is empty or invalid, keeping defaults.");
+                return;
+            }
+            state = loadedState.withDefaults();
+        } catch (IOException e) {
+            LOGGER.error("Failed to load config from {}", CONFIG_FILE, e);
+        }
+    }
 
-                // Feature toggles
-                durabilityToggle = data.durabilityToggle;
-                tooltipToggle = data.tooltipToggle;
-                statToggle = data.statToggle;
-                handToggle = data.handToggle;
-                locationToggle = data.locationToggle;
-                thunderToggle = data.thunderToggle;
-                rainToggle = data.rainToggle;
+    /**
+     * Persists the current state to disk.
+     */
+    public static void save() {
+        try (Writer writer = Files.newBufferedWriter(CONFIG_FILE, StandardCharsets.UTF_8)) {
+            GSON.toJson(state, writer);
+        } catch (IOException e) {
+            LOGGER.error("Failed to save config to {}", CONFIG_FILE, e);
+        }
+    }
 
-                // Insect toggles
-                antToggle = data.antToggle;
-                atlasMothToggle = data.atlasMothToggle;
-                birdwingToggle = data.birdwingToggle;
-                blueButterflyToggle = data.blueButterflyToggle;
-                blueDragonflyToggle = data.blueDragonflyToggle;
-                brownAntToggle = data.brownAntToggle;
-                centipedeToggle = data.centipedeToggle;
-                cricketToggle = data.cricketToggle;
-                cyclommatusToggle = data.cyclommatusToggle;
-                dungBeetleToggle = data.dungBeetleToggle;
-                fireflyToggle = data.fireflyToggle;
-                greenButterflyToggle = data.greenButterflyToggle;
-                greenDragonflyToggle = data.greenDragonflyToggle;
-                ladybugToggle = data.ladybugToggle;
-                locustToggle = data.locustToggle;
-                mantisToggle = data.mantisToggle;
-                mosquitoToggle = data.mosquitoToggle;
-                nightButterflyToggle = data.nightButterflyToggle;
-                purpleEmperorToggle = data.purpleEmperorToggle;
-                redDragonflyToggle = data.redDragonflyToggle;
-                scorpionToggle = data.scorpionToggle;
-                snailToggle = data.snailToggle;
-                spiderToggle = data.spiderToggle;
-                stickInsectToggle = data.stickInsectToggle;
-                sunsetMothToggle = data.sunsetMothToggle;
-                tarantulaToggle = data.tarantulaToggle;
-                tigerButterflyToggle = data.tigerButterflyToggle;
-                waspToggle = data.waspToggle;
-                whiteButterflyToggle = data.whiteButterflyToggle;
-                yellowButterflyToggle = data.yellowButterflyToggle;
-                yellowDragonflyToggle = data.yellowDragonflyToggle;
+    private static final class ConfigState {
+        private General general = new General();
+        private Features features = new Features();
+        private Insects insects = new Insects();
+        private Shops shops = new Shops();
+        private Hud hud = new Hud();
 
-                // Shop toggles
-                coffeeShopToggle = data.coffeeShopToggle;
-                bakeryToggle = data.bakeryToggle;
-                cocktailBarToggle = data.cocktailBarToggle;
-                paintingShopToggle = data.paintingShopToggle;
-                italianRestaurantToggle = data.italianRestaurantToggle;
-                herbShopToggle = data.herbShopToggle;
+        private String language;
+        private Boolean durabilityToggle;
+        private Boolean tooltipToggle;
+        private ConfigOption statToggle;
+        private Boolean handToggle;
+        private Boolean locationToggle;
+        private Boolean thunderToggle;
+        private Boolean rainToggle;
+        private Boolean antToggle;
+        private Boolean atlasMothToggle;
+        private Boolean birdwingToggle;
+        private Boolean blueButterflyToggle;
+        private Boolean blueDragonflyToggle;
+        private Boolean brownAntToggle;
+        private Boolean centipedeToggle;
+        private Boolean cricketToggle;
+        private Boolean cyclommatusToggle;
+        private Boolean dungBeetleToggle;
+        private Boolean fireflyToggle;
+        private Boolean greenButterflyToggle;
+        private Boolean greenDragonflyToggle;
+        private Boolean ladybugToggle;
+        private Boolean locustToggle;
+        private Boolean mantisToggle;
+        private Boolean mosquitoToggle;
+        private Boolean nightButterflyToggle;
+        private Boolean purpleEmperorToggle;
+        private Boolean redDragonflyToggle;
+        private Boolean scorpionToggle;
+        private Boolean snailToggle;
+        private Boolean spiderToggle;
+        private Boolean stickInsectToggle;
+        private Boolean sunsetMothToggle;
+        private Boolean tarantulaToggle;
+        private Boolean tigerButterflyToggle;
+        private Boolean waspToggle;
+        private Boolean whiteButterflyToggle;
+        private Boolean yellowButterflyToggle;
+        private Boolean yellowDragonflyToggle;
+        private Boolean coffeeShopToggle;
+        private Boolean bakeryToggle;
+        private Boolean cocktailBarToggle;
+        private Boolean paintingShopToggle;
+        private Boolean italianRestaurantToggle;
+        private Boolean herbShopToggle;
+        private Map<String, WidgetPos> widgetPositions;
 
-                if (data.widgetPositions != null) {
-                    widgetPositions.clear();
-                    widgetPositions.putAll(data.widgetPositions);
-                }
+        private ConfigState withDefaults() {
+            if (general == null) general = new General();
+            if (features == null) features = new Features();
+            if (insects == null) insects = new Insects();
+            if (shops == null) shops = new Shops();
+            if (hud == null) hud = new Hud();
+            if (hud.widgetPositions == null) hud.widgetPositions = new HashMap<>();
+            if (hud.iconSize == null) hud.iconSize = IconSize.NORMAL;
+            if (hud.iconOrientation == null) hud.iconOrientation = IconOrientation.HORIZONTAL;
+            if (hud.iconDirection == null) hud.iconDirection = IconDirection.AUTO;
+            applyLegacyValues();
+            return this;
+        }
 
-            } catch (IOException e) {
-                ModConfigLogger.error(e.getMessage());
+        private void applyLegacyValues() {
+            applyLegacy(language, value -> general.language = value);
+            applyLegacy(statToggle, value -> features.statDisplay = value);
+
+            applyLegacy(durabilityToggle, FeatureFlag.DURABILITY);
+            applyLegacy(tooltipToggle, FeatureFlag.TOOLTIP);
+            applyLegacy(handToggle, FeatureFlag.HAND);
+            applyLegacy(locationToggle, FeatureFlag.LOCATION);
+            applyLegacy(thunderToggle, FeatureFlag.THUNDER);
+            applyLegacy(rainToggle, FeatureFlag.RAIN);
+
+            applyLegacy(antToggle, InsectFlag.ANT);
+            applyLegacy(atlasMothToggle, InsectFlag.ATLAS_MOTH);
+            applyLegacy(birdwingToggle, InsectFlag.BIRDWING);
+            applyLegacy(blueButterflyToggle, InsectFlag.BLUE_BUTTERFLY);
+            applyLegacy(blueDragonflyToggle, InsectFlag.BLUE_DRAGONFLY);
+            applyLegacy(brownAntToggle, InsectFlag.BROWN_ANT);
+            applyLegacy(centipedeToggle, InsectFlag.CENTIPEDE);
+            applyLegacy(cricketToggle, InsectFlag.CRICKET);
+            applyLegacy(cyclommatusToggle, InsectFlag.CYCLOMMATUS);
+            applyLegacy(dungBeetleToggle, InsectFlag.DUNG_BEETLE);
+            applyLegacy(fireflyToggle, InsectFlag.FIREFLY);
+            applyLegacy(greenButterflyToggle, InsectFlag.GREEN_BUTTERFLY);
+            applyLegacy(greenDragonflyToggle, InsectFlag.GREEN_DRAGONFLY);
+            applyLegacy(ladybugToggle, InsectFlag.LADYBUG);
+            applyLegacy(locustToggle, InsectFlag.LOCUST);
+            applyLegacy(mantisToggle, InsectFlag.MANTIS);
+            applyLegacy(mosquitoToggle, InsectFlag.MOSQUITO);
+            applyLegacy(nightButterflyToggle, InsectFlag.NIGHT_BUTTERFLY);
+            applyLegacy(purpleEmperorToggle, InsectFlag.PURPLE_EMPEROR);
+            applyLegacy(redDragonflyToggle, InsectFlag.RED_DRAGONFLY);
+            applyLegacy(scorpionToggle, InsectFlag.SCORPION);
+            applyLegacy(snailToggle, InsectFlag.SNAIL);
+            applyLegacy(spiderToggle, InsectFlag.SPIDER);
+            applyLegacy(stickInsectToggle, InsectFlag.STICK_INSECT);
+            applyLegacy(sunsetMothToggle, InsectFlag.SUNSET_MOTH);
+            applyLegacy(tarantulaToggle, InsectFlag.TARANTULA);
+            applyLegacy(tigerButterflyToggle, InsectFlag.TIGER_BUTTERFLY);
+            applyLegacy(waspToggle, InsectFlag.WASP);
+            applyLegacy(whiteButterflyToggle, InsectFlag.WHITE_BUTTERFLY);
+            applyLegacy(yellowButterflyToggle, InsectFlag.YELLOW_BUTTERFLY);
+            applyLegacy(yellowDragonflyToggle, InsectFlag.YELLOW_DRAGONFLY);
+
+            applyLegacy(coffeeShopToggle, ShopFlag.COFFEE);
+            applyLegacy(bakeryToggle, ShopFlag.BAKERY);
+            applyLegacy(cocktailBarToggle, ShopFlag.COCKTAIL_BAR);
+            applyLegacy(paintingShopToggle, ShopFlag.PAINTING);
+            applyLegacy(italianRestaurantToggle, ShopFlag.ITALIAN_RESTAURANT);
+            applyLegacy(herbShopToggle, ShopFlag.HERB);
+
+            if (widgetPositions != null) {
+                hud.widgetPositions.clear();
+                hud.widgetPositions.putAll(widgetPositions);
+            }
+        }
+
+        private void applyLegacy(String value, Consumer<String> setter) {
+            if (value != null) {
+                setter.accept(value);
+            }
+        }
+
+        private void applyLegacy(ConfigOption value, Consumer<ConfigOption> setter) {
+            if (value != null) {
+                setter.accept(value);
+            }
+        }
+
+        private void applyLegacy(Boolean value, FeatureFlag flag) {
+            if (value != null) {
+                flag.set(this, value);
+            }
+        }
+
+        private void applyLegacy(Boolean value, InsectFlag flag) {
+            if (value != null) {
+                flag.set(this, value);
+            }
+        }
+
+        private void applyLegacy(Boolean value, ShopFlag flag) {
+            if (value != null) {
+                flag.set(this, value);
             }
         }
     }
 
-    public static void save() {
-        try (FileWriter writer = new FileWriter(CONFIG_FILE)) {
-            ModConfigData data = new ModConfigData();
-
-            data.language = language;
-            // Feature toggles
-            data.durabilityToggle = durabilityToggle;
-            data.tooltipToggle = tooltipToggle;
-            data.statToggle = statToggle;
-            data.handToggle = handToggle;
-            data.locationToggle = locationToggle;
-            data.thunderToggle = thunderToggle;
-            data.rainToggle = rainToggle;
-
-            // Insect toggles
-            data.antToggle = antToggle;
-            data.atlasMothToggle = atlasMothToggle;
-            data.birdwingToggle = birdwingToggle;
-            data.blueButterflyToggle = blueButterflyToggle;
-            data.blueDragonflyToggle = blueDragonflyToggle;
-            data.brownAntToggle = brownAntToggle;
-            data.centipedeToggle = centipedeToggle;
-            data.cricketToggle = cricketToggle;
-            data.cyclommatusToggle = cyclommatusToggle;
-            data.dungBeetleToggle = dungBeetleToggle;
-            data.fireflyToggle = fireflyToggle;
-            data.greenButterflyToggle = greenButterflyToggle;
-            data.greenDragonflyToggle = greenDragonflyToggle;
-            data.ladybugToggle = ladybugToggle;
-            data.locustToggle = locustToggle;
-            data.mantisToggle = mantisToggle;
-            data.mosquitoToggle = mosquitoToggle;
-            data.nightButterflyToggle = nightButterflyToggle;
-            data.purpleEmperorToggle = purpleEmperorToggle;
-            data.redDragonflyToggle = redDragonflyToggle;
-            data.scorpionToggle = scorpionToggle;
-            data.snailToggle = snailToggle;
-            data.spiderToggle = spiderToggle;
-            data.stickInsectToggle = stickInsectToggle;
-            data.sunsetMothToggle = sunsetMothToggle;
-            data.tarantulaToggle = tarantulaToggle;
-            data.tigerButterflyToggle = tigerButterflyToggle;
-            data.waspToggle = waspToggle;
-            data.whiteButterflyToggle = whiteButterflyToggle;
-            data.yellowButterflyToggle = yellowButterflyToggle;
-            data.yellowDragonflyToggle = yellowDragonflyToggle;
-
-            // Shop toggles
-            data.coffeeShopToggle = coffeeShopToggle;
-            data.bakeryToggle = bakeryToggle;
-            data.cocktailBarToggle = cocktailBarToggle;
-            data.paintingShopToggle = paintingShopToggle;
-            data.italianRestaurantToggle = italianRestaurantToggle;
-            data.herbShopToggle = herbShopToggle;
-
-            // Widget toggles
-            data.widgetPositions = widgetPositions;
-
-            GSON.toJson(data, writer);
-        } catch (IOException e) {
-            ModConfigLogger.error(e.getMessage());
-        }
+    public static final class General {
+        public String language = "en_us";
     }
 
-    private static class ModConfigData {
-
-        String language;
-        // Feature toggles
-        boolean durabilityToggle;
-        boolean tooltipToggle;
-        ConfigOption statToggle;
-        boolean handToggle;
-        boolean locationToggle;
-        boolean thunderToggle;
-        boolean rainToggle;
-
-        // Insect toggles
-        boolean antToggle;
-        boolean atlasMothToggle;
-        boolean birdwingToggle;
-        boolean blueButterflyToggle;
-        boolean blueDragonflyToggle;
-        boolean brownAntToggle;
-        boolean centipedeToggle;
-        boolean cricketToggle;
-        boolean cyclommatusToggle;
-        boolean dungBeetleToggle;
-        boolean fireflyToggle;
-        boolean greenButterflyToggle;
-        boolean greenDragonflyToggle;
-        boolean ladybugToggle;
-        boolean locustToggle;
-        boolean mantisToggle;
-        boolean mosquitoToggle;
-        boolean nightButterflyToggle;
-        boolean purpleEmperorToggle;
-        boolean redDragonflyToggle;
-        boolean scorpionToggle;
-        boolean snailToggle;
-        boolean spiderToggle;
-        boolean stickInsectToggle;
-        boolean sunsetMothToggle;
-        boolean tarantulaToggle;
-        boolean tigerButterflyToggle;
-        boolean waspToggle;
-        boolean whiteButterflyToggle;
-        boolean yellowButterflyToggle;
-        boolean yellowDragonflyToggle;
-
-        // Shop toggles
-        boolean coffeeShopToggle;
-        boolean bakeryToggle;
-        boolean cocktailBarToggle;
-        boolean paintingShopToggle;
-        boolean italianRestaurantToggle;
-        boolean herbShopToggle;
-
-        // Widget toggles
-        Map<String, WidgetPos> widgetPositions = new HashMap<>();
+    public static final class Features {
+        public boolean durability = true;
+        public boolean tooltip = true;
+        public ConfigOption statDisplay = ConfigOption.SIMPLE;
+        public boolean hand = true;
+        public boolean location = true;
+        public boolean thunder = true;
+        public boolean rain = true;
     }
 
-    public static class WidgetPos {
+    public static final class Insects {
+        public boolean ant = false;
+        public boolean atlasMoth = false;
+        public boolean birdwing = false;
+        public boolean blueButterfly = false;
+        public boolean blueDragonfly = false;
+        public boolean brownAnt = false;
+        public boolean centipede = false;
+        public boolean cricket = false;
+        public boolean cyclommatus = false;
+        public boolean dungBeetle = false;
+        public boolean firefly = false;
+        public boolean greenButterfly = false;
+        public boolean greenDragonfly = false;
+        public boolean ladybug = false;
+        public boolean locust = false;
+        public boolean mantis = false;
+        public boolean mosquito = false;
+        public boolean nightButterfly = false;
+        public boolean purpleEmperor = false;
+        public boolean redDragonfly = false;
+        public boolean scorpion = false;
+        public boolean snail = false;
+        public boolean spider = false;
+        public boolean stickInsect = false;
+        public boolean sunsetMoth = false;
+        public boolean tarantula = false;
+        public boolean tigerButterfly = false;
+        public boolean wasp = false;
+        public boolean whiteButterfly = false;
+        public boolean yellowButterfly = false;
+        public boolean yellowDragonfly = false;
+    }
+
+    public static final class Shops {
+        public boolean coffee = false;
+        public boolean bakery = false;
+        public boolean cocktailBar = false;
+        public boolean painting = false;
+        public boolean italianRestaurant = false;
+        public boolean herb = false;
+    }
+
+    public static final class Hud {
+        public Map<String, WidgetPos> widgetPositions = new HashMap<>();
+        public IconSize iconSize = IconSize.NORMAL;
+        public IconOrientation iconOrientation = IconOrientation.HORIZONTAL;
+        public IconDirection iconDirection = IconDirection.AUTO;
+    }
+
+    public static final class WidgetPos {
         int x;
         int y;
 
-        WidgetPos(){}
+        WidgetPos() {
+        }
+
         WidgetPos(int x, int y) {
             this.x = x;
             this.y = y;
+        }
+    }
+
+    /**
+     * Supported icon size presets for HUD icon rendering.
+     */
+    public enum IconSize {
+        SMALL(16, "mineboxtools.menu.icon_size.small"),
+        NORMAL(24, "mineboxtools.menu.icon_size.normal"),
+        LARGE(32, "mineboxtools.menu.icon_size.large");
+
+        private final int pixels;
+        private final String labelKey;
+
+        IconSize(int pixels, String labelKey) {
+            this.pixels = pixels;
+            this.labelKey = labelKey;
+        }
+
+        public int getPixels() {
+            return pixels;
+        }
+
+        public String getLabelKey() {
+            return labelKey;
+        }
+    }
+
+    /**
+     * Supported icon stacking orientations for HUD icon rendering.
+     */
+    public enum IconOrientation {
+        HORIZONTAL("mineboxtools.menu.icon_orientation.horizontal"),
+        VERTICAL("mineboxtools.menu.icon_orientation.vertical");
+
+        private final String labelKey;
+
+        IconOrientation(String labelKey) {
+            this.labelKey = labelKey;
+        }
+
+        public String getLabelKey() {
+            return labelKey;
+        }
+    }
+
+    /**
+     * Supported icon growth directions for HUD icon rendering.
+     */
+    public enum IconDirection {
+        AUTO("mineboxtools.menu.icon_direction.auto"),
+        LEFT("mineboxtools.menu.icon_direction.left"),
+        RIGHT("mineboxtools.menu.icon_direction.right"),
+        UP("mineboxtools.menu.icon_direction.up"),
+        DOWN("mineboxtools.menu.icon_direction.down");
+
+        private final String labelKey;
+
+        IconDirection(String labelKey) {
+            this.labelKey = labelKey;
+        }
+
+        public String getLabelKey() {
+            return labelKey;
+        }
+    }
+
+    private interface BooleanGetter<T> {
+        boolean get(T target);
+    }
+
+    private interface BooleanSetter<T> {
+        void set(T target, boolean value);
+    }
+
+    /**
+     * Ã‰numÃ©ration FeatureFlag.
+     */
+    public enum FeatureFlag {
+        DURABILITY(section -> section.durability, (section, value) -> section.durability = value),
+        TOOLTIP(section -> section.tooltip, (section, value) -> section.tooltip = value),
+        HAND(section -> section.hand, (section, value) -> section.hand = value),
+        LOCATION(section -> section.location, (section, value) -> section.location = value),
+        THUNDER(section -> section.thunder, (section, value) -> section.thunder = value),
+        RAIN(section -> section.rain, (section, value) -> section.rain = value);
+
+        private final BooleanGetter<Features> getter;
+        private final BooleanSetter<Features> setter;
+
+        FeatureFlag(BooleanGetter<Features> getter, BooleanSetter<Features> setter) {
+            this.getter = getter;
+            this.setter = setter;
+        }
+
+        private boolean get(ConfigState state) {
+            return getter.get(state.features);
+        }
+
+        private void set(ConfigState state, boolean value) {
+            setter.set(state.features, value);
+        }
+    }
+
+    /**
+     * Ã‰numÃ©ration InsectFlag.
+     */
+    public enum InsectFlag {
+        ANT(section -> section.ant, (section, value) -> section.ant = value),
+        ATLAS_MOTH(section -> section.atlasMoth, (section, value) -> section.atlasMoth = value),
+        BIRDWING(section -> section.birdwing, (section, value) -> section.birdwing = value),
+        BLUE_BUTTERFLY(section -> section.blueButterfly, (section, value) -> section.blueButterfly = value),
+        BLUE_DRAGONFLY(section -> section.blueDragonfly, (section, value) -> section.blueDragonfly = value),
+        BROWN_ANT(section -> section.brownAnt, (section, value) -> section.brownAnt = value),
+        CENTIPEDE(section -> section.centipede, (section, value) -> section.centipede = value),
+        CRICKET(section -> section.cricket, (section, value) -> section.cricket = value),
+        CYCLOMMATUS(section -> section.cyclommatus, (section, value) -> section.cyclommatus = value),
+        DUNG_BEETLE(section -> section.dungBeetle, (section, value) -> section.dungBeetle = value),
+        FIREFLY(section -> section.firefly, (section, value) -> section.firefly = value),
+        GREEN_BUTTERFLY(section -> section.greenButterfly, (section, value) -> section.greenButterfly = value),
+        GREEN_DRAGONFLY(section -> section.greenDragonfly, (section, value) -> section.greenDragonfly = value),
+        LADYBUG(section -> section.ladybug, (section, value) -> section.ladybug = value),
+        LOCUST(section -> section.locust, (section, value) -> section.locust = value),
+        MANTIS(section -> section.mantis, (section, value) -> section.mantis = value),
+        MOSQUITO(section -> section.mosquito, (section, value) -> section.mosquito = value),
+        NIGHT_BUTTERFLY(section -> section.nightButterfly, (section, value) -> section.nightButterfly = value),
+        PURPLE_EMPEROR(section -> section.purpleEmperor, (section, value) -> section.purpleEmperor = value),
+        RED_DRAGONFLY(section -> section.redDragonfly, (section, value) -> section.redDragonfly = value),
+        SCORPION(section -> section.scorpion, (section, value) -> section.scorpion = value),
+        SNAIL(section -> section.snail, (section, value) -> section.snail = value),
+        SPIDER(section -> section.spider, (section, value) -> section.spider = value),
+        STICK_INSECT(section -> section.stickInsect, (section, value) -> section.stickInsect = value),
+        SUNSET_MOTH(section -> section.sunsetMoth, (section, value) -> section.sunsetMoth = value),
+        TARANTULA(section -> section.tarantula, (section, value) -> section.tarantula = value),
+        TIGER_BUTTERFLY(section -> section.tigerButterfly, (section, value) -> section.tigerButterfly = value),
+        WASP(section -> section.wasp, (section, value) -> section.wasp = value),
+        WHITE_BUTTERFLY(section -> section.whiteButterfly, (section, value) -> section.whiteButterfly = value),
+        YELLOW_BUTTERFLY(section -> section.yellowButterfly, (section, value) -> section.yellowButterfly = value),
+        YELLOW_DRAGONFLY(section -> section.yellowDragonfly, (section, value) -> section.yellowDragonfly = value);
+
+        private final BooleanGetter<Insects> getter;
+        private final BooleanSetter<Insects> setter;
+
+        InsectFlag(BooleanGetter<Insects> getter, BooleanSetter<Insects> setter) {
+            this.getter = getter;
+            this.setter = setter;
+        }
+
+        private boolean get(ConfigState state) {
+            return getter.get(state.insects);
+        }
+
+        private void set(ConfigState state, boolean value) {
+            setter.set(state.insects, value);
+        }
+    }
+
+    /**
+     * Ã‰numÃ©ration ShopFlag.
+     */
+    public enum ShopFlag {
+        COFFEE(section -> section.coffee, (section, value) -> section.coffee = value),
+        BAKERY(section -> section.bakery, (section, value) -> section.bakery = value),
+        COCKTAIL_BAR(section -> section.cocktailBar, (section, value) -> section.cocktailBar = value),
+        PAINTING(section -> section.painting, (section, value) -> section.painting = value),
+        ITALIAN_RESTAURANT(section -> section.italianRestaurant, (section, value) -> section.italianRestaurant = value),
+        HERB(section -> section.herb, (section, value) -> section.herb = value);
+
+        private final BooleanGetter<Shops> getter;
+        private final BooleanSetter<Shops> setter;
+
+        ShopFlag(BooleanGetter<Shops> getter, BooleanSetter<Shops> setter) {
+            this.getter = getter;
+            this.setter = setter;
+        }
+
+        private boolean get(ConfigState state) {
+            return getter.get(state.shops);
+        }
+
+        private void set(ConfigState state, boolean value) {
+            setter.set(state.shops, value);
         }
     }
 }

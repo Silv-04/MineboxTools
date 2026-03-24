@@ -1,328 +1,195 @@
 package fr.silv.hud.widget;
 
-import java.time.LocalTime;
-import java.time.ZoneId;
-
-import fr.silv.constants.DaylightCycle;
-import fr.silv.constants.Icons;
 import fr.silv.ModConfig;
+import fr.silv.availability.AvailabilityEntry;
+import fr.silv.availability.AvailabilityRegistry;
+import fr.silv.availability.AvailabilitySlot;
+import fr.silv.constants.DaylightCycle;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
-public class IconWidget extends HudWidget {
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * HUD widget that displays contextual status icons.
+ */
+public class IconWidget extends HudWidget {
+    private static final int ICON_SPACING = 2;
+    private static final ZoneId GAME_TIME_ZONE = ZoneId.of("UTC");
+
+    /**
+     * Creates a new IconWidget instance.
+     */
     public IconWidget() {
         super("icon_widget",
                 ModConfig.getWidgetPosition("icon_widget")[0],
                 ModConfig.getWidgetPosition("icon_widget")[1],
-                24, 24);
+                ModConfig.getHudIconSize().getPixels(),
+                ModConfig.getHudIconSize().getPixels());
     }
 
     @Override
+    /**
+     * Executes the render operation.
+     * @param drawContext value for drawContext
+     * @param client value for client
+     */
     public void render(DrawContext drawContext, MinecraftClient client) {
         World world = client.world;
-
-        if (client.player == null || client.options.hudHidden)
+        if (world == null || client.player == null || client.options.hudHidden) {
             return;
-
-        int x = this.x;
-        int y = this.y;
-
-        int iconWidth = 24;
-        int spacing = 2;
-        int offsetIndex = 0;
-
-        LocalTime now = LocalTime.now(ZoneId.of("UTC"));
-
-        if (ModConfig.thunderToggle) {
-            if (world.isThundering()) {
-                drawIcon(drawContext, Icons.ThunderICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                offsetIndex++;
-            }
-        }
-        if (ModConfig.rainToggle) {
-            if (world.isRaining() && !world.isThundering()) {
-                drawIcon(drawContext, Icons.RainICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                offsetIndex++;
-            }
         }
 
-        // Insects
+        int screenWidth = client.getWindow().getScaledWidth();
+        int screenHeight = client.getWindow().getScaledHeight();
+        int iconSize = ModConfig.getHudIconSize().getPixels();
+        ModConfig.IconOrientation configuredOrientation = ModConfig.getHudIconOrientation();
+        ModConfig.IconDirection iconDirection = ModConfig.getHudIconDirection();
+        ModConfig.IconOrientation effectiveOrientation = switch (iconDirection) {
+            case LEFT, RIGHT -> ModConfig.IconOrientation.HORIZONTAL;
+            case UP, DOWN -> ModConfig.IconOrientation.VERTICAL;
+            case AUTO -> configuredOrientation;
+        };
+
+        LocalTime now = LocalTime.now(GAME_TIME_ZONE);
+        List<AvailabilityEntry> entries = collectEntries(world, now);
+        int iconCount = Math.max(1, entries.size());
+        int delta = iconSize + ICON_SPACING;
+
+        int layoutWidth = effectiveOrientation == ModConfig.IconOrientation.HORIZONTAL
+                ? iconSize + ((iconCount - 1) * delta)
+                : iconSize;
+        int layoutHeight = effectiveOrientation == ModConfig.IconOrientation.VERTICAL
+                ? iconSize + ((iconCount - 1) * delta)
+                : iconSize;
+
+        setSize(layoutWidth, layoutHeight);
+        keepInBounds(screenWidth, screenHeight);
+
+        IconLayout layout = IconLayout.create(
+                this.x,
+                this.y,
+                this.width,
+                this.height,
+                iconSize,
+                effectiveOrientation,
+                iconDirection,
+                screenWidth,
+                screenHeight
+        );
+
+        drawEntries(drawContext, layout, entries);
+    }
+
+    private static List<AvailabilityEntry> collectEntries(World world, LocalTime now) {
+        List<AvailabilityEntry> entries = new ArrayList<>();
+        entries.addAll(AvailabilityRegistry.entriesForSlot(AvailabilitySlot.WEATHER, world, now));
+        entries.addAll(AvailabilityRegistry.entriesForSlot(AvailabilitySlot.ALL_DAY, world, now));
+
         if (world.isRaining() || world.isThundering()) {
-            if (ModConfig.snailToggle) {
-                drawIcon(drawContext, Icons.SnailICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                offsetIndex++;
-            }
-        }
-        if (!world.isRaining() && !world.isThundering()) {
-            if (DaylightCycle.isMorning(now)) {
-                if (ModConfig.antToggle) {
-                    drawIcon(drawContext, Icons.AntICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.whiteButterflyToggle) {
-                    drawIcon(drawContext, Icons.WhiteButterflyICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.greenButterflyToggle) {
-                    drawIcon(drawContext, Icons.GreenButterflyICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.yellowButterflyToggle) {
-                    drawIcon(drawContext, Icons.YellowButterflyICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.greenDragonflyToggle) {
-                    drawIcon(drawContext, Icons.GreenDragonflyICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.yellowDragonflyToggle) {
-                    drawIcon(drawContext, Icons.YellowDragonflyICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.blueDragonflyToggle) {
-                    drawIcon(drawContext, Icons.BlueDragonflyICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.brownAntToggle) {
-                    drawIcon(drawContext, Icons.BrownAntICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.tigerButterflyToggle) {
-                    drawIcon(drawContext, Icons.TigerButterflyICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.ladybugToggle) {
-                    drawIcon(drawContext, Icons.LadybugICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-            }
-
-            if (DaylightCycle.isAfternoon(now)) {
-                if (ModConfig.antToggle) {
-                    drawIcon(drawContext, Icons.AntICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.locustToggle) {
-                    drawIcon(drawContext, Icons.LocustICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.whiteButterflyToggle) {
-                    drawIcon(drawContext, Icons.WhiteButterflyICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.yellowButterflyToggle) {
-                    drawIcon(drawContext, Icons.YellowButterflyICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.greenDragonflyToggle) {
-                    drawIcon(drawContext, Icons.GreenDragonflyICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.yellowDragonflyToggle) {
-                    drawIcon(drawContext, Icons.YellowDragonflyICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.blueDragonflyToggle) {
-                    drawIcon(drawContext, Icons.BlueDragonflyICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.redDragonflyToggle) {
-                    drawIcon(drawContext, Icons.RedDragonflyICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.mantisToggle) {
-                    drawIcon(drawContext, Icons.MantisICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.brownAntToggle) {
-                    drawIcon(drawContext, Icons.BrownAntICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.waspToggle) {
-                    drawIcon(drawContext, Icons.WaspICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.birdwingToggle) {
-                    drawIcon(drawContext, Icons.BirdwingICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.tigerButterflyToggle) {
-                    drawIcon(drawContext, Icons.TigerButterflyICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-            }
-
-            if (DaylightCycle.isEvening(now)) {
-                if (ModConfig.cricketToggle) {
-                    drawIcon(drawContext, Icons.CricketICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.cyclommatusToggle) {
-                    drawIcon(drawContext, Icons.CyclommatusICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.stickInsectToggle) {
-                    drawIcon(drawContext, Icons.StickInsectICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.spiderToggle) {
-                    drawIcon(drawContext, Icons.SpiderICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.centipedeToggle) {
-                    drawIcon(drawContext, Icons.CentipedeICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.dungBeetleToggle) {
-                    drawIcon(drawContext, Icons.DungleBeetleICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.blueButterflyToggle) {
-                    drawIcon(drawContext, Icons.BlueButterflyICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.fireflyToggle) {
-                    drawIcon(drawContext, Icons.FireflyICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.nightButterflyToggle) {
-                    drawIcon(drawContext, Icons.NightButterflyICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.tarantulaToggle) {
-                    drawIcon(drawContext, Icons.TarantulaICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.atlasMothToggle) {
-                    drawIcon(drawContext, Icons.AtlasMothButterflyICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.sunsetMothToggle) {
-                    drawIcon(drawContext, Icons.SunsetMothICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-            }
-
-            if (DaylightCycle.isNight(now)) {
-                if (ModConfig.cricketToggle) {
-                    drawIcon(drawContext, Icons.CricketICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.cyclommatusToggle) {
-                    drawIcon(drawContext, Icons.CyclommatusICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.stickInsectToggle) {
-                    drawIcon(drawContext, Icons.StickInsectICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.spiderToggle) {
-                    drawIcon(drawContext, Icons.SpiderICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.centipedeToggle) {
-                    drawIcon(drawContext, Icons.CentipedeICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.dungBeetleToggle) {
-                    drawIcon(drawContext, Icons.DungleBeetleICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.blueButterflyToggle) {
-                    drawIcon(drawContext, Icons.BlueButterflyICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.fireflyToggle) {
-                    drawIcon(drawContext, Icons.FireflyICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.nightButterflyToggle) {
-                    drawIcon(drawContext, Icons.NightButterflyICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.tarantulaToggle) {
-                    drawIcon(drawContext, Icons.TarantulaICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-                if (ModConfig.atlasMothToggle) {
-                    drawIcon(drawContext, Icons.AtlasMothButterflyICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                    offsetIndex++;
-                }
-            }
+            entries.addAll(AvailabilityRegistry.entriesForSlot(AvailabilitySlot.BAD_WEATHER, world, now));
+        } else {
+            entries.addAll(AvailabilityRegistry.entriesForSlot(slotFor(now), world, now));
         }
 
+        entries.addAll(AvailabilityRegistry.entriesForSlot(AvailabilitySlot.SPECIAL, world, now));
+        entries.addAll(AvailabilityRegistry.entriesForSlot(AvailabilitySlot.SHOP, world, now));
+        return entries;
+    }
+
+    private static AvailabilitySlot slotFor(LocalTime now) {
+        if (DaylightCycle.isMorning(now)) {
+            return AvailabilitySlot.MORNING;
+        }
+        if (DaylightCycle.isAfternoon(now)) {
+            return AvailabilitySlot.AFTERNOON;
+        }
         if (DaylightCycle.isEvening(now)) {
-            if (ModConfig.scorpionToggle) {
-                drawIcon(drawContext, Icons.ScorpionICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                offsetIndex++;
-            }
+            return AvailabilitySlot.EVENING;
         }
+        return AvailabilitySlot.NIGHT;
+    }
 
-        if (DaylightCycle.isNight(now)){
-            if (ModConfig.scorpionToggle) {
-                drawIcon(drawContext, Icons.ScorpionICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                offsetIndex++;
-            }
-            if ((DaylightCycle.isFullMoon(now) || DaylightCycle.isNewMoon(now)) && ModConfig.purpleEmperorToggle) {
-                drawIcon(drawContext, Icons.PurpleEmperorICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                offsetIndex++;
-            }
-        }
-
-        if (!world.isThundering()) {
-            // Coffee shop
-            if (DaylightCycle.isMorning(now) && ModConfig.coffeeShopToggle) {
-                drawIcon(drawContext, Icons.CoffeeShopICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                offsetIndex++;
-            }
-
-            // Bakery
-            if (DaylightCycle.isAfternoon(now) && ModConfig.bakeryToggle) {
-                drawIcon(drawContext, Icons.BakeryICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                offsetIndex++;
-            }
-        }
-
-        // Cocktail bar
-        if (DaylightCycle.isCocktailAndMonkeyShopOpen(now)) {
-            if (ModConfig.cocktailBarToggle) {
-                drawIcon(drawContext, Icons.CocktailBarICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                offsetIndex++;
-            }
-        }
-
-        // Painting
-        if (DaylightCycle.isCocktailAndMonkeyShopOpen(now)) {
-            if (ModConfig.paintingShopToggle) {
-                drawIcon(drawContext, Icons.PaintingICON, x - (offsetIndex * (iconWidth + spacing)), y);
-                offsetIndex++;
-            }
-        }
-
-        // Italian restaurant
-        if (DaylightCycle.isItalianRestaurantOpen(now) && ModConfig.italianRestaurantToggle) {
-            drawIcon(drawContext, Icons.ItalianRestaurantICON, x - (offsetIndex * (iconWidth + spacing)), y);
-            offsetIndex++;
-        }
-
-        // Full moon cycles
-        if (DaylightCycle.isFullMoon(now) && DaylightCycle.isHerbShopOpen(now) && ModConfig.herbShopToggle) {
-            drawIcon(drawContext, Icons.HerbShopICON, x - (offsetIndex * (iconWidth + spacing)), y);
-            offsetIndex++;
-        }
-
-        // Temp
-        if (DaylightCycle.isNewDay(now)) {
-            drawIcon(drawContext, Icons.CandyICON, x - (offsetIndex * (iconWidth + spacing)), y);
-            offsetIndex++;
+    private static void drawEntries(DrawContext context, IconLayout layout, List<AvailabilityEntry> entries) {
+        for (AvailabilityEntry entry : entries) {
+            layout.draw(context, entry.icon());
         }
     }
 
-    private static void drawIcon(DrawContext context, Identifier icon, int x, int y) {
-        context.drawTexture(RenderPipelines.GUI_TEXTURED, icon, x, y, 0f, 0f, 24, 24, 24, 24);
+    private static void drawIcon(DrawContext context, Identifier icon, int x, int y, int iconSize) {
+        context.drawTexture(RenderPipelines.GUI_TEXTURED, icon, x, y, 0f, 0f, iconSize, iconSize, iconSize, iconSize);
+    }
+
+    private static final class IconLayout {
+        private final int baseX;
+        private final int baseY;
+        private final int width;
+        private final int height;
+        private final int iconSize;
+        private final ModConfig.IconOrientation orientation;
+        private final boolean positiveDirection;
+        private int offsetIndex;
+
+        private IconLayout(int baseX,
+                           int baseY,
+                           int width,
+                           int height,
+                           int iconSize,
+                           ModConfig.IconOrientation orientation,
+                           boolean positiveDirection) {
+            this.baseX = baseX;
+            this.baseY = baseY;
+            this.width = width;
+            this.height = height;
+            this.iconSize = iconSize;
+            this.orientation = orientation;
+            this.positiveDirection = positiveDirection;
+        }
+
+        private static IconLayout create(int x,
+                                         int y,
+                                         int width,
+                                         int height,
+                                         int iconSize,
+                                         ModConfig.IconOrientation orientation,
+                                         ModConfig.IconDirection direction,
+                                         int screenWidth,
+                                         int screenHeight) {
+            boolean positiveDirection = switch (direction) {
+                case LEFT, UP -> false;
+                case RIGHT, DOWN -> true;
+                case AUTO -> orientation == ModConfig.IconOrientation.HORIZONTAL
+                        ? x <= (screenWidth / 2)
+                        : y <= (screenHeight / 2);
+            };
+            return new IconLayout(x, y, width, height, iconSize, orientation, positiveDirection);
+        }
+
+        private void draw(DrawContext context, Identifier icon) {
+            int delta = iconSize + ICON_SPACING;
+            int drawX;
+            int drawY;
+
+            if (orientation == ModConfig.IconOrientation.HORIZONTAL) {
+                int originX = positiveDirection ? baseX : baseX + width - iconSize;
+                int sign = positiveDirection ? 1 : -1;
+                drawX = originX + (offsetIndex * sign * delta);
+                drawY = baseY;
+            } else {
+                int originY = positiveDirection ? baseY : baseY + height - iconSize;
+                int sign = positiveDirection ? 1 : -1;
+                drawX = baseX;
+                drawY = originY + (offsetIndex * sign * delta);
+            }
+
+            IconWidget.drawIcon(context, icon, drawX, drawY, iconSize);
+            offsetIndex++;
+        }
     }
 }

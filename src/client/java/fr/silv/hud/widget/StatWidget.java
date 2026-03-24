@@ -1,33 +1,45 @@
 package fr.silv.hud.widget;
 
-import fr.silv.Lang;
+import fr.silv.ModConfig;
+import fr.silv.constants.StatDefinition;
 import fr.silv.hud.widget.config.ConfigOption;
 import fr.silv.model.MineboxStat;
+import fr.silv.utils.MineboxItemDataUtils;
 import fr.silv.utils.MineboxItemStatUtils;
-import fr.silv.ModConfig;
 import fr.silv.utils.StatTextUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.LoreComponent;
-import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.WeakHashMap;
 
+/**
+ * HUD widget that renders combined player statistics.
+ */
 public class StatWidget extends HudWidget {
-    private static List<MineboxStat> cachedStatsTotal = new ArrayList<>();
-    private static List<MineboxStat> cachedHandStats = new ArrayList<>();
-    private static List<MineboxStat> cachedPlayerStats = new ArrayList<>();
+    private static final Set<String> ALL_STATS = StatDefinition.keys();
+    private static final List<String> STAT_ORDER = List.copyOf(ALL_STATS);
+    private static final Map<LoreComponent, Map<String, Integer>> BASE_LORE_STATS_CACHE = new WeakHashMap<>();
+    private static final Map<LoreComponent, Map<String, Integer>> BONUS_LORE_STATS_CACHE = new WeakHashMap<>();
 
+    private static Map<String, Integer> cachedPlayerStats = Map.of();
+    private static Map<String, Integer> cachedHandStats = Map.of();
+    private static List<MineboxStat> cachedCombinedStats = List.of();
+
+    /**
+     * Creates a new StatWidget instance.
+     */
     public StatWidget() {
         super("stat_widget",
                 ModConfig.getWidgetPosition("stat_widget")[0],
@@ -35,106 +47,139 @@ public class StatWidget extends HudWidget {
                 40, 90);
     }
 
-    public static final Set<String> ALL_STATS = Set.of(
-            "mbx.stats.fortune",
-            "mbx.stats.luck",
-            "mbx.stats.intelligence",
-            "mbx.stats.strength",
-            "mbx.stats.health",
-            "mbx.stats.agility",
-            "mbx.stats.wisdom",
-            "mbx.stats.defense"
-    );
-
     @Override
+    /**
+     * Executes the render operation.
+     * @param context value for context
+     * @param client value for client
+     */
     public void render(DrawContext context, MinecraftClient client) {
-            if (ModConfig.statToggle == ConfigOption.OFF) return;
-            if (client.options.hudHidden) return;
-            Lang.load(ModConfig.language);
+        ConfigOption displayMode = ModConfig.getStatDisplay();
+        if (displayMode == ConfigOption.OFF || client.options.hudHidden) {
+            return;
+        }
 
-            TextRenderer textRenderer = client.textRenderer;
+        List<MineboxStat> stats = getCombinedStats(client);
+        if (stats.isEmpty()) {
+            return;
+        }
 
-            List<MineboxStat> stats = getCombinedStats(client);
-            if (stats.isEmpty()) return;
+        TextRenderer textRenderer = client.textRenderer;
+        int lineHeight = textRenderer.fontHeight + 2;
+        int currentY = this.y;
 
-            int lineHeight = textRenderer.fontHeight + 2;
-            int y = this.y;
-            int x = this.x;
-
-            for (MineboxStat stat : stats) {
-                String statString = "";
-                if (ModConfig.statToggle == ConfigOption.SIMPLE) {
-                    statString = StatTextUtils.formatStatSimple(stat.getStat()) + " " + stat.getValue();
-                } else if (ModConfig.statToggle == ConfigOption.ADVANCED) {
-                    statString = StatTextUtils.formatStatAdvanced(stat.getStat()) + ": " + stat.getValue();
-                }
-                Text text = StatTextUtils.statColor(statString, stat.getStat());
-                context.drawTextWithShadow(textRenderer, text, x, y, Colors.WHITE);
-                y += lineHeight;
-            }
+        for (MineboxStat stat : stats) {
+            Text text = StatTextUtils.statColor(formatStat(stat, displayMode), stat.getStat());
+            context.drawTextWithShadow(textRenderer, text, this.x, currentY, Colors.WHITE);
+            currentY += lineHeight;
+        }
     }
 
+    /**
+     * Returns the combined stats.
+     * @param client value for client
+     * @return the combined stats
+     */
     public static List<MineboxStat> getCombinedStats(MinecraftClient client) {
-        List<MineboxStat> statsPlayer = new ArrayList<>();
-        List<MineboxStat> statsItem = new ArrayList<>();
-        if (client.player == null) return statsPlayer;
-
-        ItemStack slot9 = client.player.getInventory().getStack(9);
-        if (!slot9.isEmpty()) {
-            statsPlayer = getStats(slot9, false);
+        if (client.player == null) {
+            return List.of();
         }
 
-        ItemStack main = client.player.getMainHandStack();
-        if (!main.isEmpty()) {
-            NbtComponent nbtComponent = main.get(DataComponentTypes.CUSTOM_DATA);
-            if (nbtComponent != null) {
-                NbtCompound nbt = nbtComponent.copyNbt();
-                String itemId = nbt.getString("mbitems:id").orElse("");
-                if (!itemId.contains("helmet") && !itemId.contains("chestplate") && !itemId.contains("leggings") && !itemId.contains("boots")
-                && !itemId.contains("ring") && !itemId.contains("belt") && !itemId.contains("back") && !itemId.contains("necklace") && !itemId.contains("pet")) {
-                    statsItem = getStats(main, true);
-                }
-            }
+        Map<String, Integer> playerStats = extractStats(client.player.getInventory().getStack(9), false);
+        Map<String, Integer> handStats = extractHandStats(client.player.getMainHandStack());
+
+        if (cachedPlayerStats.equals(playerStats) && cachedHandStats.equals(handStats)) {
+            return cachedCombinedStats;
         }
 
-        if (MineboxItemStatUtils.areEquals(cachedPlayerStats,statsPlayer) && MineboxItemStatUtils.areEquals(cachedHandStats,statsItem)) {
-            return cachedStatsTotal;
-        }
-
-        cachedPlayerStats =  new ArrayList<>(statsPlayer);;
-        cachedHandStats = new ArrayList<>(statsItem);;
-
-        for (MineboxStat statPlayer : statsPlayer) {
-            for (MineboxStat statItem : statsItem) {
-                if (statPlayer.getStat().equals(statItem.getStat())) {
-                    statPlayer.setValue(statPlayer.getValue() + statItem.getValue());
-                    break;
-                }
-            }
-        }
-        cachedStatsTotal = new ArrayList<>(statsPlayer);
-        return statsPlayer;
+        cachedPlayerStats = playerStats;
+        cachedHandStats = handStats;
+        cachedCombinedStats = toStatList(mergeStats(playerStats, handStats));
+        return cachedCombinedStats;
     }
 
-    private static List<MineboxStat> getStats(ItemStack stack, boolean includeBonus) {
+    private static String formatStat(MineboxStat stat, ConfigOption displayMode) {
+        return switch (displayMode) {
+            case SIMPLE -> StatTextUtils.formatStatSimple(stat.getStat()) + " " + stat.getValue();
+            case ADVANCED -> StatTextUtils.formatStatAdvanced(stat.getStat()) + ": " + stat.getValue();
+            case OFF -> "";
+        };
+    }
+
+    private static Map<String, Integer> extractHandStats(ItemStack stack) {
+        if (stack.isEmpty()) {
+            return Map.of();
+        }
+
+        Optional<String> itemIdOptional = MineboxItemDataUtils.getItemId(stack);
+        if (itemIdOptional.isEmpty() || MineboxItemDataUtils.isEquipmentOrAccessory(itemIdOptional.get())) {
+            return Map.of();
+        }
+
+        return extractStats(stack, true);
+    }
+
+    private static Map<String, Integer> extractStats(ItemStack stack, boolean includeBonus) {
         LoreComponent lore = stack.get(DataComponentTypes.LORE);
-        if (lore == null) return new ArrayList<>();
+        if (lore == null) {
+            return Map.of();
+        }
 
-        List<Text> lines = lore.lines();
-        List<MineboxStat> stats = new ArrayList<>();
+        Map<LoreComponent, Map<String, Integer>> cache = includeBonus ? BONUS_LORE_STATS_CACHE : BASE_LORE_STATS_CACHE;
+        Map<String, Integer> cachedStats = cache.get(lore);
+        if (cachedStats != null) {
+            return cachedStats;
+        }
 
-        for (Text line : lines) {
-            MineboxStat stat;
-            if (includeBonus) {
-                stat = MineboxItemStatUtils.extractStatsFromLineWithBonus(line, ALL_STATS);
-            }
-            else {
-                stat = MineboxItemStatUtils.extractStatsFromLine(line, ALL_STATS);
-            }
+        Map<String, Integer> stats = new LinkedHashMap<>();
+        for (Text line : lore.lines()) {
+            MineboxStat stat = includeBonus
+                    ? MineboxItemStatUtils.extractStatsFromLineWithBonus(line, ALL_STATS)
+                    : MineboxItemStatUtils.extractStatsFromLine(line, ALL_STATS);
             if (stat != null) {
-                stats.add(stat);
+                stats.merge(stat.getStat(), stat.getValue(), Integer::sum);
             }
         }
-        return stats;
+
+        if (stats.isEmpty()) {
+            cache.put(lore, Map.of());
+            return Map.of();
+        }
+
+        Map<String, Integer> orderedStats = orderedStats(stats);
+        cache.put(lore, orderedStats);
+        return orderedStats;
+    }
+
+    private static Map<String, Integer> mergeStats(Map<String, Integer> playerStats, Map<String, Integer> handStats) {
+        Map<String, Integer> merged = new LinkedHashMap<>();
+        for (String statKey : STAT_ORDER) {
+            boolean exists = playerStats.containsKey(statKey) || handStats.containsKey(statKey);
+            if (!exists) {
+                continue;
+            }
+
+            merged.put(statKey, playerStats.getOrDefault(statKey, 0) + handStats.getOrDefault(statKey, 0));
+        }
+        return merged;
+    }
+
+    private static Map<String, Integer> orderedStats(Map<String, Integer> stats) {
+        Map<String, Integer> ordered = new LinkedHashMap<>();
+        for (String statKey : STAT_ORDER) {
+            Integer value = stats.get(statKey);
+            if (value != null) {
+                ordered.put(statKey, value);
+            }
+        }
+        return ordered;
+    }
+
+    private static List<MineboxStat> toStatList(Map<String, Integer> stats) {
+        List<MineboxStat> result = new ArrayList<>(stats.size());
+        for (Map.Entry<String, Integer> entry : stats.entrySet()) {
+            result.add(new MineboxStat(entry.getKey(), entry.getValue()));
+        }
+        return result;
     }
 }

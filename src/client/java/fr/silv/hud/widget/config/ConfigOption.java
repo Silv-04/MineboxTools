@@ -2,6 +2,9 @@ package fr.silv.hud.widget.config;
 
 import net.minecraft.text.Text;
 
+/**
+ * Ã‰numÃ©ration ConfigOption.
+ */
 public enum ConfigOption {
     SIMPLE("Simple"),
     ADVANCED("Advanced"),
@@ -13,6 +16,10 @@ public enum ConfigOption {
         this.name = name;
     }
 
+    /**
+     * Returns the display name.
+     * @return the display name
+     */
     public Text getDisplayName() {
         return Text.literal(name);
     }

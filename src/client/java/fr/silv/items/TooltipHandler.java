@@ -2,73 +2,68 @@ package fr.silv.items;
 
 import fr.silv.Lang;
 import fr.silv.ModConfig;
-import fr.silv.constants.StatValue;
+import fr.silv.constants.StatDefinition;
 import fr.silv.model.MineboxItem;
 import fr.silv.model.MineboxStat;
+import fr.silv.utils.MineboxItemDataUtils;
+import fr.silv.utils.MineboxItemStatUtils;
 import fr.silv.utils.MineboxItemUtils;
-import net.minecraft.item.ItemStack;
+import fr.silv.utils.ModLog;
+import fr.silv.utils.StatTextUtils;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
-
-import java.util.*;
-
 import net.minecraft.text.TranslatableTextContent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
-import fr.silv.utils.MineboxItemStatUtils;
-import fr.silv.utils.StatTextUtils;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
+/**
+ * Builds and injects custom item tooltip sections.
+ */
 public class TooltipHandler {
-    private static final Logger TooltipHandlerLogger = LogManager
-            .getLogger(TooltipHandler.class);
-    private static final long LOG_THROTTLE_MS = 5000;
+    private static final Logger LOGGER = ModLog.getLogger(TooltipHandler.class);
+    private static final String TOOLTIP_BULLET = "- ";
 
-    private static final Map<String, Integer> STAT_WEIGHTS = Map.of(
-            "mbx.stats.fortune", StatValue.FORTUNE,
-            "mbx.stats.agility", StatValue.AGILITY,
-            "mbx.stats.strength", StatValue.STRENGTH,
-            "mbx.stats.luck", StatValue.LUCK,
-            "mbx.stats.intelligence", StatValue.INTELLIGENCE,
-            "mbx.stats.wisdom", StatValue.WISDOM,
-            "mbx.stats.defense", StatValue.DEFENSE,
-            "mbx.stats.health", StatValue.HEALTH);
-
+    /**
+     * Adds stat ranges to tooltip.
+     * @param stack value for stack
+     * @param context value for context
+     * @param type value for type
+     * @param lines value for lines
+     */
     public static void addStatRangesToTooltip(ItemStack stack, Item.TooltipContext context, TooltipType type,
                                               List<Text> lines) {
-        if (!ModConfig.tooltipToggle) return;
-
-        NbtComponent nbtComponent = stack.get(DataComponentTypes.CUSTOM_DATA);
-        if (nbtComponent == null)
+        if (!ModConfig.isEnabled(ModConfig.FeatureFlag.TOOLTIP)) {
             return;
+        }
 
-        NbtCompound nbt = nbtComponent.copyNbt();
-        if (!nbt.contains("mbitems:id"))
+        Optional<MineboxItemDataUtils.PersistentItemData> itemDataOptional = MineboxItemDataUtils.getPersistentItemData(stack);
+        if (itemDataOptional.isEmpty()) {
             return;
+        }
 
-        if (nbt.getInt("mbitems:display").isPresent() && nbt.getInt("mbitems:display").get() == 1)
+        MineboxItemDataUtils.PersistentItemData itemData = itemDataOptional.get();
+        if (MineboxItemDataUtils.isDisplayOnlyItem(itemData.customData())) {
             return;
+        }
 
-        if (nbt.getCompound("mbitems:persistent").isEmpty())
-            return;
-
-        NbtCompound persistent = nbt.getCompound("mbitems:persistent").get();
-        if (persistent.toString().equals("{}"))
-            return;
-
-        if (nbt.getString("mbitems:id").isEmpty()) return;
-        String itemId = nbt.getString("mbitems:id").get();
-        long now = System.currentTimeMillis();
+        NbtCompound persistent = itemData.persistentData();
+        String itemId = itemData.itemId();
 
         Map<String, int[]> statRanges = MineboxItemStatUtils.getStatsFor(itemId);
-        if (statRanges.isEmpty())
+        if (statRanges.isEmpty()) {
             return;
+        }
 
         Set<String> statKeys = statRanges.keySet();
         Map<String, Integer> actualStats = new HashMap<>();
@@ -76,105 +71,122 @@ public class TooltipHandler {
         for (int i = 0; i < lines.size(); i++) {
             Text line = lines.get(i);
             MineboxStat stat = MineboxItemStatUtils.extractStatsFromLine(line, statKeys);
-            if (stat != null) {
-                int[] range = statRanges.get(stat.getStat().toLowerCase());
-                if (range != null) {
-                    StringBuilder suffix = new StringBuilder(" [");
-                    suffix.append(range[0]);
-                    if (range[0] != range[1]) {
-                        suffix.append(" | ")
-                                .append(range[1]);
-                    }
-                    suffix.append("]");
+            if (stat == null) {
+                continue;
+            }
 
-                    Text newLine = line.copy()
-                            .append(StatTextUtils.statColor(suffix.toString(), stat.getStat().toUpperCase()));
-                    lines.set(i, newLine);
+            int[] range = statRanges.get(stat.getStat().toLowerCase());
+            if (range == null) {
+                continue;
+            }
 
-                    actualStats.put(stat.getStat().toLowerCase(), stat.getValue());
-                }
+            StringBuilder suffix = new StringBuilder(" [");
+            suffix.append(range[0]);
+            if (range[0] != range[1]) {
+                suffix.append(" | ").append(range[1]);
+            }
+            suffix.append("]");
+
+            Text newLine = line.copy().append(StatTextUtils.statColor(suffix.toString(), stat.getStat()));
+            lines.set(i, newLine);
+            actualStats.put(stat.getStat().toLowerCase(), stat.getValue());
+        }
+
+        if (MineboxItemDataUtils.getStatsData(persistent).isEmpty() || actualStats.isEmpty()) {
+            return;
+        }
+
+        int score = (int) computeGlobalStatScore(actualStats, statRanges);
+        Style style = getColorFromScore(score);
+        Text scoreLine = lines.getFirst().copy()
+                .append(Text.literal(" " + score + "%").setStyle(style.withBold(true)));
+        lines.set(0, scoreLine);
+    }
+
+    /**
+     * Adds info to tooltip.
+     * @param stack value for stack
+     * @param context value for context
+     * @param type value for type
+     * @param lines value for lines
+     */
+    public static void addInfoToTooltip(ItemStack stack, Item.TooltipContext context, TooltipType type,
+                                        List<Text> lines) {
+        if (!ModConfig.isEnabled(ModConfig.FeatureFlag.LOCATION)) {
+            return;
+        }
+
+        MineboxItem item = resolveItem(stack);
+        if (item == null) {
+            return;
+        }
+
+        int seeMoreIndex = findIndexOfTranslateKey(lines, "mbx.see_more");
+        Text seeMoreText = Text.literal("");
+
+        if (seeMoreIndex != -1) {
+            seeMoreText = lines.remove(seeMoreIndex);
+        } else {
+            seeMoreIndex = findIndexOfTranslateKey(lines, "mbx.actions.open");
+            if (seeMoreIndex != -1) {
+                seeMoreText = lines.remove(seeMoreIndex);
             }
         }
-        if (persistent.getCompound("mbitems:stats").isEmpty())
-            return;
-        NbtCompound stats = persistent.getCompound("mbitems:stats").get();
-        if (stats.toString().equals("{}"))
-            return;
 
-        if (!actualStats.isEmpty()) {
-            int score = (int) computeGlobalStatScore(actualStats, statRanges);
-            Style style = getColorFromScore(score);
-            Text scoreLine = lines.getFirst().copy()
-                    .append(Text.literal(" " + score + "%").setStyle(style.withBold(true)));
-            lines.set(0, scoreLine);
+        lines.add(sectionTitle("mineboxtools.menu.tooltip.location", 0xFFA500));
+        for (String location : item.getLocation()) {
+            lines.add(detailLine(location));
+        }
+
+        String condition = item.getCondition();
+        if (!condition.isEmpty()) {
+            lines.add(Text.literal(""));
+            lines.add(sectionTitle("mineboxtools.menu.tooltip.condition", 0xFFFF00));
+            lines.add(detailLine(condition));
+        }
+
+        String boost = item.getBoost();
+        if (!boost.isEmpty()) {
+            lines.add(Text.literal(""));
+            lines.add(sectionTitle("mineboxtools.menu.tooltip.boost", 0x00FF00));
+            lines.add(detailLine(boost));
+        }
+
+        if (seeMoreIndex != -1) {
+            lines.add(Text.literal(""));
+            lines.add(seeMoreText);
         }
     }
 
-    public static void addInfoToTooltip(ItemStack stack, Item.TooltipContext context, TooltipType type,
-                                        List<Text> lines) {
-        if (!ModConfig.locationToggle) return;
-        NbtComponent nbtComponent = stack.get(DataComponentTypes.CUSTOM_DATA);
-        if (nbtComponent == null)
-            return;
-        NbtCompound nbt = nbtComponent.copyNbt();
-        String itemId1 = nbt.getString("mbitems:id").orElse("");
-        String itemId2 = "";
-        Text textId = stack.get(DataComponentTypes.CUSTOM_NAME);
-        if (textId != null) {
-            for (Text sibling : textId.getSiblings()) {
-                if (sibling.getContent() instanceof TranslatableTextContent transContent) {
-                    if (transContent.getKey().startsWith("mbx.items.")) {
-                        itemId2 = transContent.getKey()
-                                .replace("mbx.items.", "")
-                                .replace(".name", "");
-                        break;
-                    }
-            }
-        }
-        MineboxItem item1 = MineboxItemUtils.get(itemId1);
-        MineboxItem item2 = MineboxItemUtils.get(itemId2);
-        MineboxItem item;
-        if (item1 == null) {
-            item = item2;
-        } else {
-            item = item1;
-        }
+    private static MineboxItem resolveItem(ItemStack stack) {
+        String itemIdFromNbt = MineboxItemDataUtils.getItemId(stack).orElse("");
+        String itemIdFromName = "";
 
-        if (item != null) {
-            int line = findIndexOfTranslateKey(lines, "mbx.see_more");
-            Text seeMoreText = Text.literal("");
-
-            if (line != -1) {
-                seeMoreText = lines.remove(line);
-            }
-            else {
-                line = findIndexOfTranslateKey(lines, "mbx.actions.open");
-                if (line != -1) {
-                    seeMoreText = lines.remove(line);
+        Text customName = stack.get(DataComponentTypes.CUSTOM_NAME);
+        if (customName != null) {
+            for (Text sibling : customName.getSiblings()) {
+                if (sibling.getContent() instanceof TranslatableTextContent translatable
+                        && translatable.getKey().startsWith("mbx.items.")) {
+                    itemIdFromName = translatable.getKey()
+                            .replace("mbx.items.", "")
+                            .replace(".name", "");
+                    break;
                 }
             }
+        }
 
-            lines.add(Text.literal(Lang.get("mineboxtools.menu.tooltip.location")).setStyle(Style.EMPTY.withColor(0xFFA500).withBold(true)));
-            for (String location : item.getLocation()) {
-                lines.add(Text.literal("• " + Lang.get(location)).setStyle(Style.EMPTY.withColor(0xFFFFFF)));
-            }
-            String condition = item.getCondition();
-            if (!condition.isEmpty()) {
-                lines.add(Text.literal(""));
-                lines.add(Text.literal(Lang.get("mineboxtools.menu.tooltip.condition")).setStyle(Style.EMPTY.withColor(0xFFFF00).withBold(true)));
-                lines.add(Text.literal("• " + Lang.get(item.getCondition())).setStyle(Style.EMPTY.withColor(0xFFFFFF)));
-            }
-            String boost = item.getBoost();
-            if (!boost.isEmpty()) {
-                lines.add(Text.literal(""));
-                lines.add(Text.literal(Lang.get("mineboxtools.menu.tooltip.boost")).setStyle(Style.EMPTY.withColor(0x00FF00).withBold(true)));
-                lines.add(Text.literal("• " + Lang.get(item.getBoost())).setStyle(Style.EMPTY.withColor(0xFFFFFF)));
-            }
-            if (line != -1) {
-                lines.add(Text.literal(""));
-                lines.add(seeMoreText);
-            }
-        }}
+        MineboxItem directMatch = MineboxItemUtils.get(itemIdFromNbt);
+        return directMatch != null ? directMatch : MineboxItemUtils.get(itemIdFromName);
+    }
+
+    private static Text sectionTitle(String translationKey, int color) {
+        return Text.literal(Lang.get(translationKey))
+                .setStyle(Style.EMPTY.withColor(color).withBold(true));
+    }
+
+    private static Text detailLine(String translationKey) {
+        return Text.literal(TOOLTIP_BULLET + Lang.get(translationKey))
+                .setStyle(Style.EMPTY.withColor(0xFFFFFF));
     }
 
     private static double computeGlobalStatScore(Map<String, Integer> actualStats, Map<String, int[]> statRanges) {
@@ -185,22 +197,32 @@ public class TooltipHandler {
             String statKey = entry.getKey().toLowerCase();
             int min = entry.getValue()[0];
             int max = entry.getValue()[1];
-            if (max <= min)
+            if (max <= min) {
                 continue;
-            Integer actualValue = actualStats.get(statKey);
-            if (actualValue == null) {
-                actualValue = 0;
             }
-            Integer weight = STAT_WEIGHTS.get(statKey);
 
+            int actualValue = actualStats.getOrDefault(statKey, 0);
+            Optional<StatDefinition> definition = StatDefinition.fromKey(statKey);
+            if (definition.isEmpty()) {
+                ModLog.warnThrottled(LOGGER, "tooltip:missing-weight:" + statKey, 10_000,
+                        "Missing stat weight for key '{}'", statKey);
+                continue;
+            }
+
+            int weight = definition.get().weight();
             double filledRatio = (actualValue - min) / (double) (max - min);
-
             totalWeightedScore += filledRatio * weight;
             totalWeight += weight;
         }
+
         return totalWeight == 0 ? 0 : (totalWeightedScore / totalWeight) * 100;
     }
 
+    /**
+     * Returns the color from score.
+     * @param score value for score
+     * @return the color from score
+     */
     public static Style getColorFromScore(int score) {
         score = Math.max(0, Math.min(score, 100));
         int red = (int) (255 * (100 - score) / 100.0);
@@ -209,11 +231,15 @@ public class TooltipHandler {
         return Style.EMPTY.withColor(TextColor.fromRgb(rgb)).withBold(true);
     }
 
+    /**
+     * Executes the contains translate key operation.
+     * @param text value for text
+     * @param keyToFind value for keyToFind
+     * @return true when the operation succeeds; otherwise false
+     */
     public static boolean containsTranslateKey(Text text, String keyToFind) {
-        if (text.getContent() instanceof TranslatableTextContent translatable) {
-            if (keyToFind.equals(translatable.getKey())) {
-                return true;
-            }
+        if (text.getContent() instanceof TranslatableTextContent translatable && keyToFind.equals(translatable.getKey())) {
+            return true;
         }
 
         for (Text sibling : text.getSiblings()) {
@@ -225,6 +251,12 @@ public class TooltipHandler {
         return false;
     }
 
+    /**
+     * Finds the index of translate key.
+     * @param lines value for lines
+     * @param keyToFind value for keyToFind
+     * @return the computed find index of translate key value
+     */
     public static int findIndexOfTranslateKey(List<Text> lines, String keyToFind) {
         for (int i = 0; i < lines.size(); i++) {
             if (containsTranslateKey(lines.get(i), keyToFind)) {
