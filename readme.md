@@ -58,15 +58,6 @@ Current bundled translations:
 - French
 - Polish
 
-## Data and configuration
-
-The mod relies on bundled Minebox data files for item metadata and stat ranges:
-- `src/main/resources/assets/mineboxtools/mineboxItems.json`
-- `src/main/resources/assets/mineboxtools/mineboxItemsStats.json`
-
-Runtime settings are saved in:
-- `config/mineboxtools.settings.json`
-
 ## Installation
 
 Modrinth:
