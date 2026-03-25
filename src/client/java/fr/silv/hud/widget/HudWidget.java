@@ -12,6 +12,8 @@ public abstract class HudWidget {
     protected int width;
     protected int height;
     protected String id;
+    private int lastScreenWidth = -1;
+    private int lastScreenHeight = -1;
 
     /**
      * Executes the hud widget operation.
@@ -86,10 +88,34 @@ public abstract class HudWidget {
      * @param screenHeight scaled screen height
      */
     public void keepInBounds(int screenWidth, int screenHeight) {
+        if (lastScreenWidth > 0 && lastScreenHeight > 0
+                && (lastScreenWidth != screenWidth || lastScreenHeight != screenHeight)) {
+            int previousLeftMargin = x;
+            int previousRightMargin = Math.max(0, lastScreenWidth - (x + width));
+            int previousTopMargin = y;
+            int previousBottomMargin = Math.max(0, lastScreenHeight - (y + height));
+
+            boolean anchorRight = previousRightMargin < previousLeftMargin;
+            boolean anchorBottom = previousBottomMargin < previousTopMargin;
+
+            int deltaWidth = screenWidth - lastScreenWidth;
+            int deltaHeight = screenHeight - lastScreenHeight;
+
+            if (anchorRight) {
+                x += deltaWidth;
+            }
+            if (anchorBottom) {
+                y += deltaHeight;
+            }
+        }
+
         int maxX = Math.max(0, screenWidth - width);
         int maxY = Math.max(0, screenHeight - height);
         x = Math.max(0, Math.min(x, maxX));
         y = Math.max(0, Math.min(y, maxY));
+
+        lastScreenWidth = screenWidth;
+        lastScreenHeight = screenHeight;
     }
     /**
      * Updates the position.
