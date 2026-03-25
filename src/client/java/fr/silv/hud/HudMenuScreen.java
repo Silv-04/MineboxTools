@@ -13,15 +13,24 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.text.Text;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Consumer;
 
 /**
  * Main in-game HUD menu screen for MineboxTools.
  */
 public class HudMenuScreen extends Screen {
+    private String searchQuery = "";
+    private TextFieldWidget searchField;
+    private CheckboxListWidget insectList;
+    private CheckboxListWidget shopList;
+    private List<AvailabilityEntry> insectEntries = List.of();
+    private List<AvailabilityEntry> worldEntries = List.of();
+
     /**
      * Creates a new HudMenuScreen instance.
      */
@@ -101,29 +110,55 @@ public class HudMenuScreen extends Screen {
 
         updateIconOrientationToggleState(iconOrientationToggle, ModConfig.getHudIconDirection());
 
+        int listTop = 44;
+        int listWidth = 150;
+        int shopListHeight = this.height - 96;
+        int insectSearchHeight = 20;
+        int insectListTop = listTop + insectSearchHeight;
+        int insectListHeight = shopListHeight - insectSearchHeight;
+
         ButtonWidget customHudButton = ButtonWidget.builder(Text.literal(Lang.get("mineboxtools.menu.hud")), button ->
                 MinecraftClient.getInstance().setScreen(new HudConfigScreen(HudWidgetManager.getWidgets()))
         ).dimensions(20, 240, 160, 20).build();
 
-        CheckboxListWidget insectList = new CheckboxListWidget(
-                MinecraftClient.getInstance(),
-                this.width - 160,
-                20,
-                140,
-                this.height - 80,
-                20
+        searchField = new TextFieldWidget(
+            this.textRenderer,
+                this.width - 170,
+                listTop,
+                listWidth,
+                insectSearchHeight,
+            Text.literal("Search")
         );
-        addCheckboxOptions(insectList, AvailabilityRegistry.entriesForSection(AvailabilitySection.INSECTS));
+        searchField.setMaxLength(64);
+        searchField.setPlaceholder(Text.literal("Search insects..."));
+        searchField.setText(searchQuery);
+        searchField.setChangedListener(value -> {
+            searchQuery = value;
+            refreshInsectList();
+        });
 
-        CheckboxListWidget worldList = new CheckboxListWidget(
+        insectList = new CheckboxListWidget(
                 MinecraftClient.getInstance(),
-                this.width - 310,
-                20,
-                140,
-                this.height - 80,
+            this.width - 170,
+                insectListTop,
+                listWidth,
+                insectListHeight,
                 20
         );
-        addCheckboxOptions(worldList, AvailabilityRegistry.entriesForSection(AvailabilitySection.WORLD));
+        insectEntries = AvailabilityRegistry.entriesForSection(AvailabilitySection.INSECTS);
+
+        shopList = new CheckboxListWidget(
+                MinecraftClient.getInstance(),
+            this.width - 330,
+                listTop,
+                listWidth,
+                shopListHeight,
+                20
+        );
+        worldEntries = AvailabilityRegistry.entriesForSection(AvailabilitySection.WORLD);
+
+        refreshInsectList();
+        addCheckboxOptions(shopList, worldEntries);
 
         addDrawableChild(languageButton);
         addDrawableChild(durabilityToggle);
@@ -134,12 +169,16 @@ public class HudMenuScreen extends Screen {
         addDrawableChild(iconSizeToggle);
         addDrawableChild(iconOrientationToggle);
         addDrawableChild(iconDirectionToggle);
+        addDrawableChild(searchField);
         addDrawableChild(insectList);
-        addDrawableChild(worldList);
+        addDrawableChild(shopList);
         addDrawableChild(customHudButton);
         addDrawableChild(ButtonWidget.builder(Text.literal(Lang.get("mineboxtools.menu.close")), button -> close())
                 .dimensions(this.width - 100, this.height - 40, 80, 20)
                 .build());
+
+        setFocused(searchField);
+        searchField.setFocused(true);
     }
 
     @Override
@@ -244,6 +283,35 @@ public class HudMenuScreen extends Screen {
     private static void updateIconOrientationToggleState(CyclingButtonWidget<ModConfig.IconOrientation> orientationToggle,
                                                          ModConfig.IconDirection direction) {
         orientationToggle.active = direction == ModConfig.IconDirection.AUTO;
+    }
+
+    private void refreshInsectList() {
+        if (insectList == null) {
+            return;
+        }
+
+        insectList.clearOptions();
+        String normalizedQuery = searchQuery == null ? "" : searchQuery.toLowerCase(Locale.ROOT).trim();
+
+        for (AvailabilityEntry entry : insectEntries) {
+            if (!entry.langKey().startsWith("mineboxtools.insect.")) {
+                continue;
+            }
+
+            String localizedLabel = Lang.get(entry.langKey());
+            String normalizedLabel = localizedLabel.toLowerCase(Locale.ROOT);
+            boolean matches = normalizedQuery.isEmpty()
+                    || normalizedLabel.contains(normalizedQuery)
+                    || entry.langKey().toLowerCase(Locale.ROOT).contains(normalizedQuery);
+            if (!matches) {
+                continue;
+            }
+
+            insectList.addOption(Text.of(localizedLabel), entry.isEnabled(), checked -> {
+                entry.setEnabled(checked);
+                ModConfig.save();
+            }, entry.icon());
+        }
     }
 
     private void addCheckboxOptions(CheckboxListWidget list, List<AvailabilityEntry> entries) {
