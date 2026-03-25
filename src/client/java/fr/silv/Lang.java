@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import fr.silv.utils.ModLog;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.Resource;
+import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 
@@ -39,9 +40,12 @@ public final class Lang {
      */
     public static void load(String lang) {
         String requestedLanguage = normalizeLanguage(lang);
-        fallbackTranslations = loadTranslations(DEFAULT_LANGUAGE);
+        Map<String, String> requestedFallbackTranslations = loadTranslations(DEFAULT_LANGUAGE);
+        fallbackTranslations = requestedFallbackTranslations;
 
-        if (requestedLanguage.equals(loadedLanguage)) {
+        boolean hasUsableTranslations = !translations.isEmpty() || !fallbackTranslations.isEmpty();
+
+        if (requestedLanguage.equals(loadedLanguage) && hasUsableTranslations) {
             return;
         }
 
@@ -84,8 +88,15 @@ public final class Lang {
             return Collections.emptyMap();
         }
 
+        ResourceManager resourceManager = client.getResourceManager();
+        if (resourceManager == null) {
+            ModLog.warnThrottled(LOGGER, "lang-resource-manager-unavailable", 10_000,
+                    "Skipping translation load for '{}' because resource manager is not initialized yet", lang);
+            return Collections.emptyMap();
+        }
+
         Identifier id = Identifier.of("mineboxtools", "lang/" + lang + ".json");
-        Optional<Resource> resource = client.getResourceManager().getResource(id);
+        Optional<Resource> resource = resourceManager.getResource(id);
         if (resource.isEmpty()) {
             return Collections.emptyMap();
         }

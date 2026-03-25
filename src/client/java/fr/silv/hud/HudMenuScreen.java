@@ -19,13 +19,13 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * Main in-game menu screen for MineboxTools.
+ * Main in-game HUD menu screen for MineboxTools.
  */
-public class MenuHUD extends Screen {
+public class HudMenuScreen extends Screen {
     /**
-     * Creates a new MenuHUD instance.
+     * Creates a new HudMenuScreen instance.
      */
-    public MenuHUD() {
+    public HudMenuScreen() {
         super(Text.of("MineboxTools Menu"));
     }
 

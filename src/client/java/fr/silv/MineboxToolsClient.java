@@ -31,7 +31,6 @@ public class MineboxToolsClient implements ClientModInitializer {
 		MineboxToolsLogger.info("[MineboxToolsClient] Initializing client...");
 
 		ModConfig.load();
-		Lang.load(ModConfig.getLanguage());
 
 		ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
 			MenuCommand.register(dispatcher);

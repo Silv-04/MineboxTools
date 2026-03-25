@@ -2,7 +2,7 @@ package fr.silv.commands;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
-import fr.silv.hud.MenuHUD;
+import fr.silv.hud.HudMenuScreen;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.MinecraftClient;
@@ -21,7 +21,7 @@ public class MenuCommand {
                     MinecraftClient client = MinecraftClient.getInstance();
                     if (client != null && client.player != null) {
                         client.send(() -> {
-                            client.setScreenAndRender(new MenuHUD());
+                            client.setScreenAndRender(new HudMenuScreen());
                         });
                     }
                     return Command.SINGLE_SUCCESS;
