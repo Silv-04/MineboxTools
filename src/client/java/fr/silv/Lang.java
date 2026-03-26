@@ -35,8 +35,9 @@ public final class Lang {
     }
 
     /**
-     * Loads persisted data into memory.
-     * @param lang value for lang
+        * Loads translation entries for the requested language into memory.
+        *
+        * @param lang language code to load (falls back to default when invalid)
      */
     public static void load(String lang) {
         String requestedLanguage = normalizeLanguage(lang);
@@ -60,9 +61,12 @@ public final class Lang {
     }
 
     /**
-     * Executes the get operation.
-     * @param key value for key
-     * @return the computed get value
+     * Resolves a localized message value for the provided translation key.
+     * The lookup first uses the currently selected language, then falls back to
+     * default-language entries, and finally returns the key itself.
+     *
+     * @param key translation key to resolve
+     * @return localized string or the original key when missing
      */
     public static String get(String key) {
         String value = translations.get(key);

@@ -11,10 +11,11 @@ public final class StatTextUtils {
     }
 
     /**
-     * Executes the stat color operation.
-     * @param content value for content
-     * @param statKey value for statKey
-     * @return the computed stat color value
+        * Colors a stat string according to the configured definition style.
+        *
+        * @param content text content to style
+        * @param statKey stat key used to resolve the color definition
+        * @return styled text using stat color or default style when unknown
      */
     public static Text statColor(String content, String statKey) {
         return StatDefinition.fromKey(statKey)
@@ -23,9 +24,10 @@ public final class StatTextUtils {
     }
 
     /**
-     * Formats the stat advanced.
-     * @param statKey value for statKey
-     * @return the computed format stat advanced value
+        * Returns the advanced display label for a stat key.
+        *
+        * @param statKey stat key to format
+        * @return translated symbol + name label, or raw key when unknown
      */
     public static String formatStatAdvanced(String statKey) {
         return StatDefinition.fromKey(statKey)
@@ -34,9 +36,10 @@ public final class StatTextUtils {
     }
 
     /**
-     * Formats the stat simple.
-     * @param statKey value for statKey
-     * @return the computed format stat simple value
+        * Returns the compact display label for a stat key.
+        *
+        * @param statKey stat key to format
+        * @return symbol-only label when known, otherwise raw key
      */
     public static String formatStatSimple(String statKey) {
         return StatDefinition.fromKey(statKey)

@@ -38,54 +38,60 @@ public final class MineboxItemDataUtils {
     }
 
     /**
-     * Returns the custom data.
-     * @param stack value for stack
-     * @return an optional nbtcompound value when present
+        * Returns the custom NBT payload from an item stack.
+        *
+        * @param stack item stack to inspect
+        * @return custom data compound when available
      */
     public static Optional<NbtCompound> getCustomData(ItemStack stack) {
         return getCachedItemData(stack).customData();
     }
 
     /**
-     * Returns the item id.
-     * @param stack value for stack
-     * @return an optional string value when present
+        * Returns the Minebox item id from a stack.
+        *
+        * @param stack item stack to inspect
+        * @return item id when present in custom data
      */
     public static Optional<String> getItemId(ItemStack stack) {
         return getCachedItemData(stack).itemId();
     }
 
     /**
-     * Returns the item id.
-     * @param nbt value for nbt
-     * @return an optional string value when present
+        * Returns the Minebox item id from a custom data compound.
+        *
+        * @param nbt custom data compound
+        * @return item id when present
      */
     public static Optional<String> getItemId(NbtCompound nbt) {
         return nbt.getString(ITEM_ID_KEY);
     }
 
     /**
-     * Checks whether display only item.
-     * @param stack value for stack
-     * @return true if the condition is met; otherwise false
+        * Indicates whether an item is marked as display-only.
+        *
+        * @param stack item stack to inspect
+        * @return {@code true} when the display-only marker is set
      */
     public static boolean isDisplayOnlyItem(ItemStack stack) {
         return getCachedItemData(stack).displayOnly();
     }
 
     /**
-     * Checks whether display only item.
-     * @param nbt value for nbt
-     * @return true if the condition is met; otherwise false
+        * Indicates whether a custom data compound is marked as display-only.
+        *
+        * @param nbt custom data compound
+        * @return {@code true} when the display-only marker is set
      */
     public static boolean isDisplayOnlyItem(NbtCompound nbt) {
         return nbt.getInt(DISPLAY_KEY).orElse(0) == 1;
     }
 
     /**
-     * Returns the persistent data.
-     * @param nbt value for nbt
-     * @return an optional nbtcompound value when present
+        * Returns the nested persistent section from custom data.
+        *
+        * @param nbt custom data compound
+        * @return non-empty persistent data compound when available
      */
     public static Optional<NbtCompound> getPersistentData(NbtCompound nbt) {
         return nbt.getCompound(PERSISTENT_KEY)
@@ -93,27 +99,30 @@ public final class MineboxItemDataUtils {
     }
 
     /**
-     * Returns the persistent data.
-     * @param stack value for stack
-     * @return an optional nbtcompound value when present
+        * Returns the nested persistent section from an item stack.
+        *
+        * @param stack item stack to inspect
+        * @return non-empty persistent data compound when available
      */
     public static Optional<NbtCompound> getPersistentData(ItemStack stack) {
         return getCachedItemData(stack).persistentData();
     }
 
     /**
-     * Returns the persistent item data.
-     * @param stack value for stack
-     * @return an optional persistentitemdata value when present
+        * Returns persistent item metadata extracted from a stack.
+        *
+        * @param stack item stack to inspect
+        * @return immutable persistent item metadata when available
      */
     public static Optional<PersistentItemData> getPersistentItemData(ItemStack stack) {
         return getCachedItemData(stack).persistentItemData();
     }
 
     /**
-     * Returns the persistent item data.
-     * @param nbt value for nbt
-     * @return an optional persistentitemdata value when present
+        * Returns persistent item metadata extracted from custom data.
+        *
+        * @param nbt custom data compound
+        * @return immutable persistent item metadata when available
      */
     public static Optional<PersistentItemData> getPersistentItemData(NbtCompound nbt) {
         Optional<String> itemId = getItemId(nbt);
@@ -125,50 +134,55 @@ public final class MineboxItemDataUtils {
     }
 
     /**
-     * Checks whether value is available.
-     * @param nbt value for nbt
-     * @param keyPath value for keyPath
-     * @return true if the condition is met; otherwise false
+        * Checks whether a nested NBT value exists for a dotted key path.
+        *
+        * @param nbt root custom data compound
+        * @param keyPath dotted path such as {@code mbitems.persistent.level}
+        * @return {@code true} when a value is present at that path
      */
     public static boolean hasValue(NbtCompound nbt, String keyPath) {
         return getValue(nbt, keyPath).isPresent();
     }
 
     /**
-     * Checks whether value is available.
-     * @param stack value for stack
-     * @param keyPath value for keyPath
-     * @return true if the condition is met; otherwise false
+        * Checks whether a stack contains a nested value for a dotted key path.
+        *
+        * @param stack item stack to inspect
+        * @param keyPath dotted path such as {@code mbitems.persistent.level}
+        * @return {@code true} when a value is present at that path
      */
     public static boolean hasValue(ItemStack stack, String keyPath) {
         return getValue(stack, keyPath).isPresent();
     }
 
     /**
-     * Returns the value.
-     * @param stack value for stack
-     * @param keyPath value for keyPath
-     * @return an optional nbtelement value when present
+        * Returns a nested NBT value from an item stack.
+        *
+        * @param stack item stack to inspect
+        * @param keyPath dotted key path to resolve
+        * @return resolved NBT element when present
      */
     public static Optional<NbtElement> getValue(ItemStack stack, String keyPath) {
         return getCustomData(stack).flatMap(nbt -> getValue(nbt, keyPath));
     }
 
     /**
-     * Returns the value from persistent.
-     * @param stack value for stack
-     * @param keyPath value for keyPath
-     * @return an optional nbtelement value when present
+        * Returns a nested NBT value from the persistent section of an item stack.
+        *
+        * @param stack item stack to inspect
+        * @param keyPath dotted key path inside the persistent section
+        * @return resolved NBT element when present
      */
     public static Optional<NbtElement> getValueFromPersistent(ItemStack stack, String keyPath) {
         return getPersistentData(stack).flatMap(nbt -> getValue(nbt, keyPath));
     }
 
     /**
-     * Returns the value.
-     * @param nbt value for nbt
-     * @param keyPath value for keyPath
-     * @return an optional nbtelement value when present
+        * Resolves a nested NBT value from a compound using dotted path syntax.
+        *
+        * @param nbt root custom data compound
+        * @param keyPath dotted key path to resolve
+        * @return resolved NBT element when present
      */
     public static Optional<NbtElement> getValue(NbtCompound nbt, String keyPath) {
         if (nbt == null || keyPath == null || keyPath.isBlank()) {
@@ -198,30 +212,33 @@ public final class MineboxItemDataUtils {
     }
 
     /**
-     * Returns the string value.
-     * @param stack value for stack
-     * @param keyPath value for keyPath
-     * @return an optional string value when present
+        * Returns a string value from a dotted key path on an item stack.
+        *
+        * @param stack item stack to inspect
+        * @param keyPath dotted key path to resolve
+        * @return string value when present
      */
     public static Optional<String> getStringValue(ItemStack stack, String keyPath) {
         return getCustomData(stack).flatMap(nbt -> getStringValue(nbt, keyPath));
     }
 
     /**
-     * Returns the string value from persistent.
-     * @param stack value for stack
-     * @param keyPath value for keyPath
-     * @return an optional string value when present
+        * Returns a string value from the persistent section of an item stack.
+        *
+        * @param stack item stack to inspect
+        * @param keyPath dotted key path inside persistent data
+        * @return string value when present
      */
     public static Optional<String> getStringValueFromPersistent(ItemStack stack, String keyPath) {
         return getPersistentData(stack).flatMap(nbt -> getStringValue(nbt, keyPath));
     }
 
     /**
-     * Returns the string value.
-     * @param nbt value for nbt
-     * @param keyPath value for keyPath
-     * @return an optional string value when present
+        * Returns a string value from a dotted key path on a compound.
+        *
+        * @param nbt root custom data compound
+        * @param keyPath dotted key path to resolve
+        * @return string value when present
      */
     public static Optional<String> getStringValue(NbtCompound nbt, String keyPath) {
         if (nbt == null || keyPath == null || keyPath.isBlank()) {
@@ -237,30 +254,33 @@ public final class MineboxItemDataUtils {
     }
 
     /**
-     * Returns the int value.
-     * @param stack value for stack
-     * @param keyPath value for keyPath
-     * @return an optional integer value when present
+        * Returns an integer value from a dotted key path on an item stack.
+        *
+        * @param stack item stack to inspect
+        * @param keyPath dotted key path to resolve
+        * @return integer value when present
      */
     public static Optional<Integer> getIntValue(ItemStack stack, String keyPath) {
         return getCustomData(stack).flatMap(nbt -> getIntValue(nbt, keyPath));
     }
 
     /**
-     * Returns the int value from persistent.
-     * @param stack value for stack
-     * @param keyPath value for keyPath
-     * @return an optional integer value when present
+        * Returns an integer value from the persistent section of an item stack.
+        *
+        * @param stack item stack to inspect
+        * @param keyPath dotted key path inside persistent data
+        * @return integer value when present
      */
     public static Optional<Integer> getIntValueFromPersistent(ItemStack stack, String keyPath) {
         return getPersistentData(stack).flatMap(nbt -> getIntValue(nbt, keyPath));
     }
 
     /**
-     * Returns the int value.
-     * @param nbt value for nbt
-     * @param keyPath value for keyPath
-     * @return an optional integer value when present
+        * Returns an integer value from a dotted key path on a compound.
+        *
+        * @param nbt root custom data compound
+        * @param keyPath dotted key path to resolve
+        * @return integer value when present
      */
     public static Optional<Integer> getIntValue(NbtCompound nbt, String keyPath) {
         if (nbt == null || keyPath == null || keyPath.isBlank()) {
@@ -276,30 +296,33 @@ public final class MineboxItemDataUtils {
     }
 
     /**
-     * Returns the compound value.
-     * @param stack value for stack
-     * @param keyPath value for keyPath
-     * @return an optional nbtcompound value when present
+        * Returns a compound value from a dotted key path on an item stack.
+        *
+        * @param stack item stack to inspect
+        * @param keyPath dotted key path to resolve
+        * @return nested compound when present
      */
     public static Optional<NbtCompound> getCompoundValue(ItemStack stack, String keyPath) {
         return getCustomData(stack).flatMap(nbt -> getCompoundValue(nbt, keyPath));
     }
 
     /**
-     * Returns the compound value from persistent.
-     * @param stack value for stack
-     * @param keyPath value for keyPath
-     * @return an optional nbtcompound value when present
+        * Returns a compound value from the persistent section of an item stack.
+        *
+        * @param stack item stack to inspect
+        * @param keyPath dotted key path inside persistent data
+        * @return nested compound when present
      */
     public static Optional<NbtCompound> getCompoundValueFromPersistent(ItemStack stack, String keyPath) {
         return getPersistentData(stack).flatMap(nbt -> getCompoundValue(nbt, keyPath));
     }
 
     /**
-     * Returns the compound value.
-     * @param nbt value for nbt
-     * @param keyPath value for keyPath
-     * @return an optional nbtcompound value when present
+        * Returns a compound value from a dotted key path on a compound.
+        *
+        * @param nbt root custom data compound
+        * @param keyPath dotted key path to resolve
+        * @return nested compound when present
      */
     public static Optional<NbtCompound> getCompoundValue(NbtCompound nbt, String keyPath) {
         if (nbt == null || keyPath == null || keyPath.isBlank()) {
@@ -315,27 +338,30 @@ public final class MineboxItemDataUtils {
     }
 
     /**
-     * Returns the current durability.
-     * @param persistent value for persistent
-     * @return an optional integer value when present
+        * Returns current durability from persistent item data.
+        *
+        * @param persistent persistent item compound
+        * @return durability value when present
      */
     public static Optional<Integer> getCurrentDurability(NbtCompound persistent) {
         return persistent.getInt(DURABILITY_KEY);
     }
 
     /**
-     * Returns the current durability.
-     * @param stack value for stack
-     * @return an optional integer value when present
+        * Returns current durability from an item stack.
+        *
+        * @param stack item stack to inspect
+        * @return durability value when present
      */
     public static Optional<Integer> getCurrentDurability(ItemStack stack) {
         return getCachedItemData(stack).currentDurability();
     }
 
     /**
-     * Returns the stats data.
-     * @param persistent value for persistent
-     * @return an optional nbtcompound value when present
+        * Returns the stats sub-compound from persistent item data.
+        *
+        * @param persistent persistent item compound
+        * @return stats compound when present and non-empty
      */
     public static Optional<NbtCompound> getStatsData(NbtCompound persistent) {
         return persistent.getCompound(STATS_KEY)
@@ -343,18 +369,20 @@ public final class MineboxItemDataUtils {
     }
 
     /**
-     * Returns the stats data.
-     * @param stack value for stack
-     * @return an optional nbtcompound value when present
+        * Returns the stats sub-compound from an item stack.
+        *
+        * @param stack item stack to inspect
+        * @return stats compound when present and non-empty
      */
     public static Optional<NbtCompound> getStatsData(ItemStack stack) {
         return getCachedItemData(stack).statsData();
     }
 
     /**
-     * Returns the max durability.
-     * @param itemId value for itemId
-     * @return an optional integer value when present
+        * Returns configured maximum durability for an item id.
+        *
+        * @param itemId Minebox item identifier
+        * @return max durability value when available
      */
     public static Optional<Integer> getMaxDurability(String itemId) {
         Map<String, int[]> stats = MineboxItemStatUtils.getStatsFor(itemId);
@@ -366,9 +394,10 @@ public final class MineboxItemDataUtils {
     }
 
     /**
-     * Checks whether equipment or accessory.
-     * @param itemId value for itemId
-     * @return true if the condition is met; otherwise false
+        * Indicates whether an item id belongs to equipment/accessory categories.
+        *
+        * @param itemId Minebox item identifier
+        * @return {@code true} for armor/accessory-like item ids
      */
     public static boolean isEquipmentOrAccessory(String itemId) {
         return itemId.contains("helmet")

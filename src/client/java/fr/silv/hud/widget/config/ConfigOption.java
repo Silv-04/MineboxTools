@@ -3,7 +3,7 @@ package fr.silv.hud.widget.config;
 import net.minecraft.text.Text;
 
 /**
- * Ã‰numÃ©ration ConfigOption.
+ * Enumerates display modes used by configurable HUD/stat rendering.
  */
 public enum ConfigOption {
     SIMPLE("Simple"),
@@ -17,8 +17,9 @@ public enum ConfigOption {
     }
 
     /**
-     * Returns the display name.
-     * @return the display name
+     * Returns the localized label text shown in cycling buttons.
+     *
+     * @return text instance for this option label
      */
     public Text getDisplayName() {
         return Text.literal(name);

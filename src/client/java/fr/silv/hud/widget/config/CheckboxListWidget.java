@@ -24,13 +24,13 @@ public class CheckboxListWidget extends ElementListWidget<CheckboxListWidget.Ent
 
     /**
      * Creates a new CheckboxListWidget instance.
-     * 
-     * @param client    value for client
-     * @param x         value for x
-     * @param y         value for y
-     * @param width     value for width
-     * @param height    value for height
-     * @param rowHeight value for rowHeight
+        *
+        * @param client active client instance
+        * @param x left position
+        * @param y top position
+        * @param width list width
+        * @param height list height
+        * @param rowHeight row height for each checkbox entry
      */
     public CheckboxListWidget(MinecraftClient client, int x, int y, int width, int height, int rowHeight) {
         super(client, width, height, y, rowHeight);
@@ -39,12 +39,12 @@ public class CheckboxListWidget extends ElementListWidget<CheckboxListWidget.Ent
     }
 
     /**
-     * Adds option.
-     * 
-     * @param label    value for label
-     * @param initial  value for initial
-     * @param onChange value for onChange
-     * @param icon     value for icon
+        * Adds a new checkbox option row.
+        *
+        * @param label label text for the checkbox
+        * @param initial initial checked state
+        * @param onChange callback invoked when state changes
+        * @param icon icon drawn after the label
      */
     public void addOption(Text label, boolean initial, Consumer<Boolean> onChange, Identifier icon) {
         this.addEntry(new Entry(label, initial, onChange, textRenderer, icon));
@@ -62,14 +62,13 @@ public class CheckboxListWidget extends ElementListWidget<CheckboxListWidget.Ent
         private final Identifier icon;
 
         /**
-         * Executes the entry operation.
-         * 
-         * @param label    value for label
-         * @param initial  value for initial
-         * @param onChange value for onChange
-         * @param tr       value for tr
-         * @param icon     value for icon
-         * @return the computed entry value
+         * Creates one checkbox row entry with an optional icon.
+         *
+         * @param label label text for the checkbox
+         * @param initial initial checked state
+         * @param onChange callback invoked on state updates
+         * @param tr text renderer used by the checkbox widget
+         * @param icon icon texture for this row
          */
         public Entry(Text label, boolean initial, Consumer<Boolean> onChange, TextRenderer tr, Identifier icon) {
             this.icon = icon;
@@ -82,18 +81,18 @@ public class CheckboxListWidget extends ElementListWidget<CheckboxListWidget.Ent
 
         @Override
         /**
-         * Executes the render operation.
-         * 
-         * @param ctx       value for ctx
-         * @param index     value for index
-         * @param top       value for top
-         * @param left      value for left
-         * @param rowWidth  value for rowWidth
-         * @param rowHeight value for rowHeight
-         * @param mouseX    value for mouseX
-         * @param mouseY    value for mouseY
-         * @param hovered   value for hovered
-         * @param delta     value for delta
+         * Renders the checkbox row and trailing icon.
+         *
+         * @param ctx draw context
+         * @param index row index
+         * @param top top row position
+         * @param left left row position
+         * @param rowWidth available row width
+         * @param rowHeight row height
+         * @param mouseX mouse X position
+         * @param mouseY mouse Y position
+         * @param hovered whether this row is hovered
+         * @param delta frame interpolation delta
          */
         public void render(DrawContext ctx, int index, int top, int left, int rowWidth, int rowHeight,
                 int mouseX, int mouseY, boolean hovered, float delta) {
@@ -113,9 +112,9 @@ public class CheckboxListWidget extends ElementListWidget<CheckboxListWidget.Ent
 
         @Override
         /**
-         * Executes the children operation.
-         * 
-         * @return the computed children value
+         * Returns interactive child elements for this row.
+         *
+         * @return row child elements
          */
         public List<? extends Element> children() {
             return List.of(checkbox);
@@ -123,9 +122,9 @@ public class CheckboxListWidget extends ElementListWidget<CheckboxListWidget.Ent
 
         @Override
         /**
-         * Executes the selectable children operation.
-         * 
-         * @return the computed selectable children value
+         * Returns selectable elements used for focus/navigation.
+         *
+         * @return selectable row children
          */
         public List<? extends Selectable> selectableChildren() {
             return List.of(checkbox);
@@ -134,9 +133,9 @@ public class CheckboxListWidget extends ElementListWidget<CheckboxListWidget.Ent
 
     @Override
     /**
-     * Returns the row width.
-     * 
-     * @return the row width
+        * Returns the usable row width while reserving scrollbar interaction space.
+        *
+        * @return row content width
      */
     public int getRowWidth() {
         return Math.max(0, this.width - SCROLLBAR_INTERACTION_MARGIN);
@@ -144,9 +143,9 @@ public class CheckboxListWidget extends ElementListWidget<CheckboxListWidget.Ent
 
     @Override
     /**
-     * Returns the scrollbar x position.
-     * 
-     * @return the scrollbar x position
+        * Returns the right-side X position where the scrollbar should be drawn.
+        *
+        * @return scrollbar X coordinate
      */
     protected int getScrollbarX() {
         return this.getRight() - SCROLLBAR_WIDTH;

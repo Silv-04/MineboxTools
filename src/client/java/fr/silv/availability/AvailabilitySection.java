@@ -1,7 +1,7 @@
 package fr.silv.availability;
 
 /**
- * Ã‰numÃ©ration AvailabilitySection.
+ * Defines high-level categories used to group availability entries in UI lists.
  */
 public enum AvailabilitySection {
     INSECTS,

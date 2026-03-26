@@ -22,7 +22,8 @@ public class HudConfigScreen extends Screen {
 
     /**
      * Creates a new HudConfigScreen instance.
-     * @param widgets value for widgets
+        *
+        * @param widgets draggable HUD widgets to display and edit
      */
     public HudConfigScreen(List<HudWidget> widgets) {
         super(Text.literal("HUD Config"));
@@ -31,7 +32,7 @@ public class HudConfigScreen extends Screen {
 
     @Override
     /**
-     * Executes the init operation.
+        * Initializes screen widgets and adds the close button.
      */
     protected void init() {
         this.addDrawableChild(ButtonWidget.builder(Text.literal(Lang.get("mineboxtools.menu.close")),button -> {
@@ -41,11 +42,12 @@ public class HudConfigScreen extends Screen {
 
     @Override
     /**
-     * Executes the render operation.
-     * @param context value for context
-     * @param mouseX value for mouseX
-     * @param mouseY value for mouseY
-     * @param delta value for delta
+        * Renders widget outlines, labels, and hover highlights in edit mode.
+        *
+        * @param context draw context
+        * @param mouseX current mouse X position
+        * @param mouseY current mouse Y position
+        * @param delta frame interpolation delta
      */
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         for (HudWidget widget : widgets) {
@@ -70,11 +72,12 @@ public class HudConfigScreen extends Screen {
 
     @Override
     /**
-     * Executes the mouse clicked operation.
-     * @param mouseX value for mouseX
-     * @param mouseY value for mouseY
-     * @param button value for button
-     * @return true when the operation succeeds; otherwise false
+        * Starts dragging when the left button is pressed on a widget.
+        *
+        * @param mouseX mouse X position
+        * @param mouseY mouse Y position
+        * @param button clicked mouse button
+        * @return {@code true} when drag capture starts
      */
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0) {
@@ -92,13 +95,14 @@ public class HudConfigScreen extends Screen {
 
     @Override
     /**
-     * Executes the mouse dragged operation.
-     * @param mouseX value for mouseX
-     * @param mouseY value for mouseY
-     * @param button value for button
-     * @param dx value for dx
-     * @param dy value for dy
-     * @return true when the operation succeeds; otherwise false
+        * Updates the dragged widget position while clamping to screen bounds.
+        *
+        * @param mouseX mouse X position
+        * @param mouseY mouse Y position
+        * @param button active mouse button
+        * @param dx horizontal drag delta
+        * @param dy vertical drag delta
+        * @return {@code true} when a widget drag is handled
      */
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dx, double dy) {
         if (draggingWidget != null && button == 0) {
@@ -117,11 +121,12 @@ public class HudConfigScreen extends Screen {
 
     @Override
     /**
-     * Executes the mouse released operation.
-     * @param mouseX value for mouseX
-     * @param mouseY value for mouseY
-     * @param button value for button
-     * @return true when the operation succeeds; otherwise false
+        * Ends drag mode and persists the new widget position.
+        *
+        * @param mouseX mouse X position
+        * @param mouseY mouse Y position
+        * @param button released mouse button
+        * @return {@code true} when a drag session is finalized
      */
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         if (draggingWidget != null && button == 0) {

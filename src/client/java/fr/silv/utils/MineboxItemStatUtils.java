@@ -64,19 +64,21 @@ public class MineboxItemStatUtils {
     }
 
     /**
-     * Returns the stats for.
-     * @param itemId value for itemId
-     * @return the stats for
+        * Returns configured stat ranges for a given item id.
+        *
+        * @param itemId item identifier to query
+        * @return map of stat key to min/max range
      */
     public static Map<String, int[]> getStatsFor(String itemId) {
         return statRanges.getOrDefault(itemId, Collections.emptyMap());
     }
 
     /**
-     * Executes the extract stats from line operation.
-     * @param line value for line
-     * @param validKeys value for validKeys
-     * @return the computed extract stats from line value
+        * Extracts a base stat value from a lore text line.
+        *
+        * @param line lore line to parse
+        * @param validKeys supported stat translation keys
+        * @return parsed stat value, or {@code null} when no valid stat is found
      */
     public static MineboxStat extractStatsFromLine(Text line, Set<String> validKeys) {
         TranslatableTextContent content = findTranslatable(line, validKeys);
@@ -111,10 +113,11 @@ public class MineboxItemStatUtils {
     }
 
     /**
-     * Executes the extract stats from line with bonus operation.
-     * @param line value for line
-     * @param validKeys value for validKeys
-     * @return the computed extract stats from line with bonus value
+        * Extracts a stat value from lore and includes optional bonus values.
+        *
+        * @param line lore line to parse
+        * @param validKeys supported stat translation keys
+        * @return combined stat value including bonus, or {@code null} when unavailable
      */
     public static MineboxStat extractStatsFromLineWithBonus(Text line, Set<String> validKeys) {
         TranslatableTextContent content = findTranslatable(line, validKeys);
@@ -190,10 +193,11 @@ public class MineboxItemStatUtils {
     }
 
     /**
-     * Executes the are equals operation.
-     * @param listA value for listA
-     * @param listB value for listB
-     * @return true when the operation succeeds; otherwise false
+        * Compares two stat lists by stat key and numeric value.
+        *
+        * @param listA first list to compare
+        * @param listB second list to compare
+        * @return {@code true} when both lists contain equivalent stat/value pairs
      */
     public static boolean areEquals(List<MineboxStat> listA, List<MineboxStat> listB) {
         if (listA.size() != listB.size()) return false;

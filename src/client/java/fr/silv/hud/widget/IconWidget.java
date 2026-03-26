@@ -36,9 +36,10 @@ public class IconWidget extends HudWidget {
 
     @Override
     /**
-     * Executes the render operation.
-     * @param drawContext value for drawContext
-     * @param client value for client
+        * Renders active availability icons using current orientation and direction settings.
+        *
+        * @param drawContext draw context
+        * @param client active client instance
      */
     public void render(DrawContext drawContext, MinecraftClient client) {
         World world = client.world;

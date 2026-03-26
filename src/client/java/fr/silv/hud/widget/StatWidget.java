@@ -49,9 +49,10 @@ public class StatWidget extends HudWidget {
 
     @Override
     /**
-     * Executes the render operation.
-     * @param context value for context
-     * @param client value for client
+        * Renders aggregated player stats using the configured display mode.
+        *
+        * @param context draw context
+        * @param client active client instance
      */
     public void render(DrawContext context, MinecraftClient client) {
         ConfigOption displayMode = ModConfig.getStatDisplay();
@@ -76,9 +77,11 @@ public class StatWidget extends HudWidget {
     }
 
     /**
-     * Returns the combined stats.
-     * @param client value for client
-     * @return the combined stats
+        * Returns merged player and held-item stat values.
+        * Results are cached and recomputed only when source stats change.
+        *
+        * @param client active client instance
+        * @return combined stat list in stable declaration order
      */
     public static List<MineboxStat> getCombinedStats(MinecraftClient client) {
         if (client.player == null) {

@@ -29,44 +29,53 @@ public record AvailabilityEntry(
         Map<AvailabilitySlot, Integer> displayOrder
 ) {
     /**
-     * Checks whether enabled.
-     * @return true if the condition is met; otherwise false
+     * Returns the current enabled state for this entry.
+     * The value is read from the user configuration backing this entry.
+     *
+     * @return {@code true} when this entry is enabled in configuration
      */
     public boolean isEnabled() {
         return enabled.getAsBoolean();
     }
 
     /**
-     * Updates the enabled.
-     * @param value value for value
+     * Updates the enabled state for this entry.
+     * This is typically called from menu/HUD configuration controls.
+     *
+     * @param value new enabled state to persist
      */
     public void setEnabled(boolean value) {
         setter.accept(value);
     }
 
     /**
-     * Checks whether visible.
-     * @param world value for world
-     * @param now value for now
-     * @return true if the condition is met; otherwise false
+     * Determines whether this entry should currently be visible.
+     * Visibility requires both user activation and a satisfied runtime visibility
+     * rule (time slot, weather, moon cycle, etc.).
+     *
+     * @param world current world state used by visibility predicates
+     * @param now current time used by slot-based visibility predicates
+     * @return {@code true} when the entry is enabled and currently visible
      */
     public boolean isVisible(World world, LocalTime now) {
         return isEnabled() && visibilityRule.test(world, now);
     }
 
     /**
-     * Checks whether in section.
-     * @param expectedSection value for expectedSection
-     * @return true if the condition is met; otherwise false
+     * Checks whether this entry belongs to the requested section.
+     *
+     * @param expectedSection section to compare against
+     * @return {@code true} when this entry is part of the given section
      */
     public boolean isInSection(AvailabilitySection expectedSection) {
         return section == expectedSection;
     }
 
     /**
-     * Executes the order for operation.
-     * @param slot value for slot
-     * @return the computed order for value
+     * Returns the display priority for a given availability slot.
+     *
+     * @param slot slot to retrieve ordering for
+     * @return ordering value, or {@code null} if this entry is not present in the slot
      */
     public Integer orderFor(AvailabilitySlot slot) {
         return displayOrder.get(slot);

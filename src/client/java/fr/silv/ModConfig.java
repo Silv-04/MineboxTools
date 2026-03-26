@@ -38,40 +38,45 @@ public final class ModConfig {
     }
 
     /**
-     * Executes the general operation.
-     * @return the computed general value
+     * Returns the general configuration section.
+     *
+     * @return mutable general settings container
      */
     public static General general() {
         return state.general;
     }
 
     /**
-     * Executes the features operation.
-     * @return the computed features value
+     * Returns the feature-toggle configuration section.
+     *
+     * @return mutable feature settings container
      */
     public static Features features() {
         return state.features;
     }
 
     /**
-     * Executes the insects operation.
-     * @return the computed insects value
+     * Returns the insect-visibility configuration section.
+     *
+     * @return mutable insect settings container
      */
     public static Insects insects() {
         return state.insects;
     }
 
     /**
-     * Executes the shops operation.
-     * @return the computed shops value
+     * Returns the shop-visibility configuration section.
+     *
+     * @return mutable shop settings container
      */
     public static Shops shops() {
         return state.shops;
     }
 
     /**
-     * Executes the hud operation.
-     * @return the computed hud value
+     * Returns the HUD configuration section.
+     *
+     * @return mutable HUD settings container
      */
     public static Hud hud() {
         return state.hud;
@@ -126,96 +131,107 @@ public final class ModConfig {
     }
 
     /**
-     * Returns the language.
-     * @return the language
+     * Returns the current UI language code.
+     *
+     * @return language identifier such as {@code en_us}, {@code fr_fr}, or {@code pl_pl}
      */
     public static String getLanguage() {
         return general().language;
     }
 
     /**
-     * Updates the language.
-     * @param language the l an gu ag e
+     * Updates the active UI language code.
+     *
+     * @param language language identifier to store
      */
     public static void setLanguage(String language) {
         general().language = language;
     }
 
     /**
-     * Returns the stat display.
-     * @return the stat display
+     * Returns how stats should be displayed in HUD/tooltips.
+     *
+     * @return configured stat display mode
      */
     public static ConfigOption getStatDisplay() {
         return features().statDisplay;
     }
 
     /**
-     * Updates the stat display.
-     * @param statDisplay the s ta td is pl ay
+     * Updates the stat display mode used by UI rendering.
+     *
+     * @param statDisplay new display mode
      */
     public static void setStatDisplay(ConfigOption statDisplay) {
         features().statDisplay = statDisplay;
     }
 
     /**
-     * Checks whether enabled.
-     * @return true if the condition is met; otherwise false
-     * @param flag the f la g
+     * Returns whether a global feature flag is enabled.
+     *
+     * @param flag feature flag to query
+     * @return {@code true} when the flag is enabled
      */
     public static boolean isEnabled(FeatureFlag flag) {
         return flag.get(state);
     }
 
     /**
-     * Updates the enabled.
-     * @param flag the f la g
-     * @param value the v al ue
+     * Updates a global feature flag.
+     *
+     * @param flag feature flag to modify
+     * @param value new enabled state
      */
     public static void setEnabled(FeatureFlag flag, boolean value) {
         flag.set(state, value);
     }
 
     /**
-     * Checks whether enabled.
-     * @return true if the condition is met; otherwise false
-     * @param flag the f la g
+     * Returns whether an insect flag is enabled.
+     *
+     * @param flag insect flag to query
+     * @return {@code true} when the flag is enabled
      */
     public static boolean isEnabled(InsectFlag flag) {
         return flag.get(state);
     }
 
     /**
-     * Updates the enabled.
-     * @param flag the f la g
-     * @param value the v al ue
+     * Updates an insect visibility flag.
+     *
+     * @param flag insect flag to modify
+     * @param value new enabled state
      */
     public static void setEnabled(InsectFlag flag, boolean value) {
         flag.set(state, value);
     }
 
     /**
-     * Checks whether enabled.
-     * @return true if the condition is met; otherwise false
-     * @param flag the f la g
+     * Returns whether a shop flag is enabled.
+     *
+     * @param flag shop flag to query
+     * @return {@code true} when the flag is enabled
      */
     public static boolean isEnabled(ShopFlag flag) {
         return flag.get(state);
     }
 
     /**
-     * Updates the enabled.
-     * @param flag the f la g
-     * @param value the v al ue
+     * Updates a shop visibility flag.
+     *
+     * @param flag shop flag to modify
+     * @param value new enabled state
      */
     public static void setEnabled(ShopFlag flag, boolean value) {
         flag.set(state, value);
     }
 
     /**
-     * Updates the widget position.
-     * @param id the i d
-     * @param x the x
-     * @param y the y
+     * Stores a HUD widget position and persists the updated configuration.
+     *
+     * @param id widget identifier
+     * @param x widget X coordinate in scaled screen space
+     * @param y widget Y coordinate in scaled screen space
      */
     public static void setWidgetPosition(String id, int x, int y) {
         hud().widgetPositions.put(id, new WidgetPos(x, y));
@@ -223,9 +239,10 @@ public final class ModConfig {
     }
 
     /**
-     * Returns the widget position.
-     * @return an array containing the X and Y coordinates
-     * @param id the i d
+     * Resolves a widget position from persisted state or built-in defaults.
+     *
+     * @param id widget identifier
+     * @return two-element array containing X and Y coordinates
      */
     public static int[] getWidgetPosition(String id) {
         WidgetPos pos = hud().widgetPositions.getOrDefault(id, DEFAULT_WIDGET_POSITIONS.get(id));
@@ -562,16 +579,26 @@ public final class ModConfig {
         }
     }
 
+    /**
+     * Functional accessor used by enum flags to read booleans from config sections.
+     *
+     * @param <T> section type containing the boolean flag
+     */
     private interface BooleanGetter<T> {
         boolean get(T target);
     }
 
+    /**
+     * Functional mutator used by enum flags to write booleans into config sections.
+     *
+     * @param <T> section type containing the boolean flag
+     */
     private interface BooleanSetter<T> {
         void set(T target, boolean value);
     }
 
     /**
-     * Ã‰numÃ©ration FeatureFlag.
+     * Enumerates toggleable global features exposed by MineboxTools.
      */
     public enum FeatureFlag {
         DURABILITY(section -> section.durability, (section, value) -> section.durability = value),
@@ -599,7 +626,7 @@ public final class ModConfig {
     }
 
     /**
-     * Ã‰numÃ©ration InsectFlag.
+     * Enumerates insect toggles used by availability filters and HUD rendering.
      */
     public enum InsectFlag {
         ANT(section -> section.ant, (section, value) -> section.ant = value),
@@ -652,7 +679,7 @@ public final class ModConfig {
     }
 
     /**
-     * Ã‰numÃ©ration ShopFlag.
+     * Enumerates shop toggles used by world availability rendering.
      */
     public enum ShopFlag {
         COFFEE(section -> section.coffee, (section, value) -> section.coffee = value),

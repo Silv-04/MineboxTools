@@ -12,8 +12,9 @@ import net.minecraft.client.MinecraftClient;
  */
 public class MenuCommand {
     /**
-     * Registers command handlers.
-     * @param dispatcher value for dispatcher
+     * Registers command handlers. -> /mbt
+        *
+        * @param dispatcher Brigadier dispatcher used to register client commands
      */
     public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher) {
         dispatcher.register(ClientCommandManager.literal("mbt")

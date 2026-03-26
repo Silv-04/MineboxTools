@@ -1,7 +1,7 @@
 package fr.silv.availability;
 
 /**
- * Ã‰numÃ©ration AvailabilitySlot.
+ * Defines time/weather-driven visibility slots used by availability rules.
  */
 public enum AvailabilitySlot {
     WEATHER,

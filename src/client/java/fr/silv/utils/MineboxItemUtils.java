@@ -56,9 +56,10 @@ public class MineboxItemUtils {
     }
 
     /**
-     * Executes the get operation.
-     * @param itemId value for itemId
-     * @return the computed get value
+     * Returns cached metadata for a Minebox item id.
+     *
+     * @param itemId item identifier from game data
+     * @return matching item metadata, or {@code null} when absent
      */
     public static MineboxItem get(String itemId) {
         return mineboxItems.get(itemId);

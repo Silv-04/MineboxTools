@@ -32,9 +32,10 @@ public class DurabilityWidget extends HudWidget {
 
     @Override
     /**
-     * Executes the render operation.
-     * @param context value for context
-     * @param client value for client
+        * Renders durability values for main-hand and off-hand items when available.
+        *
+        * @param context draw context
+        * @param client active client instance
      */
     public void render(DrawContext context, MinecraftClient client) {
         if (!ModConfig.isEnabled(ModConfig.FeatureFlag.HAND)) return;

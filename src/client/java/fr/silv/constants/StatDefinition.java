@@ -16,7 +16,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Ãƒâ€°numÃƒÂ©ration StatDefinition.
+ * Defines supported stat keys, labels, colors, and symbol metadata.
  */
 public enum StatDefinition {
     FORTUNE("mbx.stats.fortune", "mineboxtools.stat.fortune", 1, 0xEC8C2E, "\uD83D\uDD31"),
@@ -46,41 +46,46 @@ public enum StatDefinition {
     }
 
     /**
-     * Executes the key operation.
-     * @return the computed key value
+     * Returns the canonical stat key used in item metadata.
+     *
+     * @return lowercase stat key
      */
     public String key() {
         return key;
     }
 
     /**
-     * Executes the weight operation.
-     * @return the computed weight value
+     * Returns the weighting factor used in stat calculations.
+     *
+     * @return stat weight value
      */
     public int weight() {
         return weight;
     }
 
     /**
-     * Executes the simple label operation.
-     * @return the computed simple label value
+     * Returns the compact symbol-only representation of the stat.
+     *
+     * @return short symbol label
      */
     public String simpleLabel() {
         return symbol;
     }
 
     /**
-     * Executes the advanced label operation.
-     * @return the computed advanced label value
+     * Returns the full display label combining symbol and translated name.
+     *
+     * @return user-facing translated stat label
      */
     public String advancedLabel() {
         return symbol + " " + Lang.get(translationKey);
     }
 
     /**
-     * Executes the style text operation.
-     * @param content value for content
-     * @return the computed style text value
+     * Applies this stat's configured color style to text content.
+     *
+     * @param content text to style
+     * @return colored text instance
      */
     public Text styleText(String content) {
         MutableText text = Text.literal(content);
@@ -88,9 +93,10 @@ public enum StatDefinition {
     }
 
     /**
-     * Executes the from key operation.
-     * @param key value for key
-     * @return an optional statdefinition value when present
+     * Resolves a stat definition from a metadata key.
+     *
+     * @param key key to resolve (case-insensitive)
+     * @return matching definition when available
      */
     public static Optional<StatDefinition> fromKey(String key) {
         if (key == null) {
@@ -100,8 +106,9 @@ public enum StatDefinition {
     }
 
     /**
-     * Executes the keys operation.
-     * @return the computed keys value
+        * Returns all stat keys in declaration order.
+        *
+        * @return ordered set of supported stat keys
      */
     public static Set<String> keys() {
         return Arrays.stream(values())
@@ -110,9 +117,10 @@ public enum StatDefinition {
     }
 
     /**
-     * Executes the default style operation.
-     * @param content value for content
-     * @return the computed default style value
+     * Applies the default white style to plain text content.
+     *
+     * @param content text to style
+     * @return white-styled text instance
      */
     public static Text defaultStyle(String content) {
         return Text.literal(content).setStyle(Style.EMPTY.withColor(Formatting.WHITE));

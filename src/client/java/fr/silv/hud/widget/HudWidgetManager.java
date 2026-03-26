@@ -11,7 +11,7 @@ public class HudWidgetManager {
     private static final List<HudWidget> WIDGETS = new ArrayList<>();
 
     /**
-     * Executes the init operation.
+        * Rebuilds the active HUD widget list in display order.
      */
     public static void init() {
         WIDGETS.clear();
@@ -21,8 +21,9 @@ public class HudWidgetManager {
     }
 
     /**
-     * Returns the widgets.
-     * @return the widgets
+     * Returns an immutable view of currently registered HUD widgets.
+     *
+     * @return active widget list
      */
     public static List<HudWidget> getWidgets() {
         return Collections.unmodifiableList(WIDGETS);

@@ -22,9 +22,10 @@ public class DaylightCycle {
     private static final LocalTime NewMoonEnd3 = LocalTime.of(21, 0);
 
     /**
-     * Checks whether full moon.
-     * @param now value for now
-     * @return true if the condition is met; otherwise false
+        * Checks whether the current time is inside a full-moon activity window.
+        *
+        * @param now in-game clock time
+        * @return {@code true} when full-moon window is active
      */
     public static boolean isFullMoon(LocalTime now) {
         return (now.isAfter(FullMoonStart1) && now.isBefore(FullMoonEnd1)) ||
@@ -33,9 +34,10 @@ public class DaylightCycle {
     }
 
     /**
-     * Checks whether new moon.
-     * @param now value for now
-     * @return true if the condition is met; otherwise false
+        * Checks whether the current time is inside a new-moon activity window.
+        *
+        * @param now in-game clock time
+        * @return {@code true} when new-moon window is active
      */
     public static boolean isNewMoon(LocalTime now) {
         return (now.isAfter(NewMoonStart1) && now.isBefore(NewMoonEnd1)) ||
@@ -44,9 +46,10 @@ public class DaylightCycle {
     }
 
     /**
-     * Checks whether new day.
-     * @param now value for now
-     * @return true if the condition is met; otherwise false
+        * Checks whether the current time is in the first quarter of the cycle.
+        *
+        * @param now in-game clock time
+        * @return {@code true} during the new-day period
      */
     public static boolean isNewDay(LocalTime now) {
         int minute = now.getMinute();
@@ -55,9 +58,10 @@ public class DaylightCycle {
 
     // Night
     /**
-     * Checks whether night.
-     * @param now value for now
-     * @return true if the condition is met; otherwise false
+        * Checks whether the current minute maps to the night slot.
+        *
+        * @param now in-game clock time
+        * @return {@code true} during night slot
      */
     public static boolean isNight(LocalTime now) {
         int minute = now.getMinute();
@@ -66,9 +70,10 @@ public class DaylightCycle {
 
     // Morning
     /**
-     * Checks whether morning.
-     * @param now value for now
-     * @return true if the condition is met; otherwise false
+        * Checks whether the current minute maps to the morning slot.
+        *
+        * @param now in-game clock time
+        * @return {@code true} during morning slot
      */
     public static boolean isMorning(LocalTime now) {
         int minute = now.getMinute();
@@ -77,9 +82,10 @@ public class DaylightCycle {
 
     // Afternoon
     /**
-     * Checks whether afternoon.
-     * @param now value for now
-     * @return true if the condition is met; otherwise false
+        * Checks whether the current minute maps to the afternoon slot.
+        *
+        * @param now in-game clock time
+        * @return {@code true} during afternoon slot
      */
     public static boolean isAfternoon(LocalTime now) {
         int minute = now.getMinute();
@@ -88,9 +94,10 @@ public class DaylightCycle {
 
     // Evening
     /**
-     * Checks whether evening.
-     * @param now value for now
-     * @return true if the condition is met; otherwise false
+        * Checks whether the current minute maps to the evening slot.
+        *
+        * @param now in-game clock time
+        * @return {@code true} during evening slot
      */
     public static boolean isEvening(LocalTime now) {
         int minute = now.getMinute();
@@ -99,9 +106,10 @@ public class DaylightCycle {
 
     // Herb shop timer
     /**
-     * Checks whether herb shop open.
-     * @param now value for now
-     * @return true if the condition is met; otherwise false
+        * Checks whether the Herb Shop should be open at the current time.
+        *
+        * @param now in-game clock time
+        * @return {@code true} when Herb Shop opening window is active
      */
     public static boolean isHerbShopOpen(LocalTime now) {
         int minute = now.getMinute();
@@ -112,9 +120,10 @@ public class DaylightCycle {
 
     // Cocktail shop and monkey shop timer
     /**
-     * Checks whether cocktail and monkey shop open.
-     * @param now value for now
-     * @return true if the condition is met; otherwise false
+        * Checks whether Cocktail Bar and Monkey Shop should be open.
+        *
+        * @param now in-game clock time
+        * @return {@code true} when their shared opening window is active
      */
     public static boolean isCocktailAndMonkeyShopOpen(LocalTime now) {
         int minute = now.getMinute();
@@ -125,9 +134,10 @@ public class DaylightCycle {
 
     // Italian restaurant timer
     /**
-     * Checks whether italian restaurant open.
-     * @param now value for now
-     * @return true if the condition is met; otherwise false
+        * Checks whether the Italian restaurant should be open.
+        *
+        * @param now in-game clock time
+        * @return {@code true} when restaurant opening window is active
      */
     public static boolean isItalianRestaurantOpen(LocalTime now) {
         int minute = now.getMinute();

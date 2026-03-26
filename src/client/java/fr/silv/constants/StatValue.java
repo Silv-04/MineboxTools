@@ -1,6 +1,5 @@
 package fr.silv.constants;
 
-@Deprecated
 /**
  * Legacy stat constants mapped to StatDefinition weights.
  */

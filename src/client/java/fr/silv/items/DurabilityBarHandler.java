@@ -148,9 +148,10 @@ public class DurabilityBarHandler {
     }
 
     /**
-     * Returns the haverack amount inside.
-     * @param item value for item
-     * @return the haverack amount inside
+        * Parses current and maximum stored amount from a haversack lore line.
+        *
+        * @param item haversack item stack
+        * @return two-element array [current, max], or {@code null} when not found
      */
     public static String[] getHaverackAmountInside(ItemStack item) {
         LoreComponent loreComponent = item.get(DataComponentTypes.LORE);

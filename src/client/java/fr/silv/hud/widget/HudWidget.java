@@ -16,13 +16,13 @@ public abstract class HudWidget {
     private int lastScreenHeight = -1;
 
     /**
-     * Executes the hud widget operation.
-     * @param id value for id
-     * @param x value for x
-     * @param y value for y
-     * @param width value for width
-     * @param height value for height
-     * @return the computed hud widget value
+     * Creates a base HUD widget with initial position and bounds.
+     *
+     * @param id widget identifier used for persistence
+     * @param x initial X coordinate in scaled screen space
+     * @param y initial Y coordinate in scaled screen space
+     * @param width initial widget width
+     * @param height initial widget height
      */
     public HudWidget(String id, int x, int y, int width, int height) {
         this.id = id;
@@ -33,18 +33,19 @@ public abstract class HudWidget {
     }
 
     /**
-     * Executes the render operation.
-     * @param context value for context
-     * @param client value for client
-     * @return the computed render value
+     * Renders the widget for the current HUD frame.
+     *
+     * @param context draw context used for rendering
+     * @param client active client instance
      */
     public abstract void render(DrawContext context, MinecraftClient client);
 
     /**
-     * Checks whether mouse over.
-     * @param mouseX value for mouseX
-     * @param mouseY value for mouseY
-     * @return true if the condition is met; otherwise false
+     * Returns whether the mouse is currently inside widget bounds.
+     *
+     * @param mouseX current mouse X coordinate
+     * @param mouseY current mouse Y coordinate
+     * @return {@code true} when the pointer is over the widget
      */
     public boolean isMouseOver(double mouseX, double mouseY) {
         return mouseX >= x && mouseX <= x + width &&
@@ -52,23 +53,30 @@ public abstract class HudWidget {
     }
 
     /**
-     * Returns the x.
-     * @return the x
+     * Returns the current X coordinate.
+     *
+     * @return widget X position
      */
     public int getX() { return x; }
+
     /**
-     * Returns the y.
-     * @return the y
+     * Returns the current Y coordinate.
+     *
+     * @return widget Y position
      */
     public int getY() { return y; }
+
     /**
-     * Returns the width.
-     * @return the width
+     * Returns the current widget width.
+     *
+     * @return widget width in pixels
      */
     public int getWidth() { return width; }
+
     /**
-     * Returns the height.
-     * @return the height
+     * Returns the current widget height.
+     *
+     * @return widget height in pixels
      */
     public int getHeight() { return height; }
 
@@ -118,14 +126,17 @@ public abstract class HudWidget {
         lastScreenHeight = screenHeight;
     }
     /**
-     * Updates the position.
-     * @param x value for x
-     * @param y value for y
+     * Sets the widget position directly.
+     *
+     * @param x new X coordinate
+     * @param y new Y coordinate
      */
     public void setPosition(int x, int y) { this.x = x; this.y = y; }
+
     /**
-     * Returns the id.
-     * @return the id
+     * Returns the persistence identifier for this widget.
+     *
+     * @return widget id
      */
     public String getId() { return id; }
 }

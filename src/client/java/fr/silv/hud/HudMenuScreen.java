@@ -40,7 +40,7 @@ public class HudMenuScreen extends Screen {
 
     @Override
     /**
-     * Executes the init operation.
+        * Initializes the menu layout, toggles, lists, and search field.
      */
     public void init() {
         super.init();
@@ -183,11 +183,12 @@ public class HudMenuScreen extends Screen {
 
     @Override
     /**
-     * Executes the render operation.
-     * @param drawContext value for drawContext
-     * @param mouseX value for mouseX
-     * @param mouseY value for mouseY
-     * @param delta value for delta
+        * Renders the menu background, widgets, and contextual helper text.
+        *
+        * @param drawContext draw context
+        * @param mouseX current mouse X position
+        * @param mouseY current mouse Y position
+        * @param delta frame interpolation delta
      */
     public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         drawContext.fill(0, 0, this.width, this.height, 0x90000000);
@@ -207,8 +208,9 @@ public class HudMenuScreen extends Screen {
 
     @Override
     /**
-     * Executes the should pause operation.
-     * @return true if the condition is met; otherwise false
+     * Keeps gameplay simulation running while this menu is open.
+     *
+     * @return always {@code false} to avoid pausing the game
      */
     public boolean shouldPause() {
         return false;
@@ -217,7 +219,7 @@ public class HudMenuScreen extends Screen {
     private Text languageLabel() {
         return switch (ModConfig.getLanguage()) {
             case "fr_fr" -> Text.of("Langue : FR");
-            case "pl_pl" -> Text.of("JÃ„â„¢zyk: PL");
+            case "pl_pl" -> Text.of("Język: PL");
             default -> Text.of("Language: EN");
         };
     }

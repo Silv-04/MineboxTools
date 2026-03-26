@@ -36,10 +36,11 @@ public class TooltipHandler {
 
     /**
      * Adds stat ranges to tooltip.
-     * @param stack value for stack
-     * @param context value for context
-     * @param type value for type
-     * @param lines value for lines
+        *
+        * @param stack item stack being rendered
+        * @param context tooltip rendering context
+        * @param type tooltip type provided by Minecraft
+        * @param lines mutable tooltip line list
      */
     public static void addStatRangesToTooltip(ItemStack stack, Item.TooltipContext context, TooltipType type,
                                               List<Text> lines) {
@@ -105,10 +106,11 @@ public class TooltipHandler {
 
     /**
      * Adds info to tooltip.
-     * @param stack value for stack
-     * @param context value for context
-     * @param type value for type
-     * @param lines value for lines
+        *
+        * @param stack item stack being rendered
+        * @param context tooltip rendering context
+        * @param type tooltip type provided by Minecraft
+        * @param lines mutable tooltip line list
      */
     public static void addInfoToTooltip(ItemStack stack, Item.TooltipContext context, TooltipType type,
                                         List<Text> lines) {
@@ -219,9 +221,10 @@ public class TooltipHandler {
     }
 
     /**
-     * Returns the color from score.
-     * @param score value for score
-     * @return the color from score
+        * Computes a red-to-green color gradient based on a normalized score.
+        *
+        * @param score score in the inclusive range 0-100
+        * @return bold text style using the computed gradient color
      */
     public static Style getColorFromScore(int score) {
         score = Math.max(0, Math.min(score, 100));
@@ -232,10 +235,11 @@ public class TooltipHandler {
     }
 
     /**
-     * Executes the contains translate key operation.
-     * @param text value for text
-     * @param keyToFind value for keyToFind
-     * @return true when the operation succeeds; otherwise false
+        * Recursively checks whether a text tree contains a specific translation key.
+        *
+        * @param text root text node to inspect
+        * @param keyToFind translation key to search for
+        * @return {@code true} when the key is present in this node or descendants
      */
     public static boolean containsTranslateKey(Text text, String keyToFind) {
         if (text.getContent() instanceof TranslatableTextContent translatable && keyToFind.equals(translatable.getKey())) {
@@ -253,9 +257,10 @@ public class TooltipHandler {
 
     /**
      * Finds the index of translate key.
-     * @param lines value for lines
-     * @param keyToFind value for keyToFind
-     * @return the computed find index of translate key value
+        *
+        * @param lines tooltip lines to inspect
+        * @param keyToFind translation key to search for
+        * @return index of the first matching line, or {@code -1} when not found
      */
     public static int findIndexOfTranslateKey(List<Text> lines, String keyToFind) {
         for (int i = 0; i < lines.size(); i++) {
