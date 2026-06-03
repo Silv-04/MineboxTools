@@ -19,26 +19,28 @@ import java.util.stream.Collectors;
  * Defines supported stat keys, labels, colors, and symbol metadata.
  */
 public enum StatDefinition {
-    AGILITY("mbx.stats.agility", "mineboxtools.stat.agility", 1, 0x6BC047, "☄"),
-    DEFENSE("mbx.stats.defense", "mineboxtools.stat.defense", 1, 0x9E9E9E, "🛡"),
-    DEXTERITY("mbx.stats.dexterity", "mineboxtools.stat.dexterity", 1, 0xBDBDBD, "✗"),
-    ENDURANCE("mbx.stats.endurance", "mineboxtools.stat.endurance", 1, 0x4CAF50, "💪"),
-    ENERGY("mbx.stats.energy", "mineboxtools.stat.energy", 1, 0xFFD700, "⚡"),
-    FORTUNE("mbx.stats.fortune", "mineboxtools.stat.fortune", 1, 0xEC8C2E, "🔱"),
-    MINING_FORTUNE("mbx.stats.mining_fortune", "mineboxtools.stat.mining_fortune", 1, 0x9E9E9E, "⛏"),
-    FISHING_FORTUNE("mbx.stats.fishing_fortune", "mineboxtools.stat.fishing_fortune", 1, 0x29B6F6, "🎣"),
-    WOODCUTTING_FORTUNE("mbx.stats.woodcutting_fortune", "mineboxtools.stat.woodcutting_fortune", 1, 0x8D6E63, "🪓"),
-    FARMING_FORTUNE("mbx.stats.farming_fortune", "mineboxtools.stat.farming_fortune", 1, 0x8BC34A, "🌾"),
-    GATHERING_FORTUNE("mbx.stats.gathering_fortune", "mineboxtools.stat.gathering_fortune", 1, 0x66BB6A, "🌿"),
-    LOOTING_FORTUNE("mbx.stats.looting_fortune", "mineboxtools.stat.looting_fortune", 1, 0xBA68C8, "💎"),
-    HEALTH("mbx.stats.health", "mineboxtools.stat.health", 1, 0xE24A63, "❤"),
-    INTELLIGENCE("mbx.stats.intelligence", "mineboxtools.stat.intelligence", 1, 0xE24A2E, "🔥"),
-    LUCK("mbx.stats.luck", "mineboxtools.stat.luck", 1, 0x3D84A8, "🌊"),
-    MOVEMENT_SPEED("mbx.stats.movement_speed", "mineboxtools.stat.movement_speed", 1, 0x26C6DA, "«"),
-    STRENGTH("mbx.stats.strength", "mineboxtools.stat.strength", 1, 0xA55F26, "₪"),
-    WISDOM("mbx.stats.wisdom", "mineboxtools.stat.wisdom", 1, 0x9457D3, "☽"),
-    ATTACK_SPEED("mbx.stats.attack_speed", "mineboxtools.stat.attack_speed", 1, 0xFFEB3B, "⚔"),
-    CHARISMA("mbx.stats.charisma", "mineboxtools.stat.charisma", 1, 0xF06292, "⚓");
+    AGILITY("mbx.stats.agility", "mineboxtools.stat.agility", 1, 0x89C464, "☄"),
+    DEFENSE("mbx.stats.defense", "mineboxtools.stat.defense", 1, 0xCCCCCC, "🛡"),
+    DEXTERITY("mbx.stats.dexterity", "mineboxtools.stat.dexterity", 1, 0xE0E0E0, "⚔"),
+    ENDURANCE("mbx.stats.endurance", "mineboxtools.stat.endurance", 1, 0x28A12C, ""),
+    ENERGY("mbx.stats.energy", "mineboxtools.stat.energy", 1, 0xEDBA21, "⚡"),
+    FORTUNE("mbx.stats.fortune", "mineboxtools.stat.fortune", 1, 0xF79440, "🔱"),
+    MINING_FORTUNE("mbx.stats.mining_fortune", "mineboxtools.stat.mining_fortune", 1, 0xA0826D, "⛏"),
+    FISHING_FORTUNE("mbx.stats.fishing_fortune", "mineboxtools.stat.fishing_fortune", 1, 0x5B9BD5, "🎣"),
+    WOODCUTTING_FORTUNE("mbx.stats.woodcutting_fortune", "mineboxtools.stat.woodcutting_fortune", 1, 0x8B6914, "🪓"),
+    FARMING_FORTUNE("mbx.stats.farming_fortune", "mineboxtools.stat.farming_fortune", 1, 0x7BC74D, "🌾"),
+    GATHERING_FORTUNE("mbx.stats.gathering_fortune", "mineboxtools.stat.gathering_fortune", 1, 0x5BAE4E, "🌿"),
+    LOOTING_FORTUNE("mbx.stats.looting_fortune", "mineboxtools.stat.looting_fortune", 1, 0xE05555, "🗡"),
+    HEALTH("mbx.stats.health", "mineboxtools.stat.health", 1, 0xE62046, "❤"),
+    INTELLIGENCE("mbx.stats.intelligence", "mineboxtools.stat.intelligence", 1, 0xE5412B, "🔥"),
+    LUCK("mbx.stats.luck", "mineboxtools.stat.luck", 1, 0x7ED0FF, "🌊"),
+    MOVEMENT_SPEED("mbx.stats.movement_speed", "mineboxtools.stat.movement_speed", 1, 0x87CEEB, "⏪"),
+    STAMINA("mbx.stats.stamina", "mineboxtools.stat.stamina", 1, 0x28A12C, ""),
+    STRENGTH("mbx.stats.strength", "mineboxtools.stat.strength", 1, 0x5A370B, "₪"),
+    VITALITY("mbx.stats.vitality", "mineboxtools.stat.vitality", 1, 0x4CAF50, "♥"),
+    WISDOM("mbx.stats.wisdom", "mineboxtools.stat.wisdom", 1, 0x886EF6, "☽"),
+    ATTACK_SPEED("mbx.stats.attack_speed", "mineboxtools.stat.attack_speed", 1, 0xD7BF71, "🗡"),
+    CHARISMA("mbx.stats.charisma", "mineboxtools.stat.charisma", 1, 0xD15FB4, "⚓");
 
     private static final Map<String, StatDefinition> BY_KEY = Arrays.stream(values())
             .collect(Collectors.toMap(StatDefinition::key, Function.identity()));

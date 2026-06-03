@@ -26,6 +26,7 @@ public final class ModConfig {
     private static final Path CONFIG_FILE = FabricLoader.getInstance()
             .getConfigDir()
             .resolve("mineboxtools.settings.json");
+    @SuppressWarnings("null") // Map.of infers @NonNull values; assignment to less-annotated type is safe
     private static final Map<String, WidgetPos> DEFAULT_WIDGET_POSITIONS = Map.of(
             "durability_widget", new WidgetPos(10, 10),
             "icon_widget", new WidgetPos(10, 40),
@@ -310,6 +311,7 @@ public final class ModConfig {
     /**
      * Loads persisted data into memory.
      */
+    @SuppressWarnings("null") // Gson.fromJson is not annotated with @NonNull
     public static void load() {
         if (!Files.exists(CONFIG_FILE)) {
             return;
@@ -317,10 +319,6 @@ public final class ModConfig {
 
         try (Reader reader = Files.newBufferedReader(CONFIG_FILE, StandardCharsets.UTF_8)) {
             ConfigState loadedState = GSON.fromJson(reader, ConfigState.class);
-            if (loadedState == null) {
-                LOGGER.warn("Config file is empty or invalid, keeping defaults.");
-                return;
-            }
             boolean hadLegacy = loadedState.hasLegacyFields();
             state = loadedState.withDefaults();
             if (hadLegacy) {
