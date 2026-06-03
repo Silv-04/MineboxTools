@@ -5,11 +5,11 @@ import fr.silv.availability.AvailabilityEntry;
 import fr.silv.availability.AvailabilityRegistry;
 import fr.silv.availability.AvailabilitySlot;
 import fr.silv.constants.DaylightCycle;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.Level;
 
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -24,31 +24,38 @@ public class IconWidget extends HudWidget {
     private static final ZoneId GAME_TIME_ZONE = ZoneId.of("UTC");
 
     /**
-     * Creates a new IconWidget instance.
+     * Creates a new IconWidget with persisted screen position and configured icon size.
      */
     public IconWidget() {
-        super("icon_widget",
-                ModConfig.getWidgetPosition("icon_widget")[0],
-                ModConfig.getWidgetPosition("icon_widget")[1],
-                ModConfig.getHudIconSize().getPixels(),
-                ModConfig.getHudIconSize().getPixels());
+        this(initParams());
     }
 
-    @Override
+    private IconWidget(int[] p) {
+        super("icon_widget", p[0], p[1], p[2], p[3]);
+    }
+
+    private static int[] initParams() {
+        int defaultSize = ModConfig.getHudIconSize().getPixels();
+        int[] pos = ModConfig.getWidgetPosition("icon_widget");
+        int[] size = ModConfig.getWidgetSavedSize("icon_widget", defaultSize, defaultSize);
+        return new int[]{pos[0], pos[1], size[0], size[1]};
+    }
+
     /**
-        * Renders active availability icons using current orientation and direction settings.
-        *
-        * @param drawContext draw context
-        * @param client active client instance
+     * Renders active availability icons using current orientation and direction settings.
+     *
+     * @param drawContext draw context
+     * @param client      active client instance
      */
-    public void render(DrawContext drawContext, MinecraftClient client) {
-        World world = client.world;
-        if (world == null || client.player == null || client.options.hudHidden) {
+    @Override
+    public void render(GuiGraphicsExtractor drawContext, Minecraft client) {
+        Level level = client.level;
+        if (level == null || client.player == null || client.options.hideGui) {
             return;
         }
 
-        int screenWidth = client.getWindow().getScaledWidth();
-        int screenHeight = client.getWindow().getScaledHeight();
+        int screenWidth = client.getWindow().getGuiScaledWidth();
+        int screenHeight = client.getWindow().getGuiScaledHeight();
         int iconSize = ModConfig.getHudIconSize().getPixels();
         ModConfig.IconOrientation configuredOrientation = ModConfig.getHudIconOrientation();
         ModConfig.IconDirection iconDirection = ModConfig.getHudIconDirection();
@@ -58,8 +65,16 @@ public class IconWidget extends HudWidget {
             case AUTO -> configuredOrientation;
         };
 
+        boolean positiveDirection = switch (iconDirection) {
+            case LEFT, UP -> false;
+            case RIGHT, DOWN -> true;
+            case AUTO -> effectiveOrientation == ModConfig.IconOrientation.HORIZONTAL
+                    ? this.x <= (screenWidth / 2)
+                    : this.y <= (screenHeight / 2);
+        };
+
         LocalTime now = LocalTime.now(GAME_TIME_ZONE);
-        List<AvailabilityEntry> entries = collectEntries(world, now);
+        List<AvailabilityEntry> entries = collectEntries(level, now);
         int iconCount = Math.max(1, entries.size());
         int delta = iconSize + ICON_SPACING;
 
@@ -70,7 +85,18 @@ public class IconWidget extends HudWidget {
                 ? iconSize + ((iconCount - 1) * delta)
                 : iconSize;
 
+        int oldWidth = this.width;
+        int oldHeight = this.height;
         setSize(layoutWidth, layoutHeight);
+
+        if (!positiveDirection) {
+            if (effectiveOrientation == ModConfig.IconOrientation.HORIZONTAL) {
+                setPosition(this.x + (oldWidth - this.width), this.y);
+            } else {
+                setPosition(this.x, this.y + (oldHeight - this.height));
+            }
+        }
+
         keepInBounds(screenWidth, screenHeight);
 
         IconLayout layout = IconLayout.create(
@@ -85,22 +111,24 @@ public class IconWidget extends HudWidget {
                 screenHeight
         );
 
-        drawEntries(drawContext, layout, entries);
+        for (AvailabilityEntry entry : entries) {
+            layout.draw(drawContext, entry.icon());
+        }
     }
 
-    private static List<AvailabilityEntry> collectEntries(World world, LocalTime now) {
+    private static List<AvailabilityEntry> collectEntries(Level level, LocalTime now) {
         List<AvailabilityEntry> entries = new ArrayList<>();
-        entries.addAll(AvailabilityRegistry.entriesForSlot(AvailabilitySlot.WEATHER, world, now));
-        entries.addAll(AvailabilityRegistry.entriesForSlot(AvailabilitySlot.ALL_DAY, world, now));
+        entries.addAll(AvailabilityRegistry.entriesForSlot(AvailabilitySlot.WEATHER, level, now));
+        entries.addAll(AvailabilityRegistry.entriesForSlot(AvailabilitySlot.ALL_DAY, level, now));
 
-        if (world.isRaining() || world.isThundering()) {
-            entries.addAll(AvailabilityRegistry.entriesForSlot(AvailabilitySlot.BAD_WEATHER, world, now));
+        if (level.isRaining() || level.isThundering()) {
+            entries.addAll(AvailabilityRegistry.entriesForSlot(AvailabilitySlot.BAD_WEATHER, level, now));
         } else {
-            entries.addAll(AvailabilityRegistry.entriesForSlot(slotFor(now), world, now));
+            entries.addAll(AvailabilityRegistry.entriesForSlot(slotFor(now), level, now));
         }
 
-        entries.addAll(AvailabilityRegistry.entriesForSlot(AvailabilitySlot.SPECIAL, world, now));
-        entries.addAll(AvailabilityRegistry.entriesForSlot(AvailabilitySlot.SHOP, world, now));
+        entries.addAll(AvailabilityRegistry.entriesForSlot(AvailabilitySlot.SPECIAL, level, now));
+        entries.addAll(AvailabilityRegistry.entriesForSlot(AvailabilitySlot.SHOP, level, now));
         return entries;
     }
 
@@ -117,14 +145,8 @@ public class IconWidget extends HudWidget {
         return AvailabilitySlot.NIGHT;
     }
 
-    private static void drawEntries(DrawContext context, IconLayout layout, List<AvailabilityEntry> entries) {
-        for (AvailabilityEntry entry : entries) {
-            layout.draw(context, entry.icon());
-        }
-    }
-
-    private static void drawIcon(DrawContext context, Identifier icon, int x, int y, int iconSize) {
-        context.drawTexture(RenderPipelines.GUI_TEXTURED, icon, x, y, 0f, 0f, iconSize, iconSize, iconSize, iconSize);
+    private static void drawIcon(GuiGraphicsExtractor context, Identifier icon, int x, int y, int iconSize) {
+        context.blit(RenderPipelines.GUI_TEXTURED, icon, x, y, 0f, 0f, iconSize, iconSize, iconSize, iconSize);
     }
 
     private static final class IconLayout {
@@ -172,7 +194,7 @@ public class IconWidget extends HudWidget {
             return new IconLayout(x, y, width, height, iconSize, orientation, positiveDirection);
         }
 
-        private void draw(DrawContext context, Identifier icon) {
+        private void draw(GuiGraphicsExtractor context, Identifier icon) {
             int delta = iconSize + ICON_SPACING;
             int drawX;
             int drawY;

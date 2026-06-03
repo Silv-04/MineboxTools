@@ -8,105 +8,102 @@ import fr.silv.availability.AvailabilitySection;
 import fr.silv.hud.widget.HudWidgetManager;
 import fr.silv.hud.widget.config.CheckboxListWidget;
 import fr.silv.hud.widget.config.ConfigOption;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.CyclingButtonWidget;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.text.Text;
+import fr.silv.items.ItemHighlightHandler;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.CycleButton;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Main in-game HUD menu screen for MineboxTools.
  */
 public class HudMenuScreen extends Screen {
+    private static final int BACKGROUND_COLOR = 0x90000000;
+    private static final int HELP_TEXT_COLOR = 0xFFB0B0B0;
+
     private String searchQuery = "";
-    private TextFieldWidget searchField;
+    private EditBox searchField;
     private CheckboxListWidget insectList;
     private CheckboxListWidget shopList;
     private List<AvailabilityEntry> insectEntries = List.of();
     private List<AvailabilityEntry> worldEntries = List.of();
 
     /**
-     * Creates a new HudMenuScreen instance.
+     * Creates a new HudMenuScreen.
      */
     public HudMenuScreen() {
-        super(Text.of("MineboxTools Menu"));
+        super(Component.literal("MineboxTools Menu"));
     }
 
     @Override
-    /**
-        * Initializes the menu layout, toggles, lists, and search field.
-     */
     public void init() {
         super.init();
         Lang.load(ModConfig.getLanguage());
 
-        ButtonWidget languageButton = ButtonWidget.builder(languageLabel(), button -> {
+        Button languageButton = Button.builder(languageLabel(), button -> {
             String nextLanguage = switch (ModConfig.getLanguage()) {
                 case "en_us" -> "fr_fr";
-                case "fr_fr" -> "pl_pl";
-                case "pl_pl" -> "en_us";
+                case "fr_fr" -> "en_us";
                 default -> "en_us";
             };
             ModConfig.setLanguage(nextLanguage);
             Lang.load(ModConfig.getLanguage());
             ModConfig.save();
-            clearAndInit();
-        }).dimensions(20, 20, 160, 20).build();
+            rebuildWidgets();
+        }).bounds(20, 20, 160, 20).build();
 
-        CyclingButtonWidget<Boolean> durabilityToggle = createBooleanToggle(
+        CycleButton<Boolean> durabilityToggle = createBooleanToggle(
                 20, 60, "mineboxtools.menu.durability",
                 ModConfig.isEnabled(ModConfig.FeatureFlag.DURABILITY),
-                value -> ModConfig.setEnabled(ModConfig.FeatureFlag.DURABILITY, value)
-        );
+                value -> ModConfig.setEnabled(ModConfig.FeatureFlag.DURABILITY, value));
 
-        CyclingButtonWidget<Boolean> tooltipToggle = createBooleanToggle(
+        CycleButton<Boolean> tooltipToggle = createBooleanToggle(
                 20, 80, "mineboxtools.menu.tooltip",
                 ModConfig.isEnabled(ModConfig.FeatureFlag.TOOLTIP),
-                value -> ModConfig.setEnabled(ModConfig.FeatureFlag.TOOLTIP, value)
-        );
+                value -> ModConfig.setEnabled(ModConfig.FeatureFlag.TOOLTIP, value));
 
-        CyclingButtonWidget<ConfigOption> statDisplayToggle = createConfigOptionToggle(
+        CycleButton<ConfigOption> statDisplayToggle = createEnumToggle(
                 20, 100, "mineboxtools.menu.stats",
-                ModConfig.getStatDisplay(),
-                ModConfig::setStatDisplay
-        );
+                ConfigOption.values(), ConfigOption::getDisplayName,
+                ModConfig.getStatDisplay(), ModConfig::setStatDisplay);
 
-        CyclingButtonWidget<Boolean> handToggle = createBooleanToggle(
+        CycleButton<Boolean> handToggle = createBooleanToggle(
                 20, 120, "mineboxtools.menu.hand",
                 ModConfig.isEnabled(ModConfig.FeatureFlag.HAND),
-                value -> ModConfig.setEnabled(ModConfig.FeatureFlag.HAND, value)
-        );
+                value -> ModConfig.setEnabled(ModConfig.FeatureFlag.HAND, value));
 
-        CyclingButtonWidget<Boolean> locationToggle = createBooleanToggle(
+        CycleButton<Boolean> locationToggle = createBooleanToggle(
                 20, 140, "mineboxtools.menu.location",
                 ModConfig.isEnabled(ModConfig.FeatureFlag.LOCATION),
-                value -> ModConfig.setEnabled(ModConfig.FeatureFlag.LOCATION, value)
-        );
+                value -> ModConfig.setEnabled(ModConfig.FeatureFlag.LOCATION, value));
 
-        CyclingButtonWidget<ModConfig.IconSize> iconSizeToggle = createIconSizeToggle(
-            20, 160, "mineboxtools.menu.icon_size",
-            ModConfig.getHudIconSize(),
-            ModConfig::setHudIconSize
-        );
+        CycleButton<ModConfig.IconSize> iconSizeToggle = createEnumToggle(
+                20, 160, "mineboxtools.menu.icon_size",
+                ModConfig.IconSize.values(), value -> Component.literal(Lang.get(value.getLabelKey())),
+                ModConfig.getHudIconSize(), ModConfig::setHudIconSize);
 
-        CyclingButtonWidget<ModConfig.IconOrientation> iconOrientationToggle = createIconOrientationToggle(
-            20, 180, "mineboxtools.menu.icon_orientation",
-            ModConfig.getHudIconOrientation(),
-            ModConfig::setHudIconOrientation
-        );
+        CycleButton<ModConfig.IconOrientation> iconOrientationToggle = createEnumToggle(
+                20, 180, "mineboxtools.menu.icon_orientation",
+                ModConfig.IconOrientation.values(), value -> Component.literal(Lang.get(value.getLabelKey())),
+                ModConfig.getHudIconOrientation(), ModConfig::setHudIconOrientation);
 
-        CyclingButtonWidget<ModConfig.IconDirection> iconDirectionToggle = createIconDirectionToggle(
-            20, 200, "mineboxtools.menu.icon_direction",
-            ModConfig.getHudIconDirection(),
-            ModConfig::setHudIconDirection,
-            iconOrientationToggle
-        );
+        CycleButton<ModConfig.IconDirection> iconDirectionToggle = CycleButton.<ModConfig.IconDirection>builder(
+                        value -> Component.literal(Lang.get(value.getLabelKey())),
+                        ModConfig.getHudIconDirection())
+                .withValues(ModConfig.IconDirection.values())
+                .create(20, 200, 160, 20, Component.literal(Lang.get("mineboxtools.menu.icon_direction")), (b, value) -> {
+                    ModConfig.setHudIconDirection(value);
+                    updateIconOrientationToggleState(iconOrientationToggle, value);
+                    ModConfig.save();
+                });
 
         updateIconOrientationToggleState(iconOrientationToggle, ModConfig.getHudIconDirection());
 
@@ -117,64 +114,92 @@ public class HudMenuScreen extends Screen {
         int insectListTop = listTop + insectSearchHeight;
         int insectListHeight = shopListHeight - insectSearchHeight;
 
-        ButtonWidget customHudButton = ButtonWidget.builder(Text.literal(Lang.get("mineboxtools.menu.hud")), button ->
-                MinecraftClient.getInstance().setScreen(new HudConfigScreen(HudWidgetManager.getWidgets()))
-        ).dimensions(20, 240, 160, 20).build();
+        Button customHudButton = Button.builder(Component.literal(Lang.get("mineboxtools.menu.hud")), button ->
+                Minecraft.getInstance().setScreen(new HudConfigScreen(HudWidgetManager.getWidgets()))
+        ).bounds(20, 240, 160, 20).build();
 
-        searchField = new TextFieldWidget(
-            this.textRenderer,
+        EditBox[] highlightFieldRef = new EditBox[1];
+        highlightFieldRef[0] = new EditBox(
+                this.font, 20, 280, 118, 20,
+                Component.literal("Highlight"));
+        highlightFieldRef[0].setMaxLength(3);
+        highlightFieldRef[0].setHint(Component.literal("0-100"));
+        highlightFieldRef[0].setValue(String.valueOf(ItemHighlightHandler.getThreshold()));
+        highlightFieldRef[0].setEditable(ItemHighlightHandler.isEnabled());
+        highlightFieldRef[0].setResponder(value -> {
+            try {
+                int parsed = Integer.parseInt(value);
+                if (parsed >= 0 && parsed <= 100) {
+                    ItemHighlightHandler.setThreshold(parsed);
+                }
+            } catch (NumberFormatException ignored) {
+            }
+        });
+
+        Button[] highlightToggle = new Button[1];
+        highlightToggle[0] = Button.builder(
+                Component.literal(ItemHighlightHandler.isEnabled() ? "ON" : "OFF"),
+                button -> {
+                    boolean next = !ItemHighlightHandler.isEnabled();
+                    ItemHighlightHandler.setEnabled(next);
+                    button.setMessage(Component.literal(next ? "ON" : "OFF"));
+                    highlightFieldRef[0].setEditable(next);
+                }
+        ).bounds(142, 280, 38, 20).build();
+
+        searchField = new EditBox(
+                this.font,
                 this.width - 170,
                 listTop,
                 listWidth,
                 insectSearchHeight,
-            Text.literal("Search")
-        );
+                Component.literal("Search"));
         searchField.setMaxLength(64);
-        searchField.setPlaceholder(Text.literal("Search insects..."));
-        searchField.setText(searchQuery);
-        searchField.setChangedListener(value -> {
+        searchField.setHint(Component.literal("Search insects..."));
+        searchField.setValue(searchQuery);
+        searchField.setResponder(value -> {
             searchQuery = value;
             refreshInsectList();
         });
 
         insectList = new CheckboxListWidget(
-                MinecraftClient.getInstance(),
-            this.width - 170,
+                Minecraft.getInstance(),
+                this.width - 170,
                 insectListTop,
                 listWidth,
                 insectListHeight,
-                20
-        );
+                20);
         insectEntries = AvailabilityRegistry.entriesForSection(AvailabilitySection.INSECTS);
 
         shopList = new CheckboxListWidget(
-                MinecraftClient.getInstance(),
-            this.width - 330,
+                Minecraft.getInstance(),
+                this.width - 330,
                 listTop,
                 listWidth,
                 shopListHeight,
-                20
-        );
+                20);
         worldEntries = AvailabilityRegistry.entriesForSection(AvailabilitySection.WORLD);
 
         refreshInsectList();
         addCheckboxOptions(shopList, worldEntries);
 
-        addDrawableChild(languageButton);
-        addDrawableChild(durabilityToggle);
-        addDrawableChild(tooltipToggle);
-        addDrawableChild(statDisplayToggle);
-        addDrawableChild(handToggle);
-        addDrawableChild(locationToggle);
-        addDrawableChild(iconSizeToggle);
-        addDrawableChild(iconOrientationToggle);
-        addDrawableChild(iconDirectionToggle);
-        addDrawableChild(searchField);
-        addDrawableChild(insectList);
-        addDrawableChild(shopList);
-        addDrawableChild(customHudButton);
-        addDrawableChild(ButtonWidget.builder(Text.literal(Lang.get("mineboxtools.menu.close")), button -> close())
-                .dimensions(this.width - 100, this.height - 40, 80, 20)
+        addRenderableWidget(languageButton);
+        addRenderableWidget(durabilityToggle);
+        addRenderableWidget(tooltipToggle);
+        addRenderableWidget(statDisplayToggle);
+        addRenderableWidget(handToggle);
+        addRenderableWidget(locationToggle);
+        addRenderableWidget(iconSizeToggle);
+        addRenderableWidget(iconOrientationToggle);
+        addRenderableWidget(iconDirectionToggle);
+        addRenderableWidget(searchField);
+        addRenderableWidget(insectList);
+        addRenderableWidget(shopList);
+        addRenderableWidget(customHudButton);
+        addRenderableWidget(highlightFieldRef[0]);
+        addRenderableWidget(highlightToggle[0]);
+        addRenderableWidget(Button.builder(Component.literal(Lang.get("mineboxtools.menu.close")), button -> onClose())
+                .bounds(this.width - 100, this.height - 40, 80, 20)
                 .build());
 
         setFocused(searchField);
@@ -182,107 +207,62 @@ public class HudMenuScreen extends Screen {
     }
 
     @Override
-    /**
-        * Renders the menu background, widgets, and contextual helper text.
-        *
-        * @param drawContext draw context
-        * @param mouseX current mouse X position
-        * @param mouseY current mouse Y position
-        * @param delta frame interpolation delta
-     */
-    public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
-        drawContext.fill(0, 0, this.width, this.height, 0x90000000);
-        super.render(drawContext, mouseX, mouseY, delta);
+    public void extractRenderState(GuiGraphicsExtractor drawContext, int mouseX, int mouseY, float delta) {
+        drawContext.fill(0, 0, this.width, this.height, BACKGROUND_COLOR);
+        super.extractRenderState(drawContext, mouseX, mouseY, delta);
 
         if (ModConfig.getHudIconDirection() != ModConfig.IconDirection.AUTO) {
-            drawContext.drawText(
-                    this.textRenderer,
-                    Text.literal(Lang.get("mineboxtools.menu.icon_orientation.auto_only")),
+            drawContext.text(
+                    this.font,
+                    Component.literal(Lang.get("mineboxtools.menu.icon_orientation.auto_only")),
                     20,
                     224,
-                    0xFFB0B0B0,
-                    false
-            );
+                    HELP_TEXT_COLOR,
+                    false);
         }
+
+        drawContext.text(
+                this.font,
+                Component.literal(Lang.get("mineboxtools.menu.highlight")),
+                20,
+                270,
+                HELP_TEXT_COLOR,
+                false);
     }
 
     @Override
-    /**
-     * Keeps gameplay simulation running while this menu is open.
-     *
-     * @return always {@code false} to avoid pausing the game
-     */
-    public boolean shouldPause() {
+    public boolean isPauseScreen() {
         return false;
     }
 
-    private Text languageLabel() {
+    private Component languageLabel() {
         return switch (ModConfig.getLanguage()) {
-            case "fr_fr" -> Text.of("Langue : FR");
-            case "pl_pl" -> Text.of("Język: PL");
-            default -> Text.of("Language: EN");
+            case "fr_fr" -> Component.literal("Langue : FR");
+            default -> Component.literal("Language: EN");
         };
     }
 
-    private CyclingButtonWidget<Boolean> createBooleanToggle(int x, int y, String langKey,
-                                                             boolean initialValue, Consumer<Boolean> setter) {
-        return CyclingButtonWidget.onOffBuilder(initialValue)
-                .build(x, y, 160, 20, Text.literal(Lang.get(langKey)), (button, value) -> {
+    private CycleButton<Boolean> createBooleanToggle(int x, int y, String langKey,
+                                                    boolean initialValue, Consumer<Boolean> setter) {
+        return CycleButton.onOffBuilder(initialValue)
+                .create(x, y, 160, 20, Component.literal(Lang.get(langKey)), (button, value) -> {
                     setter.accept(value);
                     ModConfig.save();
                 });
     }
 
-    private CyclingButtonWidget<ConfigOption> createConfigOptionToggle(int x, int y, String langKey,
-                                                                       ConfigOption initialValue, Consumer<ConfigOption> setter) {
-        return CyclingButtonWidget.builder(ConfigOption::getDisplayName)
-                .values(ConfigOption.values())
-                .initially(initialValue)
-                .build(x, y, 160, 20, Text.literal(Lang.get(langKey)), (button, value) -> {
+    private <T> CycleButton<T> createEnumToggle(int x, int y, String langKey,
+                                                T[] values, Function<T, Component> display,
+                                                T initialValue, Consumer<T> setter) {
+        return CycleButton.<T>builder(display, initialValue)
+                .withValues(values)
+                .create(x, y, 160, 20, Component.literal(Lang.get(langKey)), (button, value) -> {
                     setter.accept(value);
                     ModConfig.save();
                 });
     }
 
-    private CyclingButtonWidget<ModConfig.IconSize> createIconSizeToggle(int x, int y, String langKey,
-                                                                          ModConfig.IconSize initialValue,
-                                                                          Consumer<ModConfig.IconSize> setter) {
-        return CyclingButtonWidget.<ModConfig.IconSize>builder(value -> Text.literal(Lang.get(value.getLabelKey())))
-            .values(List.of(ModConfig.IconSize.values()))
-                .initially(initialValue)
-                .build(x, y, 160, 20, Text.literal(Lang.get(langKey)), (button, value) -> {
-                    setter.accept(value);
-                    ModConfig.save();
-                });
-    }
-
-    private CyclingButtonWidget<ModConfig.IconOrientation> createIconOrientationToggle(int x, int y, String langKey,
-                                                                                         ModConfig.IconOrientation initialValue,
-                                                                                         Consumer<ModConfig.IconOrientation> setter) {
-        return CyclingButtonWidget.<ModConfig.IconOrientation>builder(value -> Text.literal(Lang.get(value.getLabelKey())))
-            .values(List.of(ModConfig.IconOrientation.values()))
-                .initially(initialValue)
-                .build(x, y, 160, 20, Text.literal(Lang.get(langKey)), (button, value) -> {
-                    setter.accept(value);
-                    ModConfig.save();
-                });
-    }
-
-    private CyclingButtonWidget<ModConfig.IconDirection> createIconDirectionToggle(int x, int y, String langKey,
-                                                                                     ModConfig.IconDirection initialValue,
-                                                                                     Consumer<ModConfig.IconDirection> setter,
-                                                                                     CyclingButtonWidget<ModConfig.IconOrientation> orientationToggle) {
-        return CyclingButtonWidget.<ModConfig.IconDirection>builder(value -> Text.literal(Lang.get(value.getLabelKey())))
-            .values(List.of(ModConfig.IconDirection.values()))
-                .initially(initialValue)
-                .build(x, y, 160, 20, Text.literal(Lang.get(langKey)), (button, value) -> {
-                    setter.accept(value);
-                    updateIconOrientationToggleState(orientationToggle, value);
-                    ModConfig.save();
-                });
-    }
-
-    private static void updateIconOrientationToggleState(CyclingButtonWidget<ModConfig.IconOrientation> orientationToggle,
+    private static void updateIconOrientationToggleState(CycleButton<ModConfig.IconOrientation> orientationToggle,
                                                          ModConfig.IconDirection direction) {
         orientationToggle.active = direction == ModConfig.IconDirection.AUTO;
     }
@@ -309,7 +289,7 @@ public class HudMenuScreen extends Screen {
                 continue;
             }
 
-            insectList.addOption(Text.of(localizedLabel), entry.isEnabled(), checked -> {
+            insectList.addOption(Component.literal(localizedLabel), entry.isEnabled(), checked -> {
                 entry.setEnabled(checked);
                 ModConfig.save();
             }, entry.icon());
@@ -318,7 +298,7 @@ public class HudMenuScreen extends Screen {
 
     private void addCheckboxOptions(CheckboxListWidget list, List<AvailabilityEntry> entries) {
         for (AvailabilityEntry entry : entries) {
-            list.addOption(Text.of(Lang.get(entry.langKey())), entry.isEnabled(), checked -> {
+            list.addOption(Component.literal(Lang.get(entry.langKey())), entry.isEnabled(), checked -> {
                 entry.setEnabled(checked);
                 ModConfig.save();
             }, entry.icon());

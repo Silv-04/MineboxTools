@@ -3,7 +3,19 @@ package fr.silv.constants;
 import java.time.LocalTime;
 
 /**
- * Provides time-window helpers for full-moon and new-moon checks.
+ * Time-window helpers used by availability rules.
+ *
+ * <p>Time slots (MORNING, AFTERNOON, EVENING, NIGHT) are based on the current
+ * minute of the real-world clock, not in-game Minecraft time:
+ * <ul>
+ *   <li>NIGHT — minutes 0–14</li>
+ *   <li>MORNING — minutes 15–29</li>
+ *   <li>AFTERNOON — minutes 30–44</li>
+ *   <li>EVENING — minutes 45–59</li>
+ * </ul>
+ *
+ * <p>Shop opening windows are computed from {@code minute * 60 + second} (total
+ * seconds within the current minute). Moon cycle windows are based on the hour.
  */
 public class DaylightCycle {
     // Fullmoon
@@ -43,17 +55,6 @@ public class DaylightCycle {
         return (now.isAfter(NewMoonStart1) && now.isBefore(NewMoonEnd1)) ||
                 (now.isAfter(NewMoonStart2) && now.isBefore(NewMoonEnd2)) ||
                 (now.isAfter(NewMoonStart3) && now.isBefore(NewMoonEnd3));
-    }
-
-    /**
-        * Checks whether the current time is in the first quarter of the cycle.
-        *
-        * @param now in-game clock time
-        * @return {@code true} during the new-day period
-     */
-    public static boolean isNewDay(LocalTime now) {
-        int minute = now.getMinute();
-        return minute <= 15;
     }
 
     // Night

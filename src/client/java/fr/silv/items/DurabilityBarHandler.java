@@ -1,30 +1,38 @@
 package fr.silv.items;
 
-import java.util.*;
-
 import fr.silv.ModConfig;
-import org.slf4j.Logger;
-
 import fr.silv.utils.MineboxItemDataUtils;
 import fr.silv.utils.MineboxItemStatUtils;
 import fr.silv.utils.ModLog;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.LoreComponent;
-import net.minecraft.component.type.NbtComponent;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableTextContent;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.ItemLore;
+import org.slf4j.Logger;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.WeakHashMap;
 
 /**
  * Renders custom durability bars for supported items.
  */
-public class DurabilityBarHandler {
+public final class DurabilityBarHandler {
     private static final Logger LOGGER = ModLog.getLogger(DurabilityBarHandler.class);
     private static final long DURABILITY_LOG_THROTTLE_MS = 10_000;
+    private static final String DURABILITY_STAT_KEY = "mbx.durability";
 
     private static final Map<ItemStack, Integer> durabilityCache = new WeakHashMap<>();
     private static final Map<ItemStack, Integer> nbtHashCache = new WeakHashMap<>();
@@ -34,20 +42,23 @@ public class DurabilityBarHandler {
             "hammer_", "vein_", "watering_can_", "sponge_", "bucket_",
             "laborer_", "basket_seeds_", "block_stick_", "leaf_blower", "silk_touch_");
 
+    private DurabilityBarHandler() {
+    }
+
     /**
-     * Registers command handlers.
+     * Registers the per-tick durability scanning hook.
      */
     public static void register() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (!ModConfig.isEnabled(ModConfig.FeatureFlag.DURABILITY)) return;
-            ClientPlayerEntity player = client.player;
+            LocalPlayer player = client.player;
             if (player != null) {
                 Set<ItemStack> scannedItems = Collections.newSetFromMap(new IdentityHashMap<>());
-                scanInventory(player.getInventory().getMainStacks(), scannedItems);
-                scanItem(player.getOffHandStack(), scannedItems);
-                if (player.currentScreenHandler != null) {
-                    for (Slot slot : player.currentScreenHandler.slots) {
-                        scanItem(slot.getStack(), scannedItems);
+                scanInventory(player.getInventory().getNonEquipmentItems(), scannedItems);
+                scanItem(player.getOffhandItem(), scannedItems);
+                if (player.containerMenu != null) {
+                    for (Slot slot : player.containerMenu.slots) {
+                        scanItem(slot.getItem(), scannedItems);
                     }
                 }
             }
@@ -61,28 +72,24 @@ public class DurabilityBarHandler {
     }
 
     private static void scanItem(ItemStack item, Set<ItemStack> scannedItems) {
-        if (item == null || item.isEmpty())
-            return;
-        if (!scannedItems.add(item))
-            return;
+        if (item == null || item.isEmpty()) return;
+        if (!scannedItems.add(item)) return;
 
-        NbtComponent nbtComponent = item.get(DataComponentTypes.CUSTOM_DATA);
-        if (nbtComponent == null) return;
+        CustomData customData = item.get(DataComponents.CUSTOM_DATA);
+        if (customData == null) return;
 
-        int nbtHash = nbtComponent.hashCode();
+        int nbtHash = customData.hashCode();
         Integer previousHash = nbtHashCache.get(item);
-        if (previousHash != null && previousHash == nbtHash)
-            return;
+        if (previousHash != null && previousHash == nbtHash) return;
         nbtHashCache.put(item, nbtHash);
 
-        if (MineboxItemDataUtils.isDisplayOnlyItem(item))
-            return;
+        if (MineboxItemDataUtils.isDisplayOnlyItem(item)) return;
 
         Optional<MineboxItemDataUtils.PersistentItemData> itemDataOptional = MineboxItemDataUtils.getPersistentItemData(item);
         if (itemDataOptional.isEmpty()) return;
         MineboxItemDataUtils.PersistentItemData itemData = itemDataOptional.get();
         String id = itemData.itemId();
-        NbtCompound persistent = itemData.persistentData();
+        CompoundTag persistent = itemData.persistentData();
 
         if (id.contains("haversack") || id.contains("block_infinite_chest")) {
             String[] amountInside = getHaverackAmountInside(item);
@@ -99,7 +106,7 @@ public class DurabilityBarHandler {
         } else if (startsWithSupportedPrefix(id)) {
             Map<String, int[]> stats = statsCache.computeIfAbsent(id, MineboxItemStatUtils::getStatsFor);
 
-            int[] durabilityRange = stats.get("mbx.durability");
+            int[] durabilityRange = stats.get(DURABILITY_STAT_KEY);
             if (durabilityRange != null && durabilityRange.length > 0) {
                 int max = durabilityRange[0];
                 Optional<Integer> currentOptional = MineboxItemDataUtils.getCurrentDurability(persistent);
@@ -115,12 +122,11 @@ public class DurabilityBarHandler {
 
     private static boolean startsWithSupportedPrefix(String id) {
         for (String prefix : SUPPORTED_PREFIXES) {
-            if (id.startsWith(prefix))
-                return true;
+            if (id.startsWith(prefix)) return true;
         }
-        return id.startsWith("harvester_") &&
-                !(id.contains("lumberjack") || id.contains("fisher") || id.contains("miner")
-                        || id.contains("alchemist"));
+        return id.startsWith("harvester_")
+                && !(id.contains("lumberjack") || id.contains("fisher") || id.contains("miner")
+                || id.contains("alchemist"));
     }
 
     private static void applyDurability(ItemStack item, int current, int max) {
@@ -132,35 +138,34 @@ public class DurabilityBarHandler {
 
         Integer previous = durabilityCache.get(item);
         int damage = max - current;
-        if (previous != null && previous == damage)
-            return;
+        if (previous != null && previous == damage) return;
 
-        if (item.get(DataComponentTypes.UNBREAKABLE) != null) {
-            item.remove(DataComponentTypes.UNBREAKABLE);
+        if (item.get(DataComponents.UNBREAKABLE) != null) {
+            item.remove(DataComponents.UNBREAKABLE);
         }
 
-        Integer previousMax = item.get(DataComponentTypes.MAX_DAMAGE);
+        Integer previousMax = item.get(DataComponents.MAX_DAMAGE);
         if (previousMax == null || previousMax != max) {
-            item.set(DataComponentTypes.MAX_DAMAGE, max);
+            item.set(DataComponents.MAX_DAMAGE, max);
         }
-        item.set(DataComponentTypes.DAMAGE, damage);
+        item.set(DataComponents.DAMAGE, damage);
         durabilityCache.put(item, damage);
     }
 
     /**
-        * Parses current and maximum stored amount from a haversack lore line.
-        *
-        * @param item haversack item stack
-        * @return two-element array [current, max], or {@code null} when not found
+     * Parses current and maximum stored amount from a haversack lore line.
+     *
+     * @param item haversack item stack
+     * @return two-element array [current, max], or {@code null} when not found
      */
     public static String[] getHaverackAmountInside(ItemStack item) {
-        LoreComponent loreComponent = item.get(DataComponentTypes.LORE);
-        if (loreComponent != null) {
-            for (Text lore : loreComponent.lines()) {
-                if (lore.getContent() instanceof TranslatableTextContent translatable) {
+        ItemLore lore = item.get(DataComponents.LORE);
+        if (lore != null) {
+            for (Component line : lore.lines()) {
+                if (line.getContents() instanceof TranslatableContents translatable) {
                     if ("mbx.items.infinite_bag.amount_inside".equals(translatable.getKey())) {
                         Object arg = translatable.getArgs()[0];
-                        String text = (arg instanceof Text t) ? t.getString() : (arg instanceof String s ? s : null);
+                        String text = (arg instanceof Component t) ? t.getString() : (arg instanceof String s ? s : null);
                         if (text != null && text.contains("/")) {
                             String[] parts = text.split("/");
                             if (parts.length == 2) {

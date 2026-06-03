@@ -1,15 +1,14 @@
 package fr.silv.hud.widget;
 
-import fr.silv.items.DurabilityBarHandler;
 import fr.silv.ModConfig;
+import fr.silv.items.DurabilityBarHandler;
 import fr.silv.utils.MineboxItemDataUtils;
 import fr.silv.utils.ModLog;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.Colors;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 import org.slf4j.Logger;
 
 import java.util.Optional;
@@ -19,9 +18,10 @@ import java.util.Optional;
  */
 public class DurabilityWidget extends HudWidget {
     private static final Logger LOGGER = ModLog.getLogger(DurabilityWidget.class);
+    private static final int TEXT_COLOR = 0xFFFFFFFF;
 
     /**
-     * Creates a new DurabilityWidget instance.
+     * Creates a new DurabilityWidget with persisted screen position.
      */
     public DurabilityWidget() {
         super("durability_widget",
@@ -30,16 +30,16 @@ public class DurabilityWidget extends HudWidget {
                 160, 30);
     }
 
-    @Override
     /**
-        * Renders durability values for main-hand and off-hand items when available.
-        *
-        * @param context draw context
-        * @param client active client instance
+     * Renders durability values for main-hand and off-hand items when available.
+     *
+     * @param context draw context
+     * @param client  active client instance
      */
-    public void render(DrawContext context, MinecraftClient client) {
+    @Override
+    public void render(GuiGraphicsExtractor context, Minecraft client) {
         if (!ModConfig.isEnabled(ModConfig.FeatureFlag.HAND)) return;
-        if (client.options.hudHidden) return;
+        if (client.options.hideGui) return;
 
         if (client.player == null) {
             ModLog.warnThrottled(LOGGER, "durability-widget:null-player", 10_000,
@@ -47,22 +47,22 @@ public class DurabilityWidget extends HudWidget {
             return;
         }
 
-        ItemStack offHandStack = client.player.getOffHandStack();
+        ItemStack offHandStack = client.player.getOffhandItem();
         String offHandDurability = getOffHandDurability(offHandStack);
-        ItemStack mainHandStack = client.player.getMainHandStack();
+        ItemStack mainHandStack = client.player.getMainHandItem();
         String mainHandDurability = getMainHandDurability(mainHandStack);
 
-        TextRenderer textRenderer = client.textRenderer;
+        Font font = client.font;
         if (!mainHandDurability.isEmpty()) {
-            context.drawItem(mainHandStack, this.x, this.y);
-            context.drawTextWithShadow(textRenderer, Text.literal(mainHandDurability), this.x + 18, this.y + 4, Colors.WHITE);
+            context.item(mainHandStack, this.x, this.y);
+            context.text(font, Component.literal(mainHandDurability), this.x + 18, this.y + 4, TEXT_COLOR);
             if (!offHandDurability.isEmpty()) {
-                context.drawItem(offHandStack, this.x, this.y + 16);
-                context.drawTextWithShadow(textRenderer, Text.literal(offHandDurability), this.x + 18, this.y + 20, Colors.WHITE);
+                context.item(offHandStack, this.x, this.y + 16);
+                context.text(font, Component.literal(offHandDurability), this.x + 18, this.y + 20, TEXT_COLOR);
             }
         } else if (!offHandDurability.isEmpty()) {
-            context.drawItem(offHandStack, this.x, this.y);
-            context.drawTextWithShadow(textRenderer, Text.literal(offHandDurability), this.x + 18, this.y + 4, Colors.WHITE);
+            context.item(offHandStack, this.x, this.y);
+            context.text(font, Component.literal(offHandDurability), this.x + 18, this.y + 4, TEXT_COLOR);
         }
     }
 
@@ -89,8 +89,7 @@ public class DurabilityWidget extends HudWidget {
                 try {
                     int current = Integer.parseInt(amountInside[0]);
                     int max = Integer.parseInt(amountInside[1]);
-                    String text = current + "/" + max;
-                    return text;
+                    return current + "/" + max;
                 } catch (NumberFormatException e) {
                     ModLog.warnThrottled(LOGGER, "durability-widget:invalid-haversack", 10_000,
                             "Invalid haversack amount {}", String.join("/", amountInside), e);

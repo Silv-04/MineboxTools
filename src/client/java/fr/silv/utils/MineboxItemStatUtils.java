@@ -2,13 +2,18 @@ package fr.silv.utils;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import fr.silv.model.MineboxStat;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableTextContent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import org.slf4j.Logger;
 
 import com.google.gson.JsonArray;
@@ -19,21 +24,29 @@ import com.google.gson.JsonParser;
 /**
  * Parses and caches per-item statistics from resources.
  */
-public class MineboxItemStatUtils {
-    private static final Logger ItemStatsRangeLoaderLogger = ModLog.getLogger(MineboxItemStatUtils.class);
-    private static final Map<String, Map<String, int[]>> statRanges = new HashMap<>();
+public final class MineboxItemStatUtils {
+    private static final Logger LOGGER = ModLog.getLogger(MineboxItemStatUtils.class);
+    private static final Map<String, Map<String, int[]>> STAT_RANGES = new HashMap<>();
+    private static final Pattern INTEGER_PATTERN = Pattern.compile("-?\\d+");
+    private static final Pattern SIGNED_INTEGER_PATTERN = Pattern.compile("[+-]?\\d+");
+    private static final String BONUS_KEY = "mbx.bonus";
+    private static final String STAT_KEY_PREFIX = "mbx.stats.";
+
+    private MineboxItemStatUtils() {
+    }
 
     /**
-     * Loads persisted data into memory.
+     * Loads stat ranges from the bundled JSON resource into memory.
+     * Safe to call multiple times — the cache is cleared and rebuilt on each call.
      */
     public static void load() {
         try (InputStream input = MineboxItemStatUtils.class.getClassLoader()
-                .getResourceAsStream("assets/mineboxtools/mineboxItemsStats.json")) {
-            ItemStatsRangeLoaderLogger.info("Loading item stats ranges from JSON file...");
+                .getResourceAsStream("assets/mineboxtools/mineboxItems.json")) {
+            LOGGER.info("Loading item stats ranges from JSON file...");
             if (input != null) {
                 String json = new String(input.readAllBytes(), StandardCharsets.UTF_8);
                 JsonObject root = JsonParser.parseString(json).getAsJsonObject();
-                statRanges.clear();
+                STAT_RANGES.clear();
 
                 for (Map.Entry<String, JsonElement> itemEntry : root.entrySet()) {
                     String itemId = itemEntry.getKey();
@@ -46,63 +59,61 @@ public class MineboxItemStatUtils {
                         if (value.isJsonArray()) {
                             JsonArray arr = value.getAsJsonArray();
                             if (arr.size() == 2) {
-                                int[] range = new int[] { arr.get(0).getAsInt(), arr.get(1).getAsInt() };
+                                int[] range = new int[]{arr.get(0).getAsInt(), arr.get(1).getAsInt()};
                                 itemStats.put(stat.getKey(), range);
                             }
                         } else if (value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber()) {
                             int val = value.getAsInt();
-                            itemStats.put(stat.getKey(), new int[] { val, val });
+                            itemStats.put(stat.getKey(), new int[]{val, val});
                         }
                     }
-                    statRanges.put(itemId, itemStats);
+                    STAT_RANGES.put(itemId, itemStats);
                 }
             }
-            ItemStatsRangeLoaderLogger.info("Item stats ranges loaded successfully.");
+            LOGGER.info("Item stats ranges loaded successfully.");
         } catch (Exception e) {
-            ItemStatsRangeLoaderLogger.error("Failed to load item stats ranges from JSON file.", e);
+            LOGGER.error("Failed to load item stats ranges from JSON file.", e);
         }
     }
 
     /**
-        * Returns configured stat ranges for a given item id.
-        *
-        * @param itemId item identifier to query
-        * @return map of stat key to min/max range
+     * Returns configured stat ranges for a given item id.
+     *
+     * @param itemId item identifier to query
+     * @return map of stat key to {@code [min, max]} range; empty when unknown
      */
     public static Map<String, int[]> getStatsFor(String itemId) {
-        return statRanges.getOrDefault(itemId, Collections.emptyMap());
+        return STAT_RANGES.getOrDefault(itemId, Collections.emptyMap());
     }
 
     /**
-        * Extracts a base stat value from a lore text line.
-        *
-        * @param line lore line to parse
-        * @param validKeys supported stat translation keys
-        * @return parsed stat value, or {@code null} when no valid stat is found
+     * Extracts a base stat value from a lore text line, ignoring bonus segments.
+     *
+     * @param line      lore line to parse
+     * @param validKeys supported stat translation keys
+     * @return parsed stat value, or {@code null} when no valid stat is found
      */
-    public static MineboxStat extractStatsFromLine(Text line, Set<String> validKeys) {
-        TranslatableTextContent content = findTranslatable(line, validKeys);
-        if (content == null)
+    public static MineboxStat extractStatsFromLine(Component line, Set<String> validKeys) {
+        TranslatableContents content = findTranslatable(line, validKeys);
+        if (content == null) {
             return null;
+        }
 
         String key = content.getKey();
-        if (!validKeys.contains(key))
+        if (!validKeys.contains(key)) {
             return null;
+        }
 
-        List<Text> flat = flattenText(line);
-
-        for (Text segment : flat) {
-            if (segment.getContent() instanceof TranslatableTextContent trContent) {
-                if (trContent.getKey().equals("mbx.bonus"))
-                    continue;
+        for (Component segment : flattenText(line)) {
+            if (segment.getContents() instanceof TranslatableContents trContent
+                    && BONUS_KEY.equals(trContent.getKey())) {
+                continue;
             }
 
-            String raw = segment.getString();
-            Matcher matcher = Pattern.compile("-?\\d+").matcher(raw);
+            Matcher matcher = INTEGER_PATTERN.matcher(segment.getString());
             if (matcher.find()) {
                 try {
-                    int value = Integer.parseInt(matcher.group());
-                    return new MineboxStat(key, value);
+                    return new MineboxStat(key, Integer.parseInt(matcher.group()));
                 } catch (NumberFormatException e) {
                     return null;
                 }
@@ -113,45 +124,44 @@ public class MineboxItemStatUtils {
     }
 
     /**
-        * Extracts a stat value from lore and includes optional bonus values.
-        *
-        * @param line lore line to parse
-        * @param validKeys supported stat translation keys
-        * @return combined stat value including bonus, or {@code null} when unavailable
+     * Extracts a stat value from lore and adds any bonus segment found on the same line.
+     *
+     * @param line      lore line to parse
+     * @param validKeys supported stat translation keys
+     * @return combined stat value including bonus, or {@code null} when unavailable
      */
-    public static MineboxStat extractStatsFromLineWithBonus(Text line, Set<String> validKeys) {
-        TranslatableTextContent content = findTranslatable(line, validKeys);
-        if (content == null) return null;
+    public static MineboxStat extractStatsFromLineWithBonus(Component line, Set<String> validKeys) {
+        TranslatableContents content = findTranslatable(line, validKeys);
+        if (content == null) {
+            return null;
+        }
 
         String key = content.getKey();
-        if (!validKeys.contains(key)) return null;
-
-        List<Text> flat = flattenText(line);
+        if (!validKeys.contains(key)) {
+            return null;
+        }
 
         Integer baseValue = null;
         Integer bonusValue = null;
         Integer pendingNumber = null;
 
-        Pattern intPat = Pattern.compile("[+-]?\\d+");
-
-        for (Text segment : flat) {
-            String raw = segment.getString();
-            Matcher m = intPat.matcher(raw);
+        for (Component segment : flattenText(line)) {
+            Matcher m = SIGNED_INTEGER_PATTERN.matcher(segment.getString());
             if (m.find()) {
                 try {
                     pendingNumber = Integer.parseInt(m.group());
-                } catch (NumberFormatException ignored) {}
+                } catch (NumberFormatException ignored) {
+                }
             }
 
-            if (segment.getContent() instanceof TranslatableTextContent tr) {
+            if (segment.getContents() instanceof TranslatableContents tr) {
                 String k = tr.getKey();
-
-                if (k.startsWith("mbx.stats.")) {
+                if (k.startsWith(STAT_KEY_PREFIX)) {
                     if (pendingNumber != null && baseValue == null) {
                         baseValue = pendingNumber;
                         pendingNumber = null;
                     }
-                } else if (k.equals("mbx.bonus")) {
+                } else if (BONUS_KEY.equals(k)) {
                     if (pendingNumber != null && bonusValue == null) {
                         bonusValue = pendingNumber;
                         pendingNumber = null;
@@ -164,53 +174,33 @@ public class MineboxItemStatUtils {
             baseValue = pendingNumber;
         }
 
-        if (baseValue == null) return null;
+        if (baseValue == null) {
+            return null;
+        }
 
         int total = baseValue + (bonusValue != null ? bonusValue : 0);
         return new MineboxStat(key, total);
     }
 
-
-    private static List<Text> flattenText(Text text) {
-        List<Text> result = new java.util.ArrayList<>();
+    private static List<Component> flattenText(Component text) {
+        List<Component> result = new ArrayList<>();
         result.add(text);
-        for (Text sibling : text.getSiblings()) {
+        for (Component sibling : text.getSiblings()) {
             result.addAll(flattenText(sibling));
         }
         return result;
     }
 
-    private static TranslatableTextContent findTranslatable(Text text, Set<String> validKeys) {
-        if (text.getContent() instanceof TranslatableTextContent content && validKeys.contains(content.getKey())) {
+    private static TranslatableContents findTranslatable(Component text, Set<String> validKeys) {
+        if (text.getContents() instanceof TranslatableContents content && validKeys.contains(content.getKey())) {
             return content;
         }
-        for (Text sibling : text.getSiblings()) {
-            TranslatableTextContent result = findTranslatable(sibling, validKeys);
-            if (result != null)
+        for (Component sibling : text.getSiblings()) {
+            TranslatableContents result = findTranslatable(sibling, validKeys);
+            if (result != null) {
                 return result;
+            }
         }
         return null;
-    }
-
-    /**
-        * Compares two stat lists by stat key and numeric value.
-        *
-        * @param listA first list to compare
-        * @param listB second list to compare
-        * @return {@code true} when both lists contain equivalent stat/value pairs
-     */
-    public static boolean areEquals(List<MineboxStat> listA, List<MineboxStat> listB) {
-        if (listA.size() != listB.size()) return false;
-        for (MineboxStat statA : listA) {
-            boolean found = false;
-            for (MineboxStat statB : listB) {
-                if (statA.getStat().equals(statB.getStat()) && statA.getValue() == statB.getValue()) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) return false;
-        }
-        return true;
     }
 }

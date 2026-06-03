@@ -23,9 +23,9 @@ public class MineboxItemUtils {
      */
     public static void load() {
         try (InputStream input = MineboxItemUtils.class.getClassLoader()
-                .getResourceAsStream("assets/mineboxtools/mineboxItems.json")) {
+                .getResourceAsStream("assets/mineboxtools/mineboxHarvestables.json")) {
             if (input == null) {
-                LOGGER.error("Cannot find mineboxItems.json !");
+                LOGGER.error("Cannot find mineboxHarvestables.json !");
                 return;
             }
 
