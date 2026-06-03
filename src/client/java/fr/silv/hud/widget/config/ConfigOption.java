@@ -1,19 +1,20 @@
 package fr.silv.hud.widget.config;
 
-import net.minecraft.text.Text;
+import fr.silv.Lang;
+import net.minecraft.network.chat.Component;
 
 /**
  * Enumerates display modes used by configurable HUD/stat rendering.
  */
 public enum ConfigOption {
-    SIMPLE("Simple"),
-    ADVANCED("Advanced"),
-    OFF("Off");
+    SIMPLE("mineboxtools.menu.stats.simple"),
+    ADVANCED("mineboxtools.menu.stats.advanced"),
+    OFF("mineboxtools.menu.stats.off");
 
-    private final String name;
+    private final String translationKey;
 
-    ConfigOption(String name) {
-        this.name = name;
+    ConfigOption(String translationKey) {
+        this.translationKey = translationKey;
     }
 
     /**
@@ -21,7 +22,7 @@ public enum ConfigOption {
      *
      * @return text instance for this option label
      */
-    public Text getDisplayName() {
-        return Text.literal(name);
+    public Component getDisplayName() {
+        return Component.literal(Lang.get(translationKey));
     }
 }

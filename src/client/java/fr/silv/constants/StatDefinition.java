@@ -1,11 +1,11 @@
 package fr.silv.constants;
 
 import fr.silv.Lang;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.text.TextColor;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -19,14 +19,26 @@ import java.util.stream.Collectors;
  * Defines supported stat keys, labels, colors, and symbol metadata.
  */
 public enum StatDefinition {
-    FORTUNE("mbx.stats.fortune", "mineboxtools.stat.fortune", 1, 0xEC8C2E, "\uD83D\uDD31"),
-    LUCK("mbx.stats.luck", "mineboxtools.stat.luck", 1, 0x3D84A8, "\uD83C\uDF0A"),
-    INTELLIGENCE("mbx.stats.intelligence", "mineboxtools.stat.intelligence", 1, 0xE24A2E, "\uD83D\uDD25"),
-    STRENGTH("mbx.stats.strength", "mineboxtools.stat.strength", 1, 0xA55F26, "\u20AA"),
-    HEALTH("mbx.stats.health", "mineboxtools.stat.health", 1, 0xE24A63, "\u2764"),
-    AGILITY("mbx.stats.agility", "mineboxtools.stat.agility", 1, 0x6BC047, "\u2604"),
-    WISDOM("mbx.stats.wisdom", "mineboxtools.stat.wisdom", 1, 0x9457D3, "\u263D"),
-    DEFENSE("mbx.stats.defense", "mineboxtools.stat.defense", 1, 0x1F8ECD, "\uD83D\uDEE1");
+    AGILITY("mbx.stats.agility", "mineboxtools.stat.agility", 1, 0x6BC047, "☄"),
+    DEFENSE("mbx.stats.defense", "mineboxtools.stat.defense", 1, 0x9E9E9E, "🛡"),
+    DEXTERITY("mbx.stats.dexterity", "mineboxtools.stat.dexterity", 1, 0xBDBDBD, "✗"),
+    ENDURANCE("mbx.stats.endurance", "mineboxtools.stat.endurance", 1, 0x4CAF50, "💪"),
+    ENERGY("mbx.stats.energy", "mineboxtools.stat.energy", 1, 0xFFD700, "⚡"),
+    FORTUNE("mbx.stats.fortune", "mineboxtools.stat.fortune", 1, 0xEC8C2E, "🔱"),
+    MINING_FORTUNE("mbx.stats.mining_fortune", "mineboxtools.stat.mining_fortune", 1, 0x9E9E9E, "⛏"),
+    FISHING_FORTUNE("mbx.stats.fishing_fortune", "mineboxtools.stat.fishing_fortune", 1, 0x29B6F6, "🎣"),
+    WOODCUTTING_FORTUNE("mbx.stats.woodcutting_fortune", "mineboxtools.stat.woodcutting_fortune", 1, 0x8D6E63, "🪓"),
+    FARMING_FORTUNE("mbx.stats.farming_fortune", "mineboxtools.stat.farming_fortune", 1, 0x8BC34A, "🌾"),
+    GATHERING_FORTUNE("mbx.stats.gathering_fortune", "mineboxtools.stat.gathering_fortune", 1, 0x66BB6A, "🌿"),
+    LOOTING_FORTUNE("mbx.stats.looting_fortune", "mineboxtools.stat.looting_fortune", 1, 0xBA68C8, "💎"),
+    HEALTH("mbx.stats.health", "mineboxtools.stat.health", 1, 0xE24A63, "❤"),
+    INTELLIGENCE("mbx.stats.intelligence", "mineboxtools.stat.intelligence", 1, 0xE24A2E, "🔥"),
+    LUCK("mbx.stats.luck", "mineboxtools.stat.luck", 1, 0x3D84A8, "🌊"),
+    MOVEMENT_SPEED("mbx.stats.movement_speed", "mineboxtools.stat.movement_speed", 1, 0x26C6DA, "«"),
+    STRENGTH("mbx.stats.strength", "mineboxtools.stat.strength", 1, 0xA55F26, "₪"),
+    WISDOM("mbx.stats.wisdom", "mineboxtools.stat.wisdom", 1, 0x9457D3, "☽"),
+    ATTACK_SPEED("mbx.stats.attack_speed", "mineboxtools.stat.attack_speed", 1, 0xFFEB3B, "⚔"),
+    CHARISMA("mbx.stats.charisma", "mineboxtools.stat.charisma", 1, 0xF06292, "⚓");
 
     private static final Map<String, StatDefinition> BY_KEY = Arrays.stream(values())
             .collect(Collectors.toMap(StatDefinition::key, Function.identity()));
@@ -87,8 +99,8 @@ public enum StatDefinition {
      * @param content text to style
      * @return colored text instance
      */
-    public Text styleText(String content) {
-        MutableText text = Text.literal(content);
+    public Component styleText(String content) {
+        MutableComponent text = Component.literal(content);
         return text.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(color)));
     }
 
@@ -106,9 +118,9 @@ public enum StatDefinition {
     }
 
     /**
-        * Returns all stat keys in declaration order.
-        *
-        * @return ordered set of supported stat keys
+     * Returns all stat keys in declaration order.
+     *
+     * @return ordered set of supported stat keys
      */
     public static Set<String> keys() {
         return Arrays.stream(values())
@@ -122,7 +134,7 @@ public enum StatDefinition {
      * @param content text to style
      * @return white-styled text instance
      */
-    public static Text defaultStyle(String content) {
-        return Text.literal(content).setStyle(Style.EMPTY.withColor(Formatting.WHITE));
+    public static Component defaultStyle(String content) {
+        return Component.literal(content).setStyle(Style.EMPTY.withColor(ChatFormatting.WHITE));
     }
 }

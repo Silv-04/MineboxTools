@@ -1,51 +1,70 @@
 package fr.silv.constants;
 
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.Identifier;
 
 /**
  * Holds texture identifiers used by HUD elements and shop/insect icons.
  */
-public class Icons {
+public final class Icons {
+    private static final String NAMESPACE = "mineboxtools";
+
+    private Icons() {
+    }
+
+    private static Identifier shop(String name) {
+        return Identifier.fromNamespaceAndPath(NAMESPACE, "textures/shops/" + name + ".png");
+    }
+
+    private static Identifier insect(String name) {
+        return Identifier.fromNamespaceAndPath(NAMESPACE, "textures/insects/" + name + ".png");
+    }
+
+    private static Identifier root(String name) {
+        return Identifier.fromNamespaceAndPath(NAMESPACE, "textures/" + name + ".png");
+    }
+
     // Shops
-    public static final Identifier BakeryICON = Identifier.of("mineboxtools", "textures/shops/yellow_macaron.png");
-    public static final Identifier ItalianRestaurantICON = Identifier.of("mineboxtools", "textures/shops/cheese.png");
-    public static final Identifier CocktailBarICON = Identifier.of("mineboxtools", "textures/shops/yellow_cocktail.png");
-    public static final Identifier CoffeeShopICON = Identifier.of("mineboxtools", "textures/shops/yellow_coffee.png");
-    public static final Identifier HerbShopICON = Identifier.of("mineboxtools", "textures/shops/herb.png");
-    public static final Identifier PaintingICON = Identifier.of("mineboxtools", "textures/shops/painting.png");
-    public static final Identifier ThunderICON = Identifier.of("mineboxtools", "textures/lightning.png");
-    public static final Identifier RainICON = Identifier.of("mineboxtools", "textures/rain.png");
+    public static final Identifier BakeryICON = shop("yellow_macaron");
+    public static final Identifier ItalianRestaurantICON = shop("cheese");
+    public static final Identifier CocktailBarICON = shop("yellow_cocktail");
+    public static final Identifier CoffeeShopICON = shop("yellow_coffee");
+    public static final Identifier HerbShopICON = shop("herb");
+    public static final Identifier PaintingICON = shop("painting");
+
+    // Weather
+    public static final Identifier ThunderICON = root("lightning");
+    public static final Identifier RainICON = root("rain");
 
     // Insects
-    public static final Identifier AntICON = Identifier.of("mineboxtools", "textures/insects/ant.png");
-    public static final Identifier AtlasMothButterflyICON = Identifier.of("mineboxtools", "textures/insects/atlas_moth_butterfly.png");
-    public static final Identifier BirdwingICON = Identifier.of("mineboxtools", "textures/insects/birdwing.png");
-    public static final Identifier BlueButterflyICON = Identifier.of("mineboxtools", "textures/insects/blue_butterfly.png");
-    public static final Identifier BlueDragonflyICON = Identifier.of("mineboxtools", "textures/insects/blue_dragonfly.png");
-    public static final Identifier BrownAntICON = Identifier.of("mineboxtools", "textures/insects/brown_ant.png");
-    public static final Identifier CentipedeICON = Identifier.of("mineboxtools", "textures/insects/centipede.png");
-    public static final Identifier CricketICON = Identifier.of("mineboxtools", "textures/insects/cricket.png");
-    public static final Identifier CyclommatusICON = Identifier.of("mineboxtools", "textures/insects/cyclommatus.png");
-    public static final Identifier DungBeetleICON = Identifier.of("mineboxtools", "textures/insects/dung_beetle.png");
-    public static final Identifier FireflyICON = Identifier.of("mineboxtools", "textures/insects/firefly.png");
-    public static final Identifier GreenButterflyICON = Identifier.of("mineboxtools", "textures/insects/green_butterfly.png");
-    public static final Identifier GreenDragonflyICON = Identifier.of("mineboxtools", "textures/insects/green_dragonfly.png");
-    public static final Identifier LadybugICON = Identifier.of("mineboxtools", "textures/insects/ladybug.png");
-    public static final Identifier LocustICON = Identifier.of("mineboxtools", "textures/insects/locust.png");
-    public static final Identifier MantisICON = Identifier.of("mineboxtools", "textures/insects/mantis.png");
-    public static final Identifier MosquitoICON = Identifier.of("mineboxtools", "textures/insects/mosquito.png");
-    public static final Identifier NightButterflyICON = Identifier.of("mineboxtools", "textures/insects/night_butterfly.png");
-    public static final Identifier PurpleEmperorICON = Identifier.of("mineboxtools", "textures/insects/purple_emperor.png");
-    public static final Identifier RedDragonflyICON = Identifier.of("mineboxtools", "textures/insects/red_dragonfly.png");
-    public static final Identifier ScorpionICON = Identifier.of("mineboxtools", "textures/insects/scorpion.png");
-    public static final Identifier SnailICON = Identifier.of("mineboxtools", "textures/insects/snail.png");
-    public static final Identifier SpiderICON = Identifier.of("mineboxtools", "textures/insects/spider.png");
-    public static final Identifier StickInsectICON = Identifier.of("mineboxtools", "textures/insects/stick_insect.png");
-    public static final Identifier SunsetMothICON = Identifier.of("mineboxtools", "textures/insects/sunset_moth.png");
-    public static final Identifier TarantulaICON = Identifier.of("mineboxtools", "textures/insects/tarantula.png");
-    public static final Identifier TigerButterflyICON = Identifier.of("mineboxtools", "textures/insects/tiger_butterfly.png");
-    public static final Identifier WaspICON = Identifier.of("mineboxtools", "textures/insects/wasp.png");
-    public static final Identifier WhiteButterflyICON = Identifier.of("mineboxtools", "textures/insects/white_butterfly.png");
-    public static final Identifier YellowButterflyICON = Identifier.of("mineboxtools", "textures/insects/yellow_butterfly.png");
-    public static final Identifier YellowDragonflyICON = Identifier.of("mineboxtools", "textures/insects/yellow_dragonfly.png");
+    public static final Identifier AntICON = insect("ant");
+    public static final Identifier AtlasMothButterflyICON = insect("atlas_moth_butterfly");
+    public static final Identifier BirdwingICON = insect("birdwing");
+    public static final Identifier BlueButterflyICON = insect("blue_butterfly");
+    public static final Identifier BlueDragonflyICON = insect("blue_dragonfly");
+    public static final Identifier BrownAntICON = insect("brown_ant");
+    public static final Identifier CentipedeICON = insect("centipede");
+    public static final Identifier CricketICON = insect("cricket");
+    public static final Identifier CyclommatusICON = insect("cyclommatus");
+    public static final Identifier DungBeetleICON = insect("dung_beetle");
+    public static final Identifier FireflyICON = insect("firefly");
+    public static final Identifier GreenButterflyICON = insect("green_butterfly");
+    public static final Identifier GreenDragonflyICON = insect("green_dragonfly");
+    public static final Identifier LadybugICON = insect("ladybug");
+    public static final Identifier LocustICON = insect("locust");
+    public static final Identifier MantisICON = insect("mantis");
+    public static final Identifier MosquitoICON = insect("mosquito");
+    public static final Identifier NightButterflyICON = insect("night_butterfly");
+    public static final Identifier PurpleEmperorICON = insect("purple_emperor");
+    public static final Identifier RedDragonflyICON = insect("red_dragonfly");
+    public static final Identifier ScorpionICON = insect("scorpion");
+    public static final Identifier SnailICON = insect("snail");
+    public static final Identifier SpiderICON = insect("spider");
+    public static final Identifier StickInsectICON = insect("stick_insect");
+    public static final Identifier SunsetMothICON = insect("sunset_moth");
+    public static final Identifier TarantulaICON = insect("tarantula");
+    public static final Identifier TigerButterflyICON = insect("tiger_butterfly");
+    public static final Identifier WaspICON = insect("wasp");
+    public static final Identifier WhiteButterflyICON = insect("white_butterfly");
+    public static final Identifier YellowButterflyICON = insect("yellow_butterfly");
+    public static final Identifier YellowDragonflyICON = insect("yellow_dragonfly");
 }

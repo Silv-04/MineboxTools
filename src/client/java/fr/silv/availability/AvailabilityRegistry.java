@@ -3,8 +3,8 @@ package fr.silv.availability;
 import fr.silv.ModConfig;
 import fr.silv.constants.DaylightCycle;
 import fr.silv.constants.Icons;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.Level;
 
 import java.time.LocalTime;
 import java.util.Comparator;
@@ -176,13 +176,13 @@ public final class AvailabilityRegistry {
          * conditions and current time.
          *
          * @param slot slot to evaluate
-         * @param world current world state
+         * @param level current world state
          * @param now current reference time
          * @return ordered list of entries that are currently visible for the slot
          */
-        public static List<AvailabilityEntry> entriesForSlot(AvailabilitySlot slot, World world, LocalTime now) {
+        public static List<AvailabilityEntry> entriesForSlot(AvailabilitySlot slot, Level level, LocalTime now) {
                 return ENTRIES_BY_SLOT.getOrDefault(slot, List.of()).stream()
-                                .filter(entry -> entry.isVisible(world, now))
+                                .filter(entry -> entry.isVisible(level, now))
                                 .toList();
         }
 
@@ -197,7 +197,7 @@ public final class AvailabilityRegistry {
          * @return configured insect entry
          */
         private static AvailabilityEntry insect(String langKey, Identifier icon, ModConfig.InsectFlag flag,
-                        BiPredicate<World, LocalTime> visibilityRule,
+                        BiPredicate<Level, LocalTime> visibilityRule,
                         Map<AvailabilitySlot, Integer> displayOrder) {
                 return new AvailabilityEntry(
                                 langKey,
@@ -220,7 +220,7 @@ public final class AvailabilityRegistry {
          * @return configured world-feature entry
          */
         private static AvailabilityEntry worldFeature(String langKey, Identifier icon, ModConfig.FeatureFlag flag,
-                        BiPredicate<World, LocalTime> visibilityRule,
+                        BiPredicate<Level, LocalTime> visibilityRule,
                         Map<AvailabilitySlot, Integer> displayOrder) {
                 return new AvailabilityEntry(
                                 langKey,
@@ -243,7 +243,7 @@ public final class AvailabilityRegistry {
          * @return configured shop entry
          */
         private static AvailabilityEntry worldShop(String langKey, Identifier icon, ModConfig.ShopFlag flag,
-                        BiPredicate<World, LocalTime> visibilityRule,
+                        BiPredicate<Level, LocalTime> visibilityRule,
                         Map<AvailabilitySlot, Integer> displayOrder) {
                 return new AvailabilityEntry(
                                 langKey,
@@ -310,8 +310,8 @@ public final class AvailabilityRegistry {
          * @param slots accepted slots
          * @return predicate that is true when current time matches at least one slot
          */
-        private static BiPredicate<World, LocalTime> during(AvailabilitySlot... slots) {
-                return (world, now) -> {
+        private static BiPredicate<Level, LocalTime> during(AvailabilitySlot... slots) {
+                return (level, now) -> {
                         for (AvailabilitySlot slot : slots) {
                                 if (matchesSlot(now, slot)) {
                                         return true;
@@ -327,7 +327,7 @@ public final class AvailabilityRegistry {
          * @param slots time-based accepted slots
          * @return predicate that is true only in clear weather and matching slot
          */
-        private static BiPredicate<World, LocalTime> clearDuring(AvailabilitySlot... slots) {
+        private static BiPredicate<Level, LocalTime> clearDuring(AvailabilitySlot... slots) {
                 return clearWeather(during(slots));
         }
 
@@ -337,8 +337,8 @@ public final class AvailabilityRegistry {
          * @param rule base rule to compose
          * @return composed rule valid only in clear weather
          */
-        private static BiPredicate<World, LocalTime> clearWeather(BiPredicate<World, LocalTime> rule) {
-                return (world, now) -> !isBadWeather(world) && rule.test(world, now);
+        private static BiPredicate<Level, LocalTime> clearWeather(BiPredicate<Level, LocalTime> rule) {
+                return (level, now) -> !isBadWeather(level) && rule.test(level, now);
         }
 
         /**
@@ -347,8 +347,8 @@ public final class AvailabilityRegistry {
          * @param rule base rule to compose
          * @return composed rule valid only when not thundering and base rule passes
          */
-        private static BiPredicate<World, LocalTime> notThunderingAnd(BiPredicate<World, LocalTime> rule) {
-                return (world, now) -> !world.isThundering() && rule.test(world, now);
+        private static BiPredicate<Level, LocalTime> notThunderingAnd(BiPredicate<Level, LocalTime> rule) {
+                return (level, now) -> !level.isThundering() && rule.test(level, now);
         }
 
         /**
@@ -356,8 +356,8 @@ public final class AvailabilityRegistry {
          *
          * @return predicate that is true when raining or thundering
          */
-        private static BiPredicate<World, LocalTime> badWeather() {
-                return (world, now) -> isBadWeather(world);
+        private static BiPredicate<Level, LocalTime> badWeather() {
+                return (level, now) -> isBadWeather(level);
         }
 
         /**
@@ -365,8 +365,8 @@ public final class AvailabilityRegistry {
          *
          * @return predicate that is true when the world is thundering
          */
-        private static BiPredicate<World, LocalTime> thundering() {
-                return (world, now) -> world.isThundering();
+        private static BiPredicate<Level, LocalTime> thundering() {
+                return (level, now) -> level.isThundering();
         }
 
         /**
@@ -374,8 +374,8 @@ public final class AvailabilityRegistry {
          *
          * @return predicate that is true when raining and not thundering
          */
-        private static BiPredicate<World, LocalTime> rainWithoutThunder() {
-                return (world, now) -> world.isRaining() && !world.isThundering();
+        private static BiPredicate<Level, LocalTime> rainWithoutThunder() {
+                return (level, now) -> level.isRaining() && !level.isThundering();
         }
 
         /**
@@ -383,8 +383,8 @@ public final class AvailabilityRegistry {
          *
          * @return predicate that is true at night when moon cycle matches
          */
-        private static BiPredicate<World, LocalTime> fullOrNewMoonNight() {
-                return (world, now) -> matchesSlot(now, AvailabilitySlot.NIGHT)
+        private static BiPredicate<Level, LocalTime> fullOrNewMoonNight() {
+                return (level, now) -> matchesSlot(now, AvailabilitySlot.NIGHT)
                                 && (DaylightCycle.isFullMoon(now) || DaylightCycle.isNewMoon(now));
         }
 
@@ -393,8 +393,8 @@ public final class AvailabilityRegistry {
          *
          * @return predicate that is true during their opening time window
          */
-        private static BiPredicate<World, LocalTime> cocktailAndMonkeyShopOpen() {
-                return (world, now) -> DaylightCycle.isCocktailAndMonkeyShopOpen(now);
+        private static BiPredicate<Level, LocalTime> cocktailAndMonkeyShopOpen() {
+                return (level, now) -> DaylightCycle.isCocktailAndMonkeyShopOpen(now);
         }
 
         /**
@@ -402,8 +402,8 @@ public final class AvailabilityRegistry {
          *
          * @return predicate that is true during the restaurant opening window
          */
-        private static BiPredicate<World, LocalTime> italianRestaurantOpen() {
-                return (world, now) -> DaylightCycle.isItalianRestaurantOpen(now);
+        private static BiPredicate<Level, LocalTime> italianRestaurantOpen() {
+                return (level, now) -> DaylightCycle.isItalianRestaurantOpen(now);
         }
 
         /**
@@ -411,8 +411,8 @@ public final class AvailabilityRegistry {
          *
          * @return predicate that is true when full moon and opening window both match
          */
-        private static BiPredicate<World, LocalTime> herbShopOpenOnFullMoon() {
-                return (world, now) -> DaylightCycle.isFullMoon(now) && DaylightCycle.isHerbShopOpen(now);
+        private static BiPredicate<Level, LocalTime> herbShopOpenOnFullMoon() {
+                return (level, now) -> DaylightCycle.isFullMoon(now) && DaylightCycle.isHerbShopOpen(now);
         }
 
         /**
@@ -436,10 +436,10 @@ public final class AvailabilityRegistry {
         /**
          * Indicates whether weather conditions are considered bad for clear-only entries.
          *
-         * @param world current world state
+         * @param level current world state
          * @return {@code true} when raining or thundering
          */
-        private static boolean isBadWeather(World world) {
-                return world.isRaining() || world.isThundering();
+        private static boolean isBadWeather(Level level) {
+                return level.isRaining() || level.isThundering();
         }
 }

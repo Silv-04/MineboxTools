@@ -7,14 +7,13 @@ import fr.silv.model.MineboxStat;
 import fr.silv.utils.MineboxItemDataUtils;
 import fr.silv.utils.MineboxItemStatUtils;
 import fr.silv.utils.StatTextUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.LoreComponent;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.Colors;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemLore;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -30,15 +29,17 @@ import java.util.WeakHashMap;
 public class StatWidget extends HudWidget {
     private static final Set<String> ALL_STATS = StatDefinition.keys();
     private static final List<String> STAT_ORDER = List.copyOf(ALL_STATS);
-    private static final Map<LoreComponent, Map<String, Integer>> BASE_LORE_STATS_CACHE = new WeakHashMap<>();
-    private static final Map<LoreComponent, Map<String, Integer>> BONUS_LORE_STATS_CACHE = new WeakHashMap<>();
+    private static final Map<ItemLore, Map<String, Integer>> BASE_LORE_STATS_CACHE = new WeakHashMap<>();
+    private static final Map<ItemLore, Map<String, Integer>> BONUS_LORE_STATS_CACHE = new WeakHashMap<>();
+    private static final int TEXT_COLOR = 0xFFFFFFFF;
+    private static final int PLAYER_STATS_SLOT = 9;
 
     private static Map<String, Integer> cachedPlayerStats = Map.of();
     private static Map<String, Integer> cachedHandStats = Map.of();
     private static List<MineboxStat> cachedCombinedStats = List.of();
 
     /**
-     * Creates a new StatWidget instance.
+     * Creates a new StatWidget with persisted screen position.
      */
     public StatWidget() {
         super("stat_widget",
@@ -47,16 +48,16 @@ public class StatWidget extends HudWidget {
                 40, 90);
     }
 
-    @Override
     /**
-        * Renders aggregated player stats using the configured display mode.
-        *
-        * @param context draw context
-        * @param client active client instance
+     * Renders aggregated player stats using the configured display mode.
+     *
+     * @param context draw context
+     * @param client  active client instance
      */
-    public void render(DrawContext context, MinecraftClient client) {
+    @Override
+    public void render(GuiGraphicsExtractor context, Minecraft client) {
         ConfigOption displayMode = ModConfig.getStatDisplay();
-        if (displayMode == ConfigOption.OFF || client.options.hudHidden) {
+        if (displayMode == ConfigOption.OFF || client.options.hideGui) {
             return;
         }
 
@@ -65,31 +66,38 @@ public class StatWidget extends HudWidget {
             return;
         }
 
-        TextRenderer textRenderer = client.textRenderer;
-        int lineHeight = textRenderer.fontHeight + 2;
+        Font font = client.font;
+        int lineHeight = font.lineHeight + 2;
         int currentY = this.y;
+        int maxWidth = 0;
 
         for (MineboxStat stat : stats) {
-            Text text = StatTextUtils.statColor(formatStat(stat, displayMode), stat.getStat());
-            context.drawTextWithShadow(textRenderer, text, this.x, currentY, Colors.WHITE);
+            Component text = StatTextUtils.statColor(formatStat(stat, displayMode), stat.getStat());
+            int textWidth = font.width(text);
+            if (textWidth > maxWidth) {
+                maxWidth = textWidth;
+            }
+            context.text(font, text, this.x, currentY, TEXT_COLOR);
             currentY += lineHeight;
         }
+
+        this.setSize(maxWidth, stats.size() * lineHeight);
     }
 
     /**
-        * Returns merged player and held-item stat values.
-        * Results are cached and recomputed only when source stats change.
-        *
-        * @param client active client instance
-        * @return combined stat list in stable declaration order
+     * Returns merged player and held-item stat values.
+     * Results are cached and recomputed only when source stats change.
+     *
+     * @param client active client instance
+     * @return combined stat list in stable declaration order
      */
-    public static List<MineboxStat> getCombinedStats(MinecraftClient client) {
+    public static List<MineboxStat> getCombinedStats(Minecraft client) {
         if (client.player == null) {
             return List.of();
         }
 
-        Map<String, Integer> playerStats = extractStats(client.player.getInventory().getStack(9), false);
-        Map<String, Integer> handStats = extractHandStats(client.player.getMainHandStack());
+        Map<String, Integer> playerStats = extractStats(client.player.getInventory().getItem(PLAYER_STATS_SLOT), false);
+        Map<String, Integer> handStats = extractHandStats(client.player.getMainHandItem());
 
         if (cachedPlayerStats.equals(playerStats) && cachedHandStats.equals(handStats)) {
             return cachedCombinedStats;
@@ -123,19 +131,19 @@ public class StatWidget extends HudWidget {
     }
 
     private static Map<String, Integer> extractStats(ItemStack stack, boolean includeBonus) {
-        LoreComponent lore = stack.get(DataComponentTypes.LORE);
+        ItemLore lore = stack.get(DataComponents.LORE);
         if (lore == null) {
             return Map.of();
         }
 
-        Map<LoreComponent, Map<String, Integer>> cache = includeBonus ? BONUS_LORE_STATS_CACHE : BASE_LORE_STATS_CACHE;
+        Map<ItemLore, Map<String, Integer>> cache = includeBonus ? BONUS_LORE_STATS_CACHE : BASE_LORE_STATS_CACHE;
         Map<String, Integer> cachedStats = cache.get(lore);
         if (cachedStats != null) {
             return cachedStats;
         }
 
         Map<String, Integer> stats = new LinkedHashMap<>();
-        for (Text line : lore.lines()) {
+        for (Component line : lore.lines()) {
             MineboxStat stat = includeBonus
                     ? MineboxItemStatUtils.extractStatsFromLineWithBonus(line, ALL_STATS)
                     : MineboxItemStatUtils.extractStatsFromLine(line, ALL_STATS);
@@ -161,7 +169,6 @@ public class StatWidget extends HudWidget {
             if (!exists) {
                 continue;
             }
-
             merged.put(statKey, playerStats.getOrDefault(statKey, 0) + handStats.getOrDefault(statKey, 0));
         }
         return merged;

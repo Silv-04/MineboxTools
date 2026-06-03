@@ -1,7 +1,7 @@
 package fr.silv.availability;
 
-import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.Level;
 
 import java.time.LocalTime;
 import java.util.Map;
@@ -11,13 +11,14 @@ import java.util.function.Consumer;
 
 /**
  * Represents one availability rule entry displayed in the HUD.
- * @param langKey translation key used for the label
- * @param icon icon identifier displayed next to the entry
- * @param section section where this entry is grouped
- * @param enabled supplier returning whether the entry is enabled
- * @param setter consumer used to update the enabled state
+ *
+ * @param langKey        translation key used for the label
+ * @param icon           icon identifier displayed next to the entry
+ * @param section        section where this entry is grouped
+ * @param enabled        supplier returning whether the entry is enabled
+ * @param setter         consumer used to update the enabled state
  * @param visibilityRule predicate that checks if the entry should be visible
- * @param displayOrder per-slot ordering values used for sorting
+ * @param displayOrder   per-slot ordering values used for sorting
  */
 public record AvailabilityEntry(
         String langKey,
@@ -25,12 +26,11 @@ public record AvailabilityEntry(
         AvailabilitySection section,
         BooleanSupplier enabled,
         Consumer<Boolean> setter,
-        BiPredicate<World, LocalTime> visibilityRule,
+        BiPredicate<Level, LocalTime> visibilityRule,
         Map<AvailabilitySlot, Integer> displayOrder
 ) {
     /**
      * Returns the current enabled state for this entry.
-     * The value is read from the user configuration backing this entry.
      *
      * @return {@code true} when this entry is enabled in configuration
      */
@@ -40,7 +40,6 @@ public record AvailabilityEntry(
 
     /**
      * Updates the enabled state for this entry.
-     * This is typically called from menu/HUD configuration controls.
      *
      * @param value new enabled state to persist
      */
@@ -54,10 +53,10 @@ public record AvailabilityEntry(
      * rule (time slot, weather, moon cycle, etc.).
      *
      * @param world current world state used by visibility predicates
-     * @param now current time used by slot-based visibility predicates
+     * @param now   current time used by slot-based visibility predicates
      * @return {@code true} when the entry is enabled and currently visible
      */
-    public boolean isVisible(World world, LocalTime now) {
+    public boolean isVisible(Level world, LocalTime now) {
         return isEnabled() && visibilityRule.test(world, now);
     }
 

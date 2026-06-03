@@ -3,18 +3,18 @@ package fr.silv;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import fr.silv.utils.ModLog;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.resource.Resource;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
 import org.slf4j.Logger;
 
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Loads and resolves localized text entries for the mod.
@@ -23,9 +23,10 @@ public final class Lang {
     private static final Logger LOGGER = ModLog.getLogger(Lang.class);
     private static final Gson GSON = new Gson();
     private static final String DEFAULT_LANGUAGE = "en_us";
-    private static final TypeToken<Map<String, String>> TRANSLATION_TYPE = new TypeToken<>() {};
+    private static final TypeToken<Map<String, String>> TRANSLATION_TYPE = new TypeToken<>() {
+    };
 
-    private static final Map<String, Map<String, String>> CACHE = new HashMap<>();
+    private static final Map<String, Map<String, String>> CACHE = new ConcurrentHashMap<>();
 
     private static Map<String, String> translations = Collections.emptyMap();
     private static Map<String, String> fallbackTranslations = Collections.emptyMap();
@@ -35,17 +36,15 @@ public final class Lang {
     }
 
     /**
-        * Loads translation entries for the requested language into memory.
-        *
-        * @param lang language code to load (falls back to default when invalid)
+     * Loads translation entries for the requested language into memory.
+     *
+     * @param lang language code to load (falls back to default when invalid)
      */
     public static void load(String lang) {
         String requestedLanguage = normalizeLanguage(lang);
-        Map<String, String> requestedFallbackTranslations = loadTranslations(DEFAULT_LANGUAGE);
-        fallbackTranslations = requestedFallbackTranslations;
+        fallbackTranslations = loadTranslations(DEFAULT_LANGUAGE);
 
         boolean hasUsableTranslations = !translations.isEmpty() || !fallbackTranslations.isEmpty();
-
         if (requestedLanguage.equals(loadedLanguage) && hasUsableTranslations) {
             return;
         }
@@ -83,11 +82,19 @@ public final class Lang {
     }
 
     private static Map<String, String> loadTranslations(String lang) {
-        return CACHE.computeIfAbsent(lang, Lang::readTranslations);
+        Map<String, String> cached = CACHE.get(lang);
+        if (cached != null && !cached.isEmpty()) {
+            return cached;
+        }
+        Map<String, String> loaded = readTranslations(lang);
+        if (!loaded.isEmpty()) {
+            CACHE.put(lang, loaded);
+        }
+        return loaded;
     }
 
     private static Map<String, String> readTranslations(String lang) {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (client == null) {
             return Collections.emptyMap();
         }
@@ -99,13 +106,13 @@ public final class Lang {
             return Collections.emptyMap();
         }
 
-        Identifier id = Identifier.of("mineboxtools", "lang/" + lang + ".json");
+        Identifier id = Identifier.fromNamespaceAndPath("mineboxtools", "lang/" + lang + ".json");
         Optional<Resource> resource = resourceManager.getResource(id);
         if (resource.isEmpty()) {
             return Collections.emptyMap();
         }
 
-        try (InputStreamReader reader = new InputStreamReader(resource.get().getInputStream(), StandardCharsets.UTF_8)) {
+        try (InputStreamReader reader = new InputStreamReader(resource.get().open(), StandardCharsets.UTF_8)) {
             Map<String, String> loadedTranslations = GSON.fromJson(reader, TRANSLATION_TYPE.getType());
             return loadedTranslations != null ? Map.copyOf(loadedTranslations) : Collections.emptyMap();
         } catch (Exception e) {

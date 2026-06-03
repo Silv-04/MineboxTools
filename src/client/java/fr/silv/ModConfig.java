@@ -133,7 +133,7 @@ public final class ModConfig {
     /**
      * Returns the current UI language code.
      *
-     * @return language identifier such as {@code en_us}, {@code fr_fr}, or {@code pl_pl}
+     * @return language identifier such as {@code en_us}, {@code fr_fr}
      */
     public static String getLanguage() {
         return general().language;
@@ -164,6 +164,43 @@ public final class ModConfig {
      */
     public static void setStatDisplay(ConfigOption statDisplay) {
         features().statDisplay = statDisplay;
+    }
+
+    /**
+     * Returns whether the item highlight feature is enabled.
+     *
+     * @return {@code true} when golden slot borders are rendered
+     */
+    public static boolean isHighlightEnabled() {
+        return features().highlightEnabled;
+    }
+
+    /**
+     * Updates the item highlight enabled state.
+     *
+     * @param value {@code true} to enable golden slot borders
+     */
+    public static void setHighlightEnabled(boolean value) {
+        features().highlightEnabled = value;
+    }
+
+    /**
+     * Returns the minimum item score (0–100) required to display a highlight border.
+     *
+     * @return highlight score threshold
+     */
+    public static int getHighlightThreshold() {
+        return features().highlightThreshold;
+    }
+
+    /**
+     * Updates the minimum item score threshold for highlight borders.
+     * The value is clamped to the range [0, 100].
+     *
+     * @param value new threshold value
+     */
+    public static void setHighlightThreshold(int value) {
+        features().highlightThreshold = Math.max(0, Math.min(100, value));
     }
 
     /**
@@ -227,14 +264,16 @@ public final class ModConfig {
     }
 
     /**
-     * Stores a HUD widget position and persists the updated configuration.
+     * Stores a HUD widget position and size, then persists the updated configuration.
      *
-     * @param id widget identifier
-     * @param x widget X coordinate in scaled screen space
-     * @param y widget Y coordinate in scaled screen space
+     * @param id     widget identifier
+     * @param x      widget X coordinate in scaled screen space
+     * @param y      widget Y coordinate in scaled screen space
+     * @param width  widget width at save time
+     * @param height widget height at save time
      */
-    public static void setWidgetPosition(String id, int x, int y) {
-        hud().widgetPositions.put(id, new WidgetPos(x, y));
+    public static void setWidgetPosition(String id, int x, int y, int width, int height) {
+        hud().widgetPositions.put(id, new WidgetPos(x, y, width, height));
         save();
     }
 
@@ -253,6 +292,22 @@ public final class ModConfig {
     }
 
     /**
+     * Resolves the saved widget size from persisted state, or returns the provided defaults.
+     *
+     * @param id            widget identifier
+     * @param defaultWidth  fallback width when no saved size exists
+     * @param defaultHeight fallback height when no saved size exists
+     * @return two-element array containing width and height
+     */
+    public static int[] getWidgetSavedSize(String id, int defaultWidth, int defaultHeight) {
+        WidgetPos pos = hud().widgetPositions.get(id);
+        if (pos != null && pos.savedWidth > 0 && pos.savedHeight > 0) {
+            return new int[]{pos.savedWidth, pos.savedHeight};
+        }
+        return new int[]{defaultWidth, defaultHeight};
+    }
+
+    /**
      * Loads persisted data into memory.
      */
     public static void load() {
@@ -266,7 +321,11 @@ public final class ModConfig {
                 LOGGER.warn("Config file is empty or invalid, keeping defaults.");
                 return;
             }
+            boolean hadLegacy = loadedState.hasLegacyFields();
             state = loadedState.withDefaults();
+            if (hadLegacy) {
+                save();
+            }
         } catch (IOException e) {
             LOGGER.error("Failed to load config from {}", CONFIG_FILE, e);
         }
@@ -347,6 +406,7 @@ public final class ModConfig {
             if (hud.iconSize == null) hud.iconSize = IconSize.NORMAL;
             if (hud.iconOrientation == null) hud.iconOrientation = IconOrientation.HORIZONTAL;
             if (hud.iconDirection == null) hud.iconDirection = IconDirection.AUTO;
+            if (features.highlightThreshold == 0 && !features.highlightEnabled) features.highlightThreshold = 50;
             applyLegacyValues();
             return this;
         }
@@ -401,10 +461,65 @@ public final class ModConfig {
             applyLegacy(italianRestaurantToggle, ShopFlag.ITALIAN_RESTAURANT);
             applyLegacy(herbShopToggle, ShopFlag.HERB);
 
-            if (widgetPositions != null) {
-                hud.widgetPositions.clear();
+            if (widgetPositions != null && hud.widgetPositions.isEmpty()) {
                 hud.widgetPositions.putAll(widgetPositions);
             }
+
+            clearLegacyFields();
+        }
+
+        private boolean hasLegacyFields() {
+            return language != null || statToggle != null || durabilityToggle != null
+                    || widgetPositions != null || antToggle != null || coffeeShopToggle != null;
+        }
+
+        private void clearLegacyFields() {
+            language = null;
+            statToggle = null;
+            durabilityToggle = null;
+            tooltipToggle = null;
+            handToggle = null;
+            locationToggle = null;
+            thunderToggle = null;
+            rainToggle = null;
+            antToggle = null;
+            atlasMothToggle = null;
+            birdwingToggle = null;
+            blueButterflyToggle = null;
+            blueDragonflyToggle = null;
+            brownAntToggle = null;
+            centipedeToggle = null;
+            cricketToggle = null;
+            cyclommatusToggle = null;
+            dungBeetleToggle = null;
+            fireflyToggle = null;
+            greenButterflyToggle = null;
+            greenDragonflyToggle = null;
+            ladybugToggle = null;
+            locustToggle = null;
+            mantisToggle = null;
+            mosquitoToggle = null;
+            nightButterflyToggle = null;
+            purpleEmperorToggle = null;
+            redDragonflyToggle = null;
+            scorpionToggle = null;
+            snailToggle = null;
+            spiderToggle = null;
+            stickInsectToggle = null;
+            sunsetMothToggle = null;
+            tarantulaToggle = null;
+            tigerButterflyToggle = null;
+            waspToggle = null;
+            whiteButterflyToggle = null;
+            yellowButterflyToggle = null;
+            yellowDragonflyToggle = null;
+            coffeeShopToggle = null;
+            bakeryToggle = null;
+            cocktailBarToggle = null;
+            paintingShopToggle = null;
+            italianRestaurantToggle = null;
+            herbShopToggle = null;
+            widgetPositions = null;
         }
 
         private void applyLegacy(String value, Consumer<String> setter) {
@@ -450,6 +565,8 @@ public final class ModConfig {
         public boolean location = true;
         public boolean thunder = true;
         public boolean rain = true;
+        public boolean highlightEnabled = false;
+        public int highlightThreshold = 50;
     }
 
     public static final class Insects {
@@ -505,6 +622,8 @@ public final class ModConfig {
     public static final class WidgetPos {
         int x;
         int y;
+        int savedWidth;
+        int savedHeight;
 
         WidgetPos() {
         }
@@ -512,6 +631,13 @@ public final class ModConfig {
         WidgetPos(int x, int y) {
             this.x = x;
             this.y = y;
+        }
+
+        WidgetPos(int x, int y, int savedWidth, int savedHeight) {
+            this.x = x;
+            this.y = y;
+            this.savedWidth = savedWidth;
+            this.savedHeight = savedHeight;
         }
     }
 
