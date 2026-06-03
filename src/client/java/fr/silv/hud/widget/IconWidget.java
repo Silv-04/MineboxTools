@@ -65,12 +65,14 @@ public class IconWidget extends HudWidget {
             case AUTO -> configuredOrientation;
         };
 
+        int[] savedPos = ModConfig.getWidgetPosition("icon_widget");
+
         boolean positiveDirection = switch (iconDirection) {
             case LEFT, UP -> false;
             case RIGHT, DOWN -> true;
             case AUTO -> effectiveOrientation == ModConfig.IconOrientation.HORIZONTAL
-                    ? this.x <= (screenWidth / 2)
-                    : this.y <= (screenHeight / 2);
+                    ? savedPos[0] <= (screenWidth / 2)
+                    : savedPos[1] <= (screenHeight / 2);
         };
 
         LocalTime now = LocalTime.now(GAME_TIME_ZONE);
@@ -85,18 +87,20 @@ public class IconWidget extends HudWidget {
                 ? iconSize + ((iconCount - 1) * delta)
                 : iconSize;
 
-        int oldWidth = this.width;
-        int oldHeight = this.height;
-        setSize(layoutWidth, layoutHeight);
+        int[] savedSize = ModConfig.getWidgetSavedSize("icon_widget", layoutWidth, layoutHeight);
 
+        int drawX = savedPos[0];
+        int drawY = savedPos[1];
         if (!positiveDirection) {
             if (effectiveOrientation == ModConfig.IconOrientation.HORIZONTAL) {
-                setPosition(this.x + (oldWidth - this.width), this.y);
+                drawX = savedPos[0] + savedSize[0] - layoutWidth;
             } else {
-                setPosition(this.x, this.y + (oldHeight - this.height));
+                drawY = savedPos[1] + savedSize[1] - layoutHeight;
             }
         }
 
+        setSize(layoutWidth, layoutHeight);
+        setPosition(drawX, drawY);
         keepInBounds(screenWidth, screenHeight);
 
         IconLayout layout = IconLayout.create(
@@ -106,9 +110,7 @@ public class IconWidget extends HudWidget {
                 this.height,
                 iconSize,
                 effectiveOrientation,
-                iconDirection,
-                screenWidth,
-                screenHeight
+                positiveDirection
         );
 
         for (AvailabilityEntry entry : entries) {
@@ -181,16 +183,7 @@ public class IconWidget extends HudWidget {
                                          int height,
                                          int iconSize,
                                          ModConfig.IconOrientation orientation,
-                                         ModConfig.IconDirection direction,
-                                         int screenWidth,
-                                         int screenHeight) {
-            boolean positiveDirection = switch (direction) {
-                case LEFT, UP -> false;
-                case RIGHT, DOWN -> true;
-                case AUTO -> orientation == ModConfig.IconOrientation.HORIZONTAL
-                        ? x <= (screenWidth / 2)
-                        : y <= (screenHeight / 2);
-            };
+                                         boolean positiveDirection) {
             return new IconLayout(x, y, width, height, iconSize, orientation, positiveDirection);
         }
 
