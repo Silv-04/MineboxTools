@@ -1,5 +1,6 @@
 package fr.silv;
 
+import fr.silv.commands.LookupCommand;
 import fr.silv.commands.MenuCommand;
 import fr.silv.hud.widget.HudWidgetManager;
 import fr.silv.items.DurabilityBarHandler;
@@ -7,6 +8,7 @@ import fr.silv.items.ItemHighlightHandler;
 import fr.silv.items.TooltipHandler;
 import fr.silv.utils.MineboxItemStatUtils;
 import fr.silv.utils.MineboxItemUtils;
+import fr.silv.utils.SkillLevelUtils;
 import fr.silv.utils.ModLog;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
@@ -37,11 +39,14 @@ public class MineboxToolsClient implements ClientModInitializer {
         ClientLifecycleEvents.CLIENT_STARTED.register(client ->
                 Lang.load(ModConfig.getLanguage()));
 
-        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) ->
-                MenuCommand.register(dispatcher));
+        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
+            MenuCommand.register(dispatcher);
+            LookupCommand.register(dispatcher);
+        });
 
         MineboxItemStatUtils.load();
         MineboxItemUtils.load();
+        SkillLevelUtils.load();
         DurabilityBarHandler.register();
 
         ItemTooltipCallback.EVENT.register((stack, context, type, lines) -> {

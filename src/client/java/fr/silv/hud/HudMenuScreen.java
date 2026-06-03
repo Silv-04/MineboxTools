@@ -25,6 +25,7 @@ import java.util.function.Function;
 /**
  * Main in-game HUD menu screen for MineboxTools.
  */
+@SuppressWarnings("null") // Minecraft/Fabric component APIs lack consistent @NonNull annotations
 public class HudMenuScreen extends Screen {
     private static final int BACKGROUND_COLOR = 0x90000000;
     private static final int HELP_TEXT_COLOR = 0xFFB0B0B0;
