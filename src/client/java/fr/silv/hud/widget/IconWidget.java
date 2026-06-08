@@ -18,13 +18,22 @@ import java.util.List;
 
 /**
  * HUD widget that displays contextual status icons.
+ *
+ * <p>{@code x}/{@code y} hold the <b>anchor</b>: the top-left corner of the first icon.
+ * The anchor is the persisted base position and is never derived from the widget size,
+ * so changing the icon count never moves it. The visual bounding box (used for dragging,
+ * hover detection and bounds clamping) is computed from the anchor each frame.</p>
  */
 public class IconWidget extends HudWidget {
     private static final int ICON_SPACING = 2;
     private static final ZoneId GAME_TIME_ZONE = ZoneId.of("UTC");
 
+    private ModConfig.IconOrientation lastOrientation = ModConfig.IconOrientation.HORIZONTAL;
+    private boolean lastPositive = true;
+    private int lastIconSize = ModConfig.IconSize.NORMAL.getPixels();
+
     /**
-     * Creates a new IconWidget with persisted screen position and configured icon size.
+     * Creates a new IconWidget with persisted anchor position and configured icon size.
      */
     public IconWidget() {
         this(initParams());
@@ -35,10 +44,60 @@ public class IconWidget extends HudWidget {
     }
 
     private static int[] initParams() {
-        int defaultSize = ModConfig.getHudIconSize().getPixels();
+        int iconSize = ModConfig.getHudIconSize().getPixels();
         int[] pos = ModConfig.getWidgetPosition("icon_widget");
-        int[] size = ModConfig.getWidgetSavedSize("icon_widget", defaultSize, defaultSize);
-        return new int[]{pos[0], pos[1], size[0], size[1]};
+        // x/y = anchor; size starts at one icon and is updated by setSize() in render().
+        return new int[]{pos[0], pos[1], iconSize, iconSize};
+    }
+
+    /**
+     * Returns the visual top-left X of the icon block, derived from the anchor.
+     */
+    @Override
+    public int getX() {
+        if (lastOrientation == ModConfig.IconOrientation.HORIZONTAL && !lastPositive) {
+            return x - (width - lastIconSize);
+        }
+        return x;
+    }
+
+    /**
+     * Returns the visual top-left Y of the icon block, derived from the anchor.
+     */
+    @Override
+    public int getY() {
+        if (lastOrientation == ModConfig.IconOrientation.VERTICAL && !lastPositive) {
+            return y - (height - lastIconSize);
+        }
+        return y;
+    }
+
+    /**
+     * Converts a visual top-left X into the stored anchor X (top-left of the first icon).
+     *
+     * @param visualX visual top-left X coordinate
+     * @return anchor X coordinate
+     */
+    @Override
+    protected int anchorXFromVisual(int visualX) {
+        if (lastOrientation == ModConfig.IconOrientation.HORIZONTAL && !lastPositive) {
+            return visualX + (width - lastIconSize);
+        }
+        return visualX;
+    }
+
+    /**
+     * Converts a visual top-left Y into the stored anchor Y (top-left of the first icon).
+     *
+     * @param visualY visual top-left Y coordinate
+     * @return anchor Y coordinate
+     */
+    @Override
+    protected int anchorYFromVisual(int visualY) {
+        if (lastOrientation == ModConfig.IconOrientation.VERTICAL && !lastPositive) {
+            return visualY + (height - lastIconSize);
+        }
+        return visualY;
     }
 
     /**
@@ -65,14 +124,13 @@ public class IconWidget extends HudWidget {
             case AUTO -> configuredOrientation;
         };
 
-        int[] savedPos = ModConfig.getWidgetPosition("icon_widget");
-
+        // AUTO direction is decided from the stable anchor, never from the moving block edge.
         boolean positiveDirection = switch (iconDirection) {
             case LEFT, UP -> false;
             case RIGHT, DOWN -> true;
             case AUTO -> effectiveOrientation == ModConfig.IconOrientation.HORIZONTAL
-                    ? savedPos[0] <= (screenWidth / 2)
-                    : savedPos[1] <= (screenHeight / 2);
+                    ? this.x <= (screenWidth / 2)
+                    : this.y <= (screenHeight / 2);
         };
 
         LocalTime now = LocalTime.now(GAME_TIME_ZONE);
@@ -87,25 +145,16 @@ public class IconWidget extends HudWidget {
                 ? iconSize + ((iconCount - 1) * delta)
                 : iconSize;
 
-        int[] savedSize = ModConfig.getWidgetSavedSize("icon_widget", layoutWidth, layoutHeight);
-
-        int drawX = savedPos[0];
-        int drawY = savedPos[1];
-        if (!positiveDirection) {
-            if (effectiveOrientation == ModConfig.IconOrientation.HORIZONTAL) {
-                drawX = savedPos[0] + savedSize[0] - layoutWidth;
-            } else {
-                drawY = savedPos[1] + savedSize[1] - layoutHeight;
-            }
-        }
+        lastOrientation = effectiveOrientation;
+        lastPositive = positiveDirection;
+        lastIconSize = iconSize;
 
         setSize(layoutWidth, layoutHeight);
-        setPosition(drawX, drawY);
         keepInBounds(screenWidth, screenHeight);
 
         IconLayout layout = IconLayout.create(
-                this.x,
-                this.y,
+                getX(),
+                getY(),
                 this.width,
                 this.height,
                 iconSize,

@@ -1,6 +1,7 @@
 package fr.silv.api;
 
 import com.google.gson.annotations.SerializedName;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,6 +29,8 @@ public final class PlayerProfile {
     public String serverInstance;
     /** Player data containing skills and objectives. */
     public Data data;
+    /** Guild the player belongs to, or {@code null} when guildless. */
+    public Guild guild;
 
     /**
      * Top-level player data section.
@@ -53,5 +56,20 @@ public final class PlayerProfile {
      */
     public static final class Objectives {
         public Map<String, Object> relics;
+        /** Number of completed quests per category (e.g. {@code DAILY}, {@code WEEKLY}). */
+        @SerializedName("completed_quests")
+        public Map<String, Integer> completedQuests;
+        /** Identifiers of museum pieces the player has donated. */
+        public List<String> museum;
+    }
+
+    /**
+     * The guild a player belongs to.
+     */
+    public static final class Guild {
+        /** Unique guild identifier. */
+        public String id;
+        /** Display name of the guild. */
+        public String name;
     }
 }

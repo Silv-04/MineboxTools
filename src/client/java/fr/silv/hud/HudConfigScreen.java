@@ -93,7 +93,7 @@ public class HudConfigScreen extends Screen {
     public boolean mouseReleased(MouseButtonEvent event) {
         if (draggingWidget != null && event.button() == 0) {
             ModConfig.setWidgetPosition(draggingWidget.getId(),
-                    draggingWidget.getX(), draggingWidget.getY(),
+                    draggingWidget.getSaveX(), draggingWidget.getSaveY(),
                     draggingWidget.getWidth(), draggingWidget.getHeight());
             draggingWidget = null;
             return true;

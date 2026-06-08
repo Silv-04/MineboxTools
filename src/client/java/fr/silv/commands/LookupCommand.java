@@ -12,6 +12,7 @@ import fr.silv.utils.SkillLevelUtils;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.Minecraft;
+import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
@@ -40,6 +41,10 @@ public final class LookupCommand {
     private static final int COLOR_GREEN  = 0x55FF55;
     private static final int COLOR_RED    = 0xFF5555;
 
+    /** Minimum delay between two lookups to avoid spamming the API. */
+    private static final long COOLDOWN_MS = 3000L;
+    private static long lastRequestMillis = 0L;
+
     private LookupCommand() {
     }
 
@@ -52,6 +57,16 @@ public final class LookupCommand {
         ArgumentType<String> wordArg = StringArgumentType.word();
         dispatcher.register(ClientCommands.literal("mbtlookup")
                 .then(ClientCommands.argument("username", wordArg)
+                        .suggests((context, builder) -> {
+                            var connection = Minecraft.getInstance().getConnection();
+                            if (connection == null) {
+                                return builder.buildFuture();
+                            }
+                            return SharedSuggestionProvider.suggest(
+                                    connection.getOnlinePlayers().stream()
+                                            .map(playerInfo -> playerInfo.getProfile().name()),
+                                    builder);
+                        })
                         .executes(context -> {
                             String username = StringArgumentType.getString(context, "username");
                             execute(context.getSource(), username);
@@ -67,6 +82,18 @@ public final class LookupCommand {
      * @param username player username to look up
      */
     private static void execute(FabricClientCommandSource source, String username) {
+        if (!MineboxApiClient.isValidUsername(username)) {
+            send(source, colored(Lang.get("mineboxtools.command.lookup.error.invalid_username"), COLOR_RED));
+            return;
+        }
+
+        long now = System.currentTimeMillis();
+        if (now - lastRequestMillis < COOLDOWN_MS) {
+            send(source, colored(Lang.get("mineboxtools.command.lookup.error.cooldown"), COLOR_RED));
+            return;
+        }
+        lastRequestMillis = now;
+
         send(source, colored(Lang.get("mineboxtools.command.lookup.loading"), COLOR_YELLOW));
 
         MineboxApiClient.fetchPlayerProfile(username)
@@ -108,6 +135,10 @@ public final class LookupCommand {
             send(source, labelValue(
                     Lang.get("mineboxtools.command.lookup.instance"),
                     profile.serverInstance + " (" + islandName + ")"));
+        }
+
+        if (profile.guild != null && profile.guild.name != null && !profile.guild.name.isEmpty()) {
+            send(source, labelValue(Lang.get("mineboxtools.command.lookup.guild"), profile.guild.name));
         }
 
         send(source, separator());
@@ -159,7 +190,41 @@ public final class LookupCommand {
             }
         }
 
+        appendObjectives(source, profile);
+
         send(source, separator());
+    }
+
+    /**
+     * Appends the museum and completed-quest progression section when data is available.
+     *
+     * @param source  command source used to send chat feedback
+     * @param profile profile data returned by the API
+     */
+    private static void appendObjectives(FabricClientCommandSource source, PlayerProfile profile) {
+        if (profile.data == null || profile.data.objectives == null) {
+            return;
+        }
+        PlayerProfile.Objectives objectives = profile.data.objectives;
+        int museumCount = objectives.museum != null ? objectives.museum.size() : 0;
+        Map<String, Integer> quests = objectives.completedQuests != null ? objectives.completedQuests : Map.of();
+        if (museumCount == 0 && quests.isEmpty()) {
+            return;
+        }
+
+        send(source, separator());
+        send(source, colored(Lang.get("mineboxtools.command.lookup.progress"), COLOR_YELLOW));
+
+        if (museumCount > 0) {
+            send(source, labelValue(Lang.get("mineboxtools.command.lookup.museum"), String.valueOf(museumCount)));
+        }
+        if (!quests.isEmpty()) {
+            int daily = quests.getOrDefault("DAILY", 0);
+            int weekly = quests.getOrDefault("WEEKLY", 0);
+            String value = Lang.get("mineboxtools.command.lookup.quests.daily") + ": " + daily
+                    + "   " + Lang.get("mineboxtools.command.lookup.quests.weekly") + ": " + weekly;
+            send(source, labelValue(Lang.get("mineboxtools.command.lookup.quests"), value));
+        }
     }
 
     /**
@@ -176,6 +241,7 @@ public final class LookupCommand {
             case RATE_LIMITED   -> "mineboxtools.command.lookup.error.rate_limited";
             case SERVER_ERROR   -> "mineboxtools.command.lookup.error.server";
             case NETWORK_ERROR  -> "mineboxtools.command.lookup.error.network";
+            case INVALID_USERNAME -> "mineboxtools.command.lookup.error.invalid_username";
         };
         return colored(Lang.get(key).replace("{0}", username), COLOR_RED);
     }
