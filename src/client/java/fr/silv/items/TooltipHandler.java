@@ -151,11 +151,13 @@ public final class TooltipHandler {
             lines.add(detailLine(location));
         }
 
-        String condition = item.getCondition();
-        if (!condition.isEmpty()) {
+        List<String> conditions = item.getConditions();
+        if (!conditions.isEmpty()) {
             lines.add(Component.literal(""));
             lines.add(sectionTitle("mineboxtools.menu.tooltip.condition", CONDITION_TITLE_COLOR));
-            lines.add(detailLine(condition));
+            for (String condition : conditions) {
+                lines.add(detailLine(condition));
+            }
         }
 
         String boost = item.getBoost();

@@ -643,20 +643,26 @@ public final class ModConfig {
      * Supported icon size presets for HUD icon rendering.
      */
     public enum IconSize {
-        SMALL(16, "mineboxtools.menu.icon_size.small"),
-        NORMAL(24, "mineboxtools.menu.icon_size.normal"),
-        LARGE(32, "mineboxtools.menu.icon_size.large");
+        SMALL(16, 0.75f, "mineboxtools.menu.icon_size.small"),
+        NORMAL(24, 1.0f, "mineboxtools.menu.icon_size.normal"),
+        LARGE(32, 1.5f, "mineboxtools.menu.icon_size.large");
 
         private final int pixels;
+        private final float widgetScale;
         private final String labelKey;
 
-        IconSize(int pixels, String labelKey) {
+        IconSize(int pixels, float widgetScale, String labelKey) {
             this.pixels = pixels;
+            this.widgetScale = widgetScale;
             this.labelKey = labelKey;
         }
 
         public int getPixels() {
             return pixels;
+        }
+
+        public float getWidgetScale() {
+            return widgetScale;
         }
 
         public String getLabelKey() {

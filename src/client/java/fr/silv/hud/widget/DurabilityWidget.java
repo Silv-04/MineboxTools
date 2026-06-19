@@ -53,17 +53,30 @@ public class DurabilityWidget extends HudWidget {
         String mainHandDurability = getMainHandDurability(mainHandStack);
 
         Font font = client.font;
+        float scale = ModConfig.getHudIconSize().getWidgetScale();
+        boolean hasBoth = !mainHandDurability.isEmpty() && !offHandDurability.isEmpty();
+        String activeText = !mainHandDurability.isEmpty() ? mainHandDurability : offHandDurability;
+        int width = 18 + Math.max(font.width(activeText), hasBoth ? font.width(offHandDurability) : 0);
+        int height = hasBoth ? 32 : 16;
+        this.setSize((int) (width * scale), (int) (height * scale));
+
+        context.pose().pushMatrix();
+        context.pose().translate(this.x, this.y);
+        context.pose().scale(scale, scale);
+
         if (!mainHandDurability.isEmpty()) {
-            context.item(mainHandStack, this.x, this.y);
-            context.text(font, Component.literal(mainHandDurability), this.x + 18, this.y + 4, TEXT_COLOR);
+            context.item(mainHandStack, 0, 0);
+            context.text(font, Component.literal(mainHandDurability), 18, 4, TEXT_COLOR);
             if (!offHandDurability.isEmpty()) {
-                context.item(offHandStack, this.x, this.y + 16);
-                context.text(font, Component.literal(offHandDurability), this.x + 18, this.y + 20, TEXT_COLOR);
+                context.item(offHandStack, 0, 16);
+                context.text(font, Component.literal(offHandDurability), 18, 20, TEXT_COLOR);
             }
-        } else if (!offHandDurability.isEmpty()) {
-            context.item(offHandStack, this.x, this.y);
-            context.text(font, Component.literal(offHandDurability), this.x + 18, this.y + 4, TEXT_COLOR);
+        } else {
+            context.item(offHandStack, 0, 0);
+            context.text(font, Component.literal(offHandDurability), 18, 4, TEXT_COLOR);
         }
+
+        context.pose().popMatrix();
     }
 
     private String getMainHandDurability(ItemStack stack) {

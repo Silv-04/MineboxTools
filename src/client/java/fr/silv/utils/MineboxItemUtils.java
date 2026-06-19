@@ -43,10 +43,10 @@ public class MineboxItemUtils {
                     location.add(locElem.getAsString());
                 }
 
-                String condition = obj.get("condition").getAsString();
+                List<String> conditions = parseStringOrArray(obj.get("condition"));
                 String boost = obj.get("boost").getAsString();
 
-                MineboxItem item = new MineboxItem(id, location, condition, boost);
+                MineboxItem item = new MineboxItem(id, location, conditions, boost);
                 mineboxItems.put(id, item);
             }
 
@@ -63,6 +63,20 @@ public class MineboxItemUtils {
      */
     public static MineboxItem get(String itemId) {
         return mineboxItems.get(itemId);
+    }
+
+    private static List<String> parseStringOrArray(JsonElement element) {
+        if (element == null || element.isJsonNull()) return List.of();
+        if (element.isJsonArray()) {
+            List<String> result = new ArrayList<>();
+            for (JsonElement e : element.getAsJsonArray()) {
+                String s = e.getAsString();
+                if (!s.isEmpty()) result.add(s);
+            }
+            return result;
+        }
+        String s = element.getAsString();
+        return s.isEmpty() ? List.of() : List.of(s);
     }
 
 }

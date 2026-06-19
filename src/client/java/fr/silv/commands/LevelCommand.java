@@ -51,8 +51,7 @@ public final class LevelCommand {
                         .then(ClientCommands.argument("skill", StringArgumentType.word())
                                 .suggests((context, builder) -> {
                                     for (String id : SkillLevelUtils.getSortedSkillIds()) {
-                                        String displayName = Lang.get("mineboxtools.skill." + id);
-                                        builder.suggest(id, () -> displayName);
+                                        builder.suggest(Lang.get("mineboxtools.skill." + id));
                                     }
                                     return builder.buildFuture();
                                 })
@@ -80,13 +79,13 @@ public final class LevelCommand {
             return;
         }
 
-        String skillKey = skillId.toLowerCase();
-        int maxLevel = SkillLevelUtils.getMaxLevel(skillKey);
-        if (maxLevel < 0) {
+        String skillKey = SkillLevelUtils.resolveSkillId(skillId);
+        if (skillKey == null) {
             send(source, error(Lang.get("mineboxtools.command.level.error.unknown_skill")
                     .replace("{0}", skillId)));
             return;
         }
+        int maxLevel = SkillLevelUtils.getMaxLevel(skillKey);
 
         if (targetLevel < 2 || targetLevel > maxLevel) {
             send(source, error(Lang.get("mineboxtools.command.level.error.level_out_of_range")

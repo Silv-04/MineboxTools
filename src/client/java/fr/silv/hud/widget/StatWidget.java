@@ -67,9 +67,14 @@ public class StatWidget extends HudWidget {
         }
 
         Font font = client.font;
+        float scale = ModConfig.getHudIconSize().getWidgetScale();
         int lineHeight = font.lineHeight + 2;
-        int currentY = this.y;
+        int currentY = 0;
         int maxWidth = 0;
+
+        context.pose().pushMatrix();
+        context.pose().translate(this.x, this.y);
+        context.pose().scale(scale, scale);
 
         for (MineboxStat stat : stats) {
             Component text = StatTextUtils.statColor(formatStat(stat, displayMode), stat.getStat());
@@ -77,11 +82,12 @@ public class StatWidget extends HudWidget {
             if (textWidth > maxWidth) {
                 maxWidth = textWidth;
             }
-            context.text(font, text, this.x, currentY, TEXT_COLOR);
+            context.text(font, text, 0, currentY, TEXT_COLOR);
             currentY += lineHeight;
         }
 
-        this.setSize(maxWidth, stats.size() * lineHeight);
+        context.pose().popMatrix();
+        this.setSize((int) (maxWidth * scale), (int) (stats.size() * lineHeight * scale));
     }
 
     /**

@@ -16,9 +16,6 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
-import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
-import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
-import net.minecraft.resources.Identifier;
 import net.minecraft.client.Minecraft;
 import org.slf4j.Logger;
 
@@ -59,17 +56,5 @@ public class MineboxToolsClient implements ClientModInitializer {
         });
 
         HudWidgetManager.init();
-        HudElementRegistry.attachElementAfter(VanillaHudElements.SUBTITLES,
-                Identifier.fromNamespaceAndPath("mineboxtools", "widgets"),
-                (context, tickCounter) -> {
-                    Minecraft client = Minecraft.getInstance();
-                    int screenWidth = client.getWindow().getGuiScaledWidth();
-                    int screenHeight = client.getWindow().getGuiScaledHeight();
-                    for (var widget : HudWidgetManager.getWidgets()) {
-                        widget.keepInBounds(screenWidth, screenHeight);
-                        widget.render(context, client);
-                    }
-                    ItemHighlightHandler.renderHotbar(client, context);
-                });
     }
 }

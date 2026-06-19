@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import fr.silv.Lang;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -112,6 +114,24 @@ public final class SkillLevelUtils {
      */
     public static List<String> getSortedSkillIds() {
         return List.copyOf(SORTED_SKILL_IDS);
+    }
+
+    /**
+     * Resolves a translated skill name or raw ID to its canonical lowercase skill ID.
+     * Comparison is case-insensitive. Returns {@code null} when no match is found.
+     *
+     * @param input translated name (e.g. "Mineur") or raw ID (e.g. "miner")
+     * @return canonical skill ID, or {@code null} if unknown
+     */
+    public static String resolveSkillId(String input) {
+        if (input == null) return null;
+        String lower = input.toLowerCase();
+        for (String id : SORTED_SKILL_IDS) {
+            if (id.equals(lower)) return id;
+            String displayName = Lang.get("mineboxtools.skill." + id);
+            if (displayName.equalsIgnoreCase(input)) return id;
+        }
+        return null;
     }
 
     private static SkillsJson parseSkillsJson(InputStream is) {

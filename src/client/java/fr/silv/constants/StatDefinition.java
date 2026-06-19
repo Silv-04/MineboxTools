@@ -22,7 +22,7 @@ public enum StatDefinition {
     AGILITY("mbx.stats.agility", "mineboxtools.stat.agility", 1, 0x89C464, "☄"),
     DEFENSE("mbx.stats.defense", "mineboxtools.stat.defense", 1, 0xCCCCCC, "🛡"),
     DEXTERITY("mbx.stats.dexterity", "mineboxtools.stat.dexterity", 1, 0xE0E0E0, "⚔"),
-    ENDURANCE("mbx.stats.endurance", "mineboxtools.stat.endurance", 1, 0x28A12C, ""),
+    ENDURANCE("mbx.stats.endurance", "mineboxtools.stat.endurance", 1, 0x28A12C, "💪"),
     ENERGY("mbx.stats.energy", "mineboxtools.stat.energy", 1, 0xEDBA21, "⚡"),
     FORTUNE("mbx.stats.fortune", "mineboxtools.stat.fortune", 1, 0xF79440, "🔱"),
     MINING_FORTUNE("mbx.stats.mining_fortune", "mineboxtools.stat.mining_fortune", 1, 0xA0826D, "⛏"),
