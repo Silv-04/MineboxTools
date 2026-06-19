@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -33,6 +34,12 @@ public final class MineboxApiClient {
     /** Valid Minecraft username pattern: 1–16 letters, digits or underscores. */
     private static final Pattern USERNAME_PATTERN = Pattern.compile("^[a-zA-Z0-9_]{1,16}$");
 
+    /** Valid guild name pattern: 1–32 letters, digits, spaces or underscores. */
+    private static final Pattern GUILD_NAME_PATTERN = Pattern.compile("^[a-zA-Z0-9_ ]{1,32}$");
+
+    public static final long COOLDOWN_MS = 3000L;
+    private static volatile long lastRequestMillis = 0L;
+
     /** Mod version resolved from Fabric metadata, used in the User-Agent header. */
     private static final String VERSION = FabricLoader.getInstance()
             .getModContainer("mineboxtools")
@@ -52,6 +59,18 @@ public final class MineboxApiClient {
     }
 
     /**
+     * Acquires the shared request cooldown. Returns {@code true} and records the current
+     * timestamp when enough time has elapsed since the last request; returns {@code false}
+     * immediately otherwise.
+     */
+    public static boolean tryAcquireCooldown() {
+        long now = System.currentTimeMillis();
+        if (now - lastRequestMillis < COOLDOWN_MS) return false;
+        lastRequestMillis = now;
+        return true;
+    }
+
+    /**
      * Validates that a username matches the Minecraft username format.
      *
      * @param username candidate username
@@ -59,6 +78,16 @@ public final class MineboxApiClient {
      */
     public static boolean isValidUsername(String username) {
         return username != null && USERNAME_PATTERN.matcher(username).matches();
+    }
+
+    /**
+     * Validates that a guild name matches the expected format.
+     *
+     * @param guildName candidate guild name
+     * @return {@code true} when the name is safe to embed in a request URL
+     */
+    public static boolean isValidGuildName(String guildName) {
+        return guildName != null && GUILD_NAME_PATTERN.matcher(guildName).matches();
     }
 
     /**
@@ -121,6 +150,68 @@ public final class MineboxApiClient {
                         return ApiResult.<PlayerProfile, LookupError>err(LookupError.NETWORK_ERROR);
                     }
                 });
+    }
+
+    /**
+     * Fetches a guild profile asynchronously.
+     *
+     * @param guildName guild name to look up
+     * @return future resolving to a guild profile or a {@link LookupError}
+     */
+    public static CompletableFuture<ApiResult<GuildProfile, LookupError>> fetchGuildProfile(String guildName) {
+        if (!isValidGuildName(guildName)) {
+            return CompletableFuture.completedFuture(ApiResult.err(LookupError.INVALID_USERNAME));
+        }
+
+        String encodedName = URLEncoder.encode(guildName, StandardCharsets.UTF_8).replace("+", "%20");
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://api.minebox.co/guild/" + encodedName))
+                .timeout(Duration.ofSeconds(10))
+                .header("User-Agent", USER_AGENT)
+                .header("Accept", "application/json")
+                .GET()
+                .build();
+
+        return HTTP_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofInputStream())
+                .handle((response, ex) -> {
+                    if (ex != null) {
+                        LOGGER.error("Network error while fetching guild '{}'", guildName, ex);
+                        return ApiResult.<GuildProfile, LookupError>err(LookupError.NETWORK_ERROR);
+                    }
+                    try (InputStream body = response.body()) {
+                        return switch (response.statusCode()) {
+                            case 200 -> readGuildProfile(body, guildName);
+                            case 404 -> ApiResult.<GuildProfile, LookupError>err(LookupError.NOT_FOUND);
+                            case 403 -> ApiResult.<GuildProfile, LookupError>err(LookupError.PROFILE_PRIVATE);
+                            case 429 -> ApiResult.<GuildProfile, LookupError>err(LookupError.RATE_LIMITED);
+                            default -> {
+                                LOGGER.warn("Minebox API returned HTTP {} for guild '{}'", response.statusCode(), guildName);
+                                yield ApiResult.<GuildProfile, LookupError>err(LookupError.SERVER_ERROR);
+                            }
+                        };
+                    } catch (IOException ioException) {
+                        LOGGER.error("Error reading API response for guild '{}'", guildName, ioException);
+                        return ApiResult.<GuildProfile, LookupError>err(LookupError.NETWORK_ERROR);
+                    }
+                });
+    }
+
+    private static ApiResult<GuildProfile, LookupError> readGuildProfile(InputStream body, String guildName) throws IOException {
+        byte[] bytes = body.readNBytes(MAX_RESPONSE_BYTES + 1);
+        if (bytes.length > MAX_RESPONSE_BYTES) {
+            LOGGER.warn("Minebox API response for guild '{}' exceeded {} bytes; rejected", guildName, MAX_RESPONSE_BYTES);
+            return ApiResult.err(LookupError.SERVER_ERROR);
+        }
+        try {
+            GuildProfile guild = GSON.fromJson(new String(bytes, StandardCharsets.UTF_8), GuildProfile.class);
+            if (guild == null) {
+                return ApiResult.err(LookupError.SERVER_ERROR);
+            }
+            return ApiResult.ok(guild);
+        } catch (com.google.gson.JsonSyntaxException jsonException) {
+            LOGGER.warn("Failed to parse Minebox API response for guild '{}'", guildName, jsonException);
+            return ApiResult.err(LookupError.SERVER_ERROR);
+        }
     }
 
     /**

@@ -1,5 +1,7 @@
 package fr.silv;
 
+import fr.silv.commands.GuildCommand;
+import fr.silv.commands.LevelCommand;
 import fr.silv.commands.LookupCommand;
 import fr.silv.commands.MenuCommand;
 import fr.silv.hud.widget.HudWidgetManager;
@@ -16,8 +18,8 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
-import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
+import net.minecraft.client.Minecraft;
 import org.slf4j.Logger;
 
 /**
@@ -42,6 +44,8 @@ public class MineboxToolsClient implements ClientModInitializer {
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
             MenuCommand.register(dispatcher);
             LookupCommand.register(dispatcher);
+            GuildCommand.register(dispatcher);
+            LevelCommand.register(dispatcher);
         });
 
         MineboxItemStatUtils.load();

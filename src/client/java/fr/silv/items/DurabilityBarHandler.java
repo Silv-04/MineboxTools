@@ -23,6 +23,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalDouble;
 import java.util.Set;
 import java.util.WeakHashMap;
 
@@ -150,6 +151,46 @@ public final class DurabilityBarHandler {
         }
         item.set(DataComponents.DAMAGE, damage);
         durabilityCache.put(item, damage);
+    }
+
+    /**
+     * Returns the fill fraction (0.0–1.0) for an item's custom durability, or empty
+     * when the item is not managed by this handler.
+     *
+     * @param stack item stack to evaluate
+     * @return fill fraction when available
+     */
+    public static OptionalDouble computeDurabilityFraction(ItemStack stack) {
+        if (stack == null || stack.isEmpty()) return OptionalDouble.empty();
+
+        Optional<String> itemIdOpt = MineboxItemDataUtils.getItemId(stack);
+        if (itemIdOpt.isEmpty()) return OptionalDouble.empty();
+        String id = itemIdOpt.get();
+
+        if (id.contains("haversack") || id.contains("block_infinite_chest")) {
+            String[] amounts = getHaverackAmountInside(stack);
+            if (amounts == null) return OptionalDouble.empty();
+            try {
+                int current = Integer.parseInt(amounts[0].trim());
+                int max = Integer.parseInt(amounts[1].trim());
+                if (max <= 0) return OptionalDouble.empty();
+                return OptionalDouble.of((double) Math.min(current, max) / max);
+            } catch (NumberFormatException e) {
+                return OptionalDouble.empty();
+            }
+        }
+
+        if (!startsWithSupportedPrefix(id)) return OptionalDouble.empty();
+        if (MineboxItemDataUtils.isDisplayOnlyItem(stack)) return OptionalDouble.empty();
+
+        Optional<Integer> currentDur = MineboxItemDataUtils.getCurrentDurability(stack);
+        Optional<Integer> maxDur = MineboxItemDataUtils.getMaxDurability(id);
+        if (currentDur.isEmpty() || maxDur.isEmpty()) return OptionalDouble.empty();
+
+        int current = currentDur.get();
+        int max = maxDur.get();
+        if (max <= 0) return OptionalDouble.empty();
+        return OptionalDouble.of((double) Math.min(current, max) / max);
     }
 
     /**

@@ -76,6 +76,36 @@ public final class SkillLevelUtils {
     }
 
     /**
+     * Returns the maximum level achievable for a skill.
+     *
+     * @param skillId lowercase skill identifier
+     * @return max level, or {@code -1} when the skill is unknown
+     */
+    public static int getMaxLevel(String skillId) {
+        int[] table = SKILL_TABLES.get(skillId.toLowerCase());
+        if (table == null) return -1;
+        return table.length;
+    }
+
+    /**
+     * Returns the minimum cumulative XP required to reach a given level.
+     *
+     * @param skillId     lowercase skill identifier
+     * @param targetLevel level to compute XP for (must be >= 1)
+     * @return cumulative XP, {@code 0} for level 1, or {@code -1} when the skill is unknown
+     */
+    public static long levelToMinXp(String skillId, int targetLevel) {
+        int[] table = SKILL_TABLES.get(skillId.toLowerCase());
+        if (table == null || targetLevel < 1) return -1;
+        if (targetLevel == 1) return 0;
+        long cumulative = 0;
+        for (int i = 1; i < table.length && i < targetLevel; i++) {
+            cumulative += table[i];
+        }
+        return cumulative;
+    }
+
+    /**
      * Returns all known skill IDs sorted alphabetically.
      *
      * @return immutable list of skill IDs
