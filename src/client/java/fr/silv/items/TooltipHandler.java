@@ -146,31 +146,49 @@ public final class TooltipHandler {
             }
         }
 
-        lines.add(sectionTitle("mineboxtools.menu.tooltip.location", LOCATION_TITLE_COLOR));
+        int insertAt = findAdvancedTooltipStart(lines);
+
+        List<Component> injected = new java.util.ArrayList<>();
+        injected.add(sectionTitle("mineboxtools.menu.tooltip.location", LOCATION_TITLE_COLOR));
         for (String location : item.getLocation()) {
-            lines.add(detailLine(location));
+            injected.add(detailLine(location));
         }
 
         List<String> conditions = item.getConditions();
         if (!conditions.isEmpty()) {
-            lines.add(Component.literal(""));
-            lines.add(sectionTitle("mineboxtools.menu.tooltip.condition", CONDITION_TITLE_COLOR));
+            injected.add(Component.literal(""));
+            injected.add(sectionTitle("mineboxtools.menu.tooltip.condition", CONDITION_TITLE_COLOR));
             for (String condition : conditions) {
-                lines.add(detailLine(condition));
+                injected.add(detailLine(condition));
             }
         }
 
         String boost = item.getBoost();
         if (!boost.isEmpty()) {
-            lines.add(Component.literal(""));
-            lines.add(sectionTitle("mineboxtools.menu.tooltip.boost", BOOST_TITLE_COLOR));
-            lines.add(detailLine(boost));
+            injected.add(Component.literal(""));
+            injected.add(sectionTitle("mineboxtools.menu.tooltip.boost", BOOST_TITLE_COLOR));
+            injected.add(detailLine(boost));
         }
 
         if (seeMoreIndex != -1) {
-            lines.add(Component.literal(""));
-            lines.add(seeMoreText);
+            injected.add(Component.literal(""));
+            injected.add(seeMoreText);
         }
+
+        lines.addAll(insertAt, injected);
+    }
+
+    // Matches "namespace:path" lines added by Minecraft in advanced tooltip mode (F3+H).
+    private static final java.util.regex.Pattern RESOURCE_LOCATION_PATTERN =
+            java.util.regex.Pattern.compile("^[a-z0-9_.-]+:[a-z0-9_/.-]+$");
+
+    private static int findAdvancedTooltipStart(List<Component> lines) {
+        for (int i = 0; i < lines.size(); i++) {
+            if (RESOURCE_LOCATION_PATTERN.matcher(lines.get(i).getString()).matches()) {
+                return i;
+            }
+        }
+        return lines.size();
     }
 
     private static MineboxItem resolveItem(ItemStack stack) {
