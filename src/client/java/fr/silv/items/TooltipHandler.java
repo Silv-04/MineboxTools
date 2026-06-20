@@ -34,7 +34,7 @@ import java.util.Set;
  */
 public final class TooltipHandler {
     private static final Logger LOGGER = ModLog.getLogger(TooltipHandler.class);
-    private static final String TOOLTIP_BULLET = "- ";
+    private static final String TOOLTIP_BULLET = "• ";
     private static final int LOCATION_TITLE_COLOR = 0xFFA500;
     private static final int CONDITION_TITLE_COLOR = 0xFFFF00;
     private static final int BOOST_TITLE_COLOR = 0x00FF00;
