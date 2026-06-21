@@ -51,7 +51,7 @@ public final class LevelCommand {
                         .then(ClientCommands.argument("skill", StringArgumentType.word())
                                 .suggests((context, builder) -> {
                                     for (String id : SkillLevelUtils.getSortedSkillIds()) {
-                                        builder.suggest(Lang.get("mineboxtools.skill." + id));
+                                        builder.suggest(Lang.get("mineboxtools.skill." + id).toLowerCase());
                                     }
                                     return builder.buildFuture();
                                 })

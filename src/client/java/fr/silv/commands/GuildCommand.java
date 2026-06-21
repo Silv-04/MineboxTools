@@ -24,13 +24,12 @@ import java.util.List;
 @SuppressWarnings("null")
 public final class GuildCommand {
     private static final String SEPARATOR = "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━";
-    private static final int COLOR_GOLD   = 0xFFAA00;
-    private static final int COLOR_GRAY   = 0xAAAAAA;
-    private static final int COLOR_WHITE  = 0xFFFFFF;
+    private static final int COLOR_GOLD = 0xFFAA00;
+    private static final int COLOR_GRAY = 0xAAAAAA;
+    private static final int COLOR_WHITE = 0xFFFFFF;
     private static final int COLOR_YELLOW = 0xFFFF55;
-    private static final int COLOR_GREEN  = 0x55FF55;
-    private static final int COLOR_RED    = 0xFF5555;
-
+    private static final int COLOR_GREEN = 0x55FF55;
+    private static final int COLOR_RED = 0xFF5555;
 
     private GuildCommand() {
     }
@@ -77,7 +76,8 @@ public final class GuildCommand {
         send(source, separator());
 
         MutableComponent header = colored(guild.name + "  ", COLOR_WHITE)
-                .append(colored("Lv." + guild.level, COLOR_YELLOW));
+                .append(colored("Lv. " + guild.level + "  ", COLOR_YELLOW))
+                .append(colored("Xp. " + formatNumber(guild.xp), COLOR_YELLOW));
         send(source, header);
 
         send(source, separator());
@@ -120,11 +120,11 @@ public final class GuildCommand {
 
     private static Component errorComponent(MineboxApiClient.LookupError error, String guildName) {
         String key = switch (error) {
-            case NOT_FOUND        -> "mineboxtools.command.guild.error.not_found";
-            case PROFILE_PRIVATE  -> "mineboxtools.command.guild.error.private";
-            case RATE_LIMITED     -> "mineboxtools.command.lookup.error.rate_limited";
-            case SERVER_ERROR     -> "mineboxtools.command.lookup.error.server";
-            case NETWORK_ERROR    -> "mineboxtools.command.lookup.error.network";
+            case NOT_FOUND -> "mineboxtools.command.guild.error.not_found";
+            case PROFILE_PRIVATE -> "mineboxtools.command.guild.error.private";
+            case RATE_LIMITED -> "mineboxtools.command.lookup.error.rate_limited";
+            case SERVER_ERROR -> "mineboxtools.command.lookup.error.server";
+            case NETWORK_ERROR -> "mineboxtools.command.lookup.error.network";
             case INVALID_USERNAME -> "mineboxtools.command.guild.error.invalid_name";
         };
         return colored(Lang.get(key).replace("{0}", guildName), COLOR_RED);
@@ -140,5 +140,13 @@ public final class GuildCommand {
 
     private static void send(FabricClientCommandSource source, Component component) {
         source.sendFeedback(component);
+    }
+
+    private static String formatNumber(long n) {
+        if (n >= 1_000_000)
+            return String.format("%.1fm", n / 1_000_000.0);
+        if (n >= 1_000)
+            return String.format("%.1fk", n / 1_000.0);
+        return String.valueOf(n);
     }
 }
