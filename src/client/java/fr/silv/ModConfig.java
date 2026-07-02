@@ -23,9 +23,15 @@ import java.util.function.Consumer;
 public final class ModConfig {
     private static final Logger LOGGER = ModLog.getLogger(ModConfig.class);
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final Path CONFIG_FILE = FabricLoader.getInstance()
+
+    /** Directory holding all MineboxTools persisted data (settings, fetched item stats). */
+    public static final Path MOD_DATA_DIR = FabricLoader.getInstance()
+            .getConfigDir()
+            .resolve("mineboxtools");
+    private static final Path LEGACY_CONFIG_FILE = FabricLoader.getInstance()
             .getConfigDir()
             .resolve("mineboxtools.settings.json");
+    private static final Path CONFIG_FILE = MOD_DATA_DIR.resolve("mineboxtools.settings.json");
     @SuppressWarnings("null") // Map.of infers @NonNull values; assignment to less-annotated type is safe
     private static final Map<String, WidgetPos> DEFAULT_WIDGET_POSITIONS = Map.of(
             "durability_widget", new WidgetPos(10, 10),
@@ -313,6 +319,8 @@ public final class ModConfig {
      */
     @SuppressWarnings("null") // Gson.fromJson is not annotated with @NonNull
     public static void load() {
+        migrateLegacyConfigFile();
+
         if (!Files.exists(CONFIG_FILE)) {
             return;
         }
@@ -333,10 +341,30 @@ public final class ModConfig {
      * Persists the current state to disk.
      */
     public static void save() {
-        try (Writer writer = Files.newBufferedWriter(CONFIG_FILE, StandardCharsets.UTF_8)) {
-            GSON.toJson(state, writer);
+        try {
+            Files.createDirectories(MOD_DATA_DIR);
+            try (Writer writer = Files.newBufferedWriter(CONFIG_FILE, StandardCharsets.UTF_8)) {
+                GSON.toJson(state, writer);
+            }
         } catch (IOException e) {
             LOGGER.error("Failed to save config to {}", CONFIG_FILE, e);
+        }
+    }
+
+    /**
+     * Moves a settings file from the old flat config path into the mod's own subdirectory,
+     * so users upgrading from earlier versions don't lose their settings.
+     */
+    private static void migrateLegacyConfigFile() {
+        if (Files.exists(CONFIG_FILE) || !Files.exists(LEGACY_CONFIG_FILE)) {
+            return;
+        }
+        try {
+            Files.createDirectories(MOD_DATA_DIR);
+            Files.move(LEGACY_CONFIG_FILE, CONFIG_FILE);
+            LOGGER.info("Migrated settings file to {}", CONFIG_FILE);
+        } catch (IOException e) {
+            LOGGER.error("Failed to migrate legacy config file from {}", LEGACY_CONFIG_FILE, e);
         }
     }
 

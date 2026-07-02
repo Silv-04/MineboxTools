@@ -8,9 +8,11 @@ import fr.silv.availability.AvailabilitySection;
 import fr.silv.hud.widget.HudWidgetManager;
 import fr.silv.hud.widget.config.CheckboxListWidget;
 import fr.silv.hud.widget.config.ConfigOption;
+import fr.silv.api.MineboxItemStatFetcher;
 import fr.silv.api.MuseumDonationCache;
 import fr.silv.items.ItemHighlightHandler;
 import fr.silv.items.MuseumHighlightHandler;
+import fr.silv.utils.MineboxItemStatUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -19,6 +21,8 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
@@ -31,6 +35,8 @@ import java.util.function.Function;
 public class HudMenuScreen extends Screen {
     private static final int BACKGROUND_COLOR = 0x90000000;
     private static final int HELP_TEXT_COLOR = 0xFFB0B0B0;
+    private static final DateTimeFormatter LAST_UPDATED_FORMAT =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.systemDefault());
 
     private String searchQuery = "";
     private EditBox searchField;
@@ -39,6 +45,7 @@ public class HudMenuScreen extends Screen {
     private List<AvailabilityEntry> insectEntries = List.of();
     private List<AvailabilityEntry> worldEntries = List.of();
     private Button museumRefreshButton;
+    private Button itemStatsUpdateButton;
 
     /**
      * Creates a new HudMenuScreen.
@@ -176,6 +183,11 @@ public class HudMenuScreen extends Screen {
                 }
         ).bounds(190, 300, 100, 20).build();
 
+        itemStatsUpdateButton = Button.builder(
+                Component.literal(Lang.get("mineboxtools.menu.item_stats_update")),
+                button -> MineboxItemStatFetcher.fetchAndApply()
+        ).bounds(20, 320, 160, 20).build();
+
         searchField = new EditBox(
                 this.font,
                 this.width - 170,
@@ -229,6 +241,7 @@ public class HudMenuScreen extends Screen {
         addRenderableWidget(highlightToggle[0]);
         addRenderableWidget(museumToggle);
         addRenderableWidget(museumRefreshButton);
+        addRenderableWidget(itemStatsUpdateButton);
         addRenderableWidget(Button.builder(Component.literal(Lang.get("mineboxtools.menu.close")), button -> onClose())
                 .bounds(this.width - 100, this.height - 40, 80, 20)
                 .build());
@@ -241,7 +254,16 @@ public class HudMenuScreen extends Screen {
     public void extractRenderState(GuiGraphicsExtractor drawContext, int mouseX, int mouseY, float delta) {
         drawContext.fill(0, 0, this.width, this.height, BACKGROUND_COLOR);
         updateMuseumRefreshButtonState();
+        updateItemStatsUpdateButtonState();
         super.extractRenderState(drawContext, mouseX, mouseY, delta);
+
+        drawContext.text(
+                this.font,
+                Component.literal(itemStatsStatusText()),
+                190,
+                326,
+                HELP_TEXT_COLOR,
+                false);
 
         if (ModConfig.getHudIconDirection() != ModConfig.IconDirection.AUTO) {
             drawContext.text(
@@ -286,6 +308,60 @@ public class HudMenuScreen extends Screen {
             museumRefreshButton.setMessage(Component.literal(
                     Lang.get("mineboxtools.menu.museum_refresh.wait").replace("{0}", String.valueOf(seconds))));
         }
+    }
+
+    /**
+     * Disables the item stats update button while a fetch is running or its 1-hour
+     * cooldown hasn't elapsed, so the menu can't be used to spam the API.
+     */
+    private void updateItemStatsUpdateButtonState() {
+        if (itemStatsUpdateButton == null) {
+            return;
+        }
+
+        if (MineboxItemStatFetcher.getState() == MineboxItemStatFetcher.State.FETCHING) {
+            itemStatsUpdateButton.active = false;
+            itemStatsUpdateButton.setMessage(Component.literal(Lang.get("mineboxtools.menu.item_stats_update")));
+            return;
+        }
+
+        long remainingMs = MineboxItemStatFetcher.remainingCooldownMs();
+        if (remainingMs <= 0) {
+            itemStatsUpdateButton.active = true;
+            itemStatsUpdateButton.setMessage(Component.literal(Lang.get("mineboxtools.menu.item_stats_update")));
+        } else {
+            long minutes = (remainingMs + 59_999) / 60_000;
+            itemStatsUpdateButton.active = false;
+            itemStatsUpdateButton.setMessage(Component.literal(
+                    Lang.get("mineboxtools.menu.item_stats_update.wait").replace("{0}", String.valueOf(minutes))));
+        }
+    }
+
+    private String itemStatsStatusText() {
+        MineboxItemStatFetcher.State state = MineboxItemStatFetcher.getState();
+        return switch (state) {
+            case FETCHING -> {
+                long secondsLeft = (MineboxItemStatFetcher.estimatedRemainingMs() + 999) / 1000;
+                yield Lang.get("mineboxtools.menu.item_stats_update.fetching")
+                        .replace("{0}", String.valueOf(MineboxItemStatFetcher.getCurrentPage()))
+                        .replace("{1}", String.valueOf(MineboxItemStatFetcher.getTotalPages()))
+                        .replace("{2}", String.valueOf(secondsLeft));
+            }
+            case SUCCESS -> Lang.get("mineboxtools.menu.item_stats_update.success") + " " + lastUpdatedText();
+            case ERROR -> {
+                String errorKey = "mineboxtools.menu.item_stats_update.error."
+                        + MineboxItemStatFetcher.getLastError().name().toLowerCase(Locale.ROOT);
+                yield Lang.get("mineboxtools.menu.item_stats_update.error").replace("{0}", Lang.get(errorKey));
+            }
+            case IDLE -> lastUpdatedText();
+        };
+    }
+
+    private String lastUpdatedText() {
+        String timestamp = MineboxItemStatUtils.getLastUpdated()
+                .map(instant -> LAST_UPDATED_FORMAT.format(instant))
+                .orElse(Lang.get("mineboxtools.menu.item_stats_update.never"));
+        return Lang.get("mineboxtools.menu.item_stats_update.last_updated").replace("{0}", timestamp);
     }
 
     private Component languageLabel() {

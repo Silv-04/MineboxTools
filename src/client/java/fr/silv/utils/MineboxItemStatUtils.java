@@ -1,31 +1,44 @@
 package fr.silv.utils;
 
-import java.io.InputStream;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import fr.silv.ModConfig;
 import fr.silv.model.MineboxStat;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import org.slf4j.Logger;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * Parses and caches per-item statistics from resources.
+ * Parses and caches per-item statistics, sourced from a JSON file the user fetches
+ * from the Minebox API via the mod menu (no data is bundled in the jar).
  */
 public final class MineboxItemStatUtils {
     private static final Logger LOGGER = ModLog.getLogger(MineboxItemStatUtils.class);
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private static final Path ITEM_STATS_FILE = ModConfig.MOD_DATA_DIR.resolve("mineboxItems.json");
     private static final Map<String, Map<String, int[]>> STAT_RANGES = new HashMap<>();
     private static final Pattern INTEGER_PATTERN = Pattern.compile("-?\\d+");
     private static final Pattern SIGNED_INTEGER_PATTERN = Pattern.compile("[+-]?\\d+");
@@ -36,43 +49,85 @@ public final class MineboxItemStatUtils {
     }
 
     /**
-     * Loads stat ranges from the bundled JSON resource into memory.
+     * Loads stat ranges from the external JSON file into memory.
      * Safe to call multiple times — the cache is cleared and rebuilt on each call.
+     * When the file is missing or corrupt, the cache is left empty and a warning is
+     * logged; the user can populate it via the "Update item data" menu button.
      */
     public static void load() {
-        try (InputStream input = MineboxItemStatUtils.class.getClassLoader()
-                .getResourceAsStream("assets/mineboxtools/mineboxItems.json")) {
-            LOGGER.info("Loading item stats ranges from JSON file...");
-            if (input != null) {
-                String json = new String(input.readAllBytes(), StandardCharsets.UTF_8);
-                JsonObject root = JsonParser.parseString(json).getAsJsonObject();
-                STAT_RANGES.clear();
+        STAT_RANGES.clear();
 
-                for (Map.Entry<String, JsonElement> itemEntry : root.entrySet()) {
-                    String itemId = itemEntry.getKey();
-                    JsonObject stats = itemEntry.getValue().getAsJsonObject();
-                    Map<String, int[]> itemStats = new HashMap<>();
+        if (!Files.exists(ITEM_STATS_FILE)) {
+            LOGGER.warn("No item stats file found at {}. Use the mod menu to fetch item data.", ITEM_STATS_FILE);
+            return;
+        }
 
-                    for (Map.Entry<String, JsonElement> stat : stats.entrySet()) {
-                        JsonElement value = stat.getValue();
+        try (Reader reader = Files.newBufferedReader(ITEM_STATS_FILE, StandardCharsets.UTF_8)) {
+            LOGGER.info("Loading item stats ranges from {}...", ITEM_STATS_FILE);
+            JsonObject root = JsonParser.parseReader(reader).getAsJsonObject();
 
-                        if (value.isJsonArray()) {
-                            JsonArray arr = value.getAsJsonArray();
-                            if (arr.size() == 2) {
-                                int[] range = new int[]{arr.get(0).getAsInt(), arr.get(1).getAsInt()};
-                                itemStats.put(stat.getKey(), range);
-                            }
-                        } else if (value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber()) {
-                            int val = value.getAsInt();
-                            itemStats.put(stat.getKey(), new int[]{val, val});
+            for (Map.Entry<String, JsonElement> itemEntry : root.entrySet()) {
+                String itemId = itemEntry.getKey();
+                JsonObject stats = itemEntry.getValue().getAsJsonObject();
+                Map<String, int[]> itemStats = new HashMap<>();
+
+                for (Map.Entry<String, JsonElement> stat : stats.entrySet()) {
+                    JsonElement value = stat.getValue();
+
+                    if (value.isJsonArray()) {
+                        JsonArray arr = value.getAsJsonArray();
+                        if (arr.size() == 2) {
+                            int[] range = new int[]{arr.get(0).getAsInt(), arr.get(1).getAsInt()};
+                            itemStats.put(stat.getKey(), range);
                         }
+                    } else if (value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber()) {
+                        int val = value.getAsInt();
+                        itemStats.put(stat.getKey(), new int[]{val, val});
                     }
-                    STAT_RANGES.put(itemId, itemStats);
                 }
+                STAT_RANGES.put(itemId, itemStats);
             }
-            LOGGER.info("Item stats ranges loaded successfully.");
+            LOGGER.info("Item stats ranges loaded successfully ({} items).", STAT_RANGES.size());
         } catch (Exception e) {
-            LOGGER.error("Failed to load item stats ranges from JSON file.", e);
+            STAT_RANGES.clear();
+            LOGGER.error("Failed to load item stats ranges from {}. Re-fetch item data from the mod menu.", ITEM_STATS_FILE, e);
+        }
+    }
+
+    /**
+     * Writes freshly-fetched item stat data to the external JSON file and reloads the
+     * in-memory cache from it. The write is atomic — a failure never corrupts the
+     * previously saved file.
+     *
+     * @param data item id to stat-map data, in the same shape as the JSON file
+     * @return {@code true} when the write and reload succeeded
+     */
+    public static boolean saveFetchedData(Map<String, Map<String, Object>> data) {
+        try {
+            Files.createDirectories(ITEM_STATS_FILE.getParent());
+            Path tempFile = ITEM_STATS_FILE.resolveSibling(ITEM_STATS_FILE.getFileName() + ".tmp");
+            try (Writer writer = Files.newBufferedWriter(tempFile, StandardCharsets.UTF_8)) {
+                GSON.toJson(data, writer);
+            }
+            Files.move(tempFile, ITEM_STATS_FILE, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            LOGGER.error("Failed to write item stats to {}", ITEM_STATS_FILE, e);
+            return false;
+        }
+        load();
+        return true;
+    }
+
+    /**
+     * Returns when the item stats file was last written, for display in the menu.
+     *
+     * @return last-modified instant, or empty when the file does not exist
+     */
+    public static Optional<Instant> getLastUpdated() {
+        try {
+            return Optional.of(Files.getLastModifiedTime(ITEM_STATS_FILE).toInstant());
+        } catch (IOException e) {
+            return Optional.empty();
         }
     }
 
