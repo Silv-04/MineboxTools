@@ -1,6 +1,7 @@
 package fr.silv.mixin.client;
 
 import fr.silv.items.ItemHighlightHandler;
+import fr.silv.items.MuseumHighlightHandler;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -15,5 +16,6 @@ public abstract class InventoryScreenHighlightMixin {
     private void onAfterRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         AbstractContainerScreenAccessor accessor = (AbstractContainerScreenAccessor) this;
         ItemHighlightHandler.render((AbstractContainerScreen<?>) (Object) this, context, accessor.getLeftPos(), accessor.getTopPos());
+        MuseumHighlightHandler.render((AbstractContainerScreen<?>) (Object) this, context, accessor.getLeftPos(), accessor.getTopPos());
     }
 }

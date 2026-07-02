@@ -8,7 +8,9 @@ import fr.silv.availability.AvailabilitySection;
 import fr.silv.hud.widget.HudWidgetManager;
 import fr.silv.hud.widget.config.CheckboxListWidget;
 import fr.silv.hud.widget.config.ConfigOption;
+import fr.silv.api.MuseumDonationCache;
 import fr.silv.items.ItemHighlightHandler;
+import fr.silv.items.MuseumHighlightHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -36,6 +38,7 @@ public class HudMenuScreen extends Screen {
     private CheckboxListWidget shopList;
     private List<AvailabilityEntry> insectEntries = List.of();
     private List<AvailabilityEntry> worldEntries = List.of();
+    private Button museumRefreshButton;
 
     /**
      * Creates a new HudMenuScreen.
@@ -148,6 +151,31 @@ public class HudMenuScreen extends Screen {
                 }
         ).bounds(142, 280, 38, 20).build();
 
+        CycleButton<Boolean> museumToggle = createBooleanToggle(
+                20, 300, "mineboxtools.menu.museum",
+                MuseumHighlightHandler.isEnabled(),
+                MuseumHighlightHandler::setEnabled);
+
+        museumRefreshButton = Button.builder(
+                Component.literal(Lang.get("mineboxtools.menu.museum_refresh")),
+                button -> {
+                    var player = Minecraft.getInstance().player;
+                    if (player == null) {
+                        return;
+                    }
+                    var outcome = MuseumDonationCache.refreshManual();
+                    String feedback = switch (outcome) {
+                        case TRIGGERED -> Lang.get("mineboxtools.menu.museum_refresh.triggered");
+                        case ON_COOLDOWN -> {
+                            long seconds = (MuseumDonationCache.remainingManualCooldownMs() + 999) / 1000;
+                            yield Lang.get("mineboxtools.menu.museum_refresh.cooldown").replace("{0}", String.valueOf(seconds));
+                        }
+                        case NO_PLAYER -> Lang.get("mineboxtools.menu.museum_refresh.cooldown");
+                    };
+                    player.sendSystemMessage(Component.literal(feedback));
+                }
+        ).bounds(190, 300, 100, 20).build();
+
         searchField = new EditBox(
                 this.font,
                 this.width - 170,
@@ -199,6 +227,8 @@ public class HudMenuScreen extends Screen {
         addRenderableWidget(customHudButton);
         addRenderableWidget(highlightFieldRef[0]);
         addRenderableWidget(highlightToggle[0]);
+        addRenderableWidget(museumToggle);
+        addRenderableWidget(museumRefreshButton);
         addRenderableWidget(Button.builder(Component.literal(Lang.get("mineboxtools.menu.close")), button -> onClose())
                 .bounds(this.width - 100, this.height - 40, 80, 20)
                 .build());
@@ -210,6 +240,7 @@ public class HudMenuScreen extends Screen {
     @Override
     public void extractRenderState(GuiGraphicsExtractor drawContext, int mouseX, int mouseY, float delta) {
         drawContext.fill(0, 0, this.width, this.height, BACKGROUND_COLOR);
+        updateMuseumRefreshButtonState();
         super.extractRenderState(drawContext, mouseX, mouseY, delta);
 
         if (ModConfig.getHudIconDirection() != ModConfig.IconDirection.AUTO) {
@@ -234,6 +265,27 @@ public class HudMenuScreen extends Screen {
     @Override
     public boolean isPauseScreen() {
         return false;
+    }
+
+    /**
+     * Disables the museum refresh button while its cooldown is active and shows the
+     * remaining time on its label, so it's clear the click was throttled rather than broken.
+     */
+    private void updateMuseumRefreshButtonState() {
+        if (museumRefreshButton == null) {
+            return;
+        }
+
+        long remainingMs = MuseumDonationCache.remainingManualCooldownMs();
+        if (remainingMs <= 0) {
+            museumRefreshButton.active = true;
+            museumRefreshButton.setMessage(Component.literal(Lang.get("mineboxtools.menu.museum_refresh")));
+        } else {
+            long seconds = (remainingMs + 999) / 1000;
+            museumRefreshButton.active = false;
+            museumRefreshButton.setMessage(Component.literal(
+                    Lang.get("mineboxtools.menu.museum_refresh.wait").replace("{0}", String.valueOf(seconds))));
+        }
     }
 
     private Component languageLabel() {

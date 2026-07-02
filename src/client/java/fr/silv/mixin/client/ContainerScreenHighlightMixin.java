@@ -1,6 +1,7 @@
 package fr.silv.mixin.client;
 
 import fr.silv.items.ItemHighlightHandler;
+import fr.silv.items.MuseumHighlightHandler;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,5 +18,6 @@ public abstract class ContainerScreenHighlightMixin {
     @Inject(method = "extractRenderState", at = @At("TAIL"))
     private void onAfterRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         ItemHighlightHandler.render((AbstractContainerScreen<?>) (Object) this, context, leftPos, topPos);
+        MuseumHighlightHandler.render((AbstractContainerScreen<?>) (Object) this, context, leftPos, topPos);
     }
 }

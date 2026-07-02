@@ -1,6 +1,7 @@
 package fr.silv.mixin.client;
 
 import fr.silv.items.ItemHighlightHandler;
+import fr.silv.items.MuseumHighlightHandler;
 import fr.silv.hud.widget.HudWidgetManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.DeltaTracker;
@@ -24,5 +25,6 @@ public class HudRenderMixin {
             widget.render(context, client);
         }
         ItemHighlightHandler.renderHotbar(client, context);
+        MuseumHighlightHandler.renderHotbar(client, context);
     }
 }

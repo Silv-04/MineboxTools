@@ -565,6 +565,7 @@ public final class ModConfig {
         public boolean rain = true;
         public boolean highlightEnabled = false;
         public int highlightThreshold = 50;
+        public boolean museum = false;
     }
 
     public static final class Insects {
@@ -736,7 +737,8 @@ public final class ModConfig {
         HAND(section -> section.hand, (section, value) -> section.hand = value),
         LOCATION(section -> section.location, (section, value) -> section.location = value),
         THUNDER(section -> section.thunder, (section, value) -> section.thunder = value),
-        RAIN(section -> section.rain, (section, value) -> section.rain = value);
+        RAIN(section -> section.rain, (section, value) -> section.rain = value),
+        MUSEUM(section -> section.museum, (section, value) -> section.museum = value);
 
         private final BooleanGetter<Features> getter;
         private final BooleanSetter<Features> setter;

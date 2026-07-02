@@ -2,7 +2,7 @@
 	"required": true,
 	"package": "fr.silv.mixin.client",
 	"compatibilityLevel": "JAVA_25",
-	"client": ["AbstractContainerScreenAccessor", "ContainerScreenHighlightMixin", "InventoryScreenHighlightMixin", "ItemStackDurabilityMixin", "HudRenderMixin"],
+	"client": ["AbstractContainerScreenAccessor", "ContainerScreenHighlightMixin", "InventoryScreenHighlightMixin", "ItemStackDurabilityMixin", "HudRenderMixin", "MuseumScreenDetectionMixin"],
 	"injectors": {
 		"defaultRequire": 1
 	}

@@ -1,5 +1,7 @@
 package fr.silv;
 
+import fr.silv.api.MuseumDonationCache;
+import fr.silv.api.MuseumScreenRegistry;
 import fr.silv.commands.GuildCommand;
 import fr.silv.commands.LevelCommand;
 import fr.silv.commands.LookupCommand;
@@ -10,14 +12,21 @@ import fr.silv.items.ItemHighlightHandler;
 import fr.silv.items.TooltipHandler;
 import fr.silv.utils.MineboxItemStatUtils;
 import fr.silv.utils.MineboxItemUtils;
+import fr.silv.utils.MuseumItemUtils;
 import fr.silv.utils.SkillLevelUtils;
 import fr.silv.utils.ModLog;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import org.slf4j.Logger;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Client entry point for MineboxTools initialization and registrations.
@@ -47,12 +56,31 @@ public class MineboxToolsClient implements ClientModInitializer {
 
         MineboxItemStatUtils.load();
         MineboxItemUtils.load();
+        MuseumItemUtils.load();
         SkillLevelUtils.load();
         DurabilityBarHandler.register();
 
         ItemTooltipCallback.EVENT.register((stack, context, type, lines) -> {
             TooltipHandler.addStatRangesToTooltip(stack, context, type, lines);
             TooltipHandler.addInfoToTooltip(stack, context, type, lines);
+        });
+
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) ->
+                MuseumDonationCache.refresh());
+
+        ScreenEvents.BEFORE_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
+            if (screen instanceof AbstractContainerScreen<?> containerScreen) {
+                ScreenEvents.remove(screen).register(closedScreen -> {
+                    int containerId = containerScreen.getMenu().containerId;
+                    if (MuseumScreenRegistry.consumeAndCheck(containerId)) {
+                        MuseumDonationCache.refresh();
+                        // Donations can take a moment to land server-side; a delayed follow-up
+                        // catches the case where the immediate fetch races ahead of that update.
+                        CompletableFuture.runAsync(MuseumDonationCache::refresh,
+                                CompletableFuture.delayedExecutor(60, TimeUnit.SECONDS));
+                    }
+                });
+            }
         });
 
         HudWidgetManager.init();
