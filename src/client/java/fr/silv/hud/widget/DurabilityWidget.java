@@ -39,7 +39,7 @@ public class DurabilityWidget extends HudWidget {
     @Override
     public void render(GuiGraphicsExtractor context, Minecraft client) {
         if (!ModConfig.isEnabled(ModConfig.FeatureFlag.HAND)) return;
-        if (client.options.hideGui) return;
+        if (client.gui.hud.isHidden()) return;
 
         if (client.player == null) {
             ModLog.warnThrottled(LOGGER, "durability-widget:null-player", 10_000,

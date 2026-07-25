@@ -61,6 +61,18 @@ public final class PlayerProfile {
         public Map<String, Integer> completedQuests;
         /** Identifiers of museum pieces the player has donated. */
         public List<String> museum;
+        /** Collection progress keyed by collection ID. */
+        public Map<String, Success> successes;
+    }
+
+    /**
+     * Progress on a single collection: the levels reached so far and the accumulated value.
+     */
+    public static final class Success {
+        /** Levels reached so far, in order (e.g. {@code [0, 1, ..., 27]}). */
+        public List<Integer> levels;
+        /** Accumulated collection value (e.g. total items gathered). */
+        public long value;
     }
 
     /**

@@ -126,7 +126,7 @@ public class HudMenuScreen extends Screen {
         int insectListHeight = shopListHeight - insectSearchHeight;
 
         Button customHudButton = Button.builder(Component.literal(Lang.get("mineboxtools.menu.hud")), button ->
-                Minecraft.getInstance().setScreen(new HudConfigScreen(HudWidgetManager.getWidgets()))
+                Minecraft.getInstance().gui.setScreen(new HudConfigScreen(HudWidgetManager.getWidgets()))
         ).bounds(20, 240, 160, 20).build();
 
         EditBox[] highlightFieldRef = new EditBox[1];

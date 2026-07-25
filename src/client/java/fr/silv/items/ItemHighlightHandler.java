@@ -4,17 +4,27 @@ import fr.silv.ModConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.OptionalInt;
 
 /**
- * Renders a golden highlight border on inventory slots whose item score exceeds
- * the configured threshold. State is persisted via ModConfig.
+ * Renders a full-slot enchantment glint overlay on inventory slots whose item score
+ * exceeds the configured threshold. State is persisted via ModConfig.
+ *
+ * <p>Vanilla masks the glint shader to the item's own pixel silhouette, which reads as a
+ * thin, easy-to-miss sliver at 16px scale. Drawing the same texture/pipeline as a plain
+ * full-slot quad instead keeps the "enchanted shimmer" look but makes it unmistakable.
  */
 public final class ItemHighlightHandler {
-    private static final int COLOR_GOLD = 0xFFFFD700;
+    private static final Identifier GLINT_TEXTURE = Identifier.withDefaultNamespace("textures/misc/enchanted_glint_item.png");
+    private static final int GLINT_TINT = 0xFFFFFFFF;
+    private static final int GLINT_TEXTURE_SIZE = 128;
+    /** Drawing the glint twice compounds the shader's additive blending for a stronger shimmer. */
+    private static final int GLINT_PASSES = 2;
 
     private ItemHighlightHandler() {
     }
@@ -58,13 +68,13 @@ public final class ItemHighlightHandler {
     }
 
     /**
-     * Draws gold borders on hotbar slots whose item score exceeds the threshold.
+     * Draws a glint overlay on hotbar slots whose item score exceeds the threshold.
      *
      * @param client  active client instance
      * @param context draw context
      */
     public static void renderHotbar(Minecraft client, GuiGraphicsExtractor context) {
-        if (!isEnabled() || client.player == null || client.options.hideGui) {
+        if (!isEnabled() || client.player == null || client.gui.hud.isHidden()) {
             return;
         }
 
@@ -83,12 +93,12 @@ public final class ItemHighlightHandler {
             if (scoreOpt.isEmpty() || scoreOpt.getAsInt() < threshold) {
                 continue;
             }
-            context.outline(hotbarLeft + i * 20 + 3, itemY, 16, 16, COLOR_GOLD);
+            drawGlint(context, hotbarLeft + i * 20 + 3, itemY);
         }
     }
 
     /**
-     * Draws gold borders on all slots whose item score exceeds the threshold.
+     * Draws a glint overlay on all slots whose item score exceeds the threshold.
      *
      * @param screen  the open container screen
      * @param context draw context
@@ -110,7 +120,14 @@ public final class ItemHighlightHandler {
             if (scoreOpt.isEmpty() || scoreOpt.getAsInt() < threshold) {
                 continue;
             }
-            context.outline(leftPos + slot.x, topPos + slot.y, 16, 16, COLOR_GOLD);
+            drawGlint(context, leftPos + slot.x, topPos + slot.y);
+        }
+    }
+
+    private static void drawGlint(GuiGraphicsExtractor context, int x, int y) {
+        for (int i = 0; i < GLINT_PASSES; i++) {
+            context.blit(RenderPipelines.GLINT, GLINT_TEXTURE, x, y, 0f, 0f, 16, 16,
+                    GLINT_TEXTURE_SIZE, GLINT_TEXTURE_SIZE, GLINT_TINT);
         }
     }
 }

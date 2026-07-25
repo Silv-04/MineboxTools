@@ -30,7 +30,7 @@ public final class Icons {
     public static final Identifier CoffeeShopICON = shop("yellow_coffee");
     public static final Identifier HerbShopICON = shop("herb");
     public static final Identifier PaintingICON = shop("painting");
-
+    public static final Identifier SushiShopICON = shop("sushi");
     // Weather
     public static final Identifier ThunderICON = root("lightning");
     public static final Identifier RainICON = root("rain");
