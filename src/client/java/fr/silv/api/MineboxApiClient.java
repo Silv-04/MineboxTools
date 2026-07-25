@@ -94,10 +94,10 @@ public final class MineboxApiClient {
      * Categorises the possible failure modes of a player lookup.
      */
     public enum LookupError {
-        /** HTTP 404 — the username does not exist. */
+        /** HTTP 404 — the username/guild/item does not exist. */
         NOT_FOUND,
-        /** HTTP 403 — the player has disabled profile sharing. */
-        PROFILE_PRIVATE,
+        /** HTTP 401 — the player has disabled API access (player lookups only). */
+        API_ACCESS_DISABLED,
         /** HTTP 429 — the API rate limit has been exceeded. */
         RATE_LIMITED,
         /** HTTP 5xx — the API is temporarily unavailable. */
@@ -137,8 +137,8 @@ public final class MineboxApiClient {
                     try (InputStream body = response.body()) {
                         return switch (response.statusCode()) {
                             case 200 -> readProfile(body, username);
+                            case 401 -> ApiResult.<PlayerProfile, LookupError>err(LookupError.API_ACCESS_DISABLED);
                             case 404 -> ApiResult.<PlayerProfile, LookupError>err(LookupError.NOT_FOUND);
-                            case 403 -> ApiResult.<PlayerProfile, LookupError>err(LookupError.PROFILE_PRIVATE);
                             case 429 -> ApiResult.<PlayerProfile, LookupError>err(LookupError.RATE_LIMITED);
                             default -> {
                                 LOGGER.warn("Minebox API returned HTTP {} for '{}'", response.statusCode(), username);
@@ -182,7 +182,6 @@ public final class MineboxApiClient {
                         return switch (response.statusCode()) {
                             case 200 -> readGuildProfile(body, guildName);
                             case 404 -> ApiResult.<GuildProfile, LookupError>err(LookupError.NOT_FOUND);
-                            case 403 -> ApiResult.<GuildProfile, LookupError>err(LookupError.PROFILE_PRIVATE);
                             case 429 -> ApiResult.<GuildProfile, LookupError>err(LookupError.RATE_LIMITED);
                             default -> {
                                 LOGGER.warn("Minebox API returned HTTP {} for guild '{}'", response.statusCode(), guildName);

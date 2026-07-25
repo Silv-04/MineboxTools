@@ -41,6 +41,9 @@ public final class LookupCommand {
     private static final int COLOR_GREEN  = 0x55FF55;
     private static final int COLOR_RED    = 0xFF5555;
 
+    /** Highest reachable level in a collection; reaching it means the collection is completed. */
+    private static final int COLLECTION_LEVEL_CAP = 27;
+
     /** Minimum delay between two lookups to avoid spamming the API. */
     private static final long COOLDOWN_MS = 3000L;
     private static long lastRequestMillis = 0L;
@@ -208,7 +211,8 @@ public final class LookupCommand {
         PlayerProfile.Objectives objectives = profile.data.objectives;
         int museumCount = objectives.museum != null ? objectives.museum.size() : 0;
         Map<String, Integer> quests = objectives.completedQuests != null ? objectives.completedQuests : Map.of();
-        if (museumCount == 0 && quests.isEmpty()) {
+        int completedCollections = countCompletedCollections(objectives.successes);
+        if (museumCount == 0 && quests.isEmpty() && completedCollections == 0) {
             return;
         }
 
@@ -218,6 +222,9 @@ public final class LookupCommand {
         if (museumCount > 0) {
             send(source, labelValue(Lang.get("mineboxtools.command.lookup.museum"), String.valueOf(museumCount)));
         }
+        if (completedCollections > 0) {
+            send(source, labelValue(Lang.get("mineboxtools.command.lookup.collections"), String.valueOf(completedCollections)));
+        }
         if (!quests.isEmpty()) {
             int daily = quests.getOrDefault("DAILY", 0);
             int weekly = quests.getOrDefault("WEEKLY", 0);
@@ -225,6 +232,24 @@ public final class LookupCommand {
                     + "   " + Lang.get("mineboxtools.command.lookup.quests.weekly") + ": " + weekly;
             send(source, labelValue(Lang.get("mineboxtools.command.lookup.quests"), value));
         }
+    }
+
+    /**
+     * Counts collections whose highest reached level is the level cap (27), i.e. fully completed.
+     *
+     * @param successes map of collection ID to progress, or {@code null}
+     * @return number of completed collections
+     */
+    private static int countCompletedCollections(Map<String, PlayerProfile.Success> successes) {
+        if (successes == null) return 0;
+        int count = 0;
+        for (PlayerProfile.Success success : successes.values()) {
+            List<Integer> levels = success.levels;
+            if (levels != null && !levels.isEmpty() && levels.get(levels.size() - 1) == COLLECTION_LEVEL_CAP) {
+                count++;
+            }
+        }
+        return count;
     }
 
     /**
@@ -237,7 +262,7 @@ public final class LookupCommand {
     private static Component errorComponent(MineboxApiClient.LookupError error, String username) {
         String key = switch (error) {
             case NOT_FOUND      -> "mineboxtools.command.lookup.error.not_found";
-            case PROFILE_PRIVATE -> "mineboxtools.command.lookup.error.private";
+            case API_ACCESS_DISABLED -> "mineboxtools.command.lookup.error.api_disabled";
             case RATE_LIMITED   -> "mineboxtools.command.lookup.error.rate_limited";
             case SERVER_ERROR   -> "mineboxtools.command.lookup.error.server";
             case NETWORK_ERROR  -> "mineboxtools.command.lookup.error.network";

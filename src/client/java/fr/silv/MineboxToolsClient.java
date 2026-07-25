@@ -73,9 +73,8 @@ public class MineboxToolsClient implements ClientModInitializer {
                 ScreenEvents.remove(screen).register(closedScreen -> {
                     int containerId = containerScreen.getMenu().containerId;
                     if (MuseumScreenRegistry.consumeAndCheck(containerId)) {
-                        MuseumDonationCache.refresh();
-                        // Donations can take a moment to land server-side; a delayed follow-up
-                        // catches the case where the immediate fetch races ahead of that update.
+                        // Donations can take a moment to land server-side, so refresh is delayed
+                        // rather than fired immediately on close.
                         CompletableFuture.runAsync(MuseumDonationCache::refresh,
                                 CompletableFuture.delayedExecutor(60, TimeUnit.SECONDS));
                     }

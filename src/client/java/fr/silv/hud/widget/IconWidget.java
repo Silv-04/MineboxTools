@@ -109,7 +109,7 @@ public class IconWidget extends HudWidget {
     @Override
     public void render(GuiGraphicsExtractor drawContext, Minecraft client) {
         Level level = client.level;
-        if (level == null || client.player == null || client.options.hideGui) {
+        if (level == null || client.player == null || client.gui.hud.isHidden()) {
             return;
         }
 

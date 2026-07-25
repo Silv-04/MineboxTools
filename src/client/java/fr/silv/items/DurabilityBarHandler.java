@@ -39,6 +39,16 @@ public final class DurabilityBarHandler {
     private static final Map<ItemStack, Integer> nbtHashCache = new WeakHashMap<>();
     private static final Map<String, Map<String, int[]>> statsCache = new HashMap<>();
 
+    /**
+     * Clears the per-item stat lookup cache. Must be called whenever
+     * {@link MineboxItemStatUtils} reloads its data (e.g. after an "Update item data"
+     * fetch), otherwise items looked up before the reload keep serving stale
+     * (possibly empty) cached results indefinitely.
+     */
+    public static void clearStatsCache() {
+        statsCache.clear();
+    }
+
     private static final List<String> SUPPORTED_PREFIXES = List.of(
             "hammer_", "vein_", "watering_can_", "sponge_", "bucket_",
             "laborer_", "basket_seeds_", "block_stick_", "leaf_blower", "silk_touch_");

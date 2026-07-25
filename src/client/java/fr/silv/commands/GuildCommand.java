@@ -121,7 +121,8 @@ public final class GuildCommand {
     private static Component errorComponent(MineboxApiClient.LookupError error, String guildName) {
         String key = switch (error) {
             case NOT_FOUND -> "mineboxtools.command.guild.error.not_found";
-            case PROFILE_PRIVATE -> "mineboxtools.command.guild.error.private";
+            // The guild endpoint never returns 401; kept only to satisfy the shared enum's exhaustive switch.
+            case API_ACCESS_DISABLED -> "mineboxtools.command.lookup.error.server";
             case RATE_LIMITED -> "mineboxtools.command.lookup.error.rate_limited";
             case SERVER_ERROR -> "mineboxtools.command.lookup.error.server";
             case NETWORK_ERROR -> "mineboxtools.command.lookup.error.network";

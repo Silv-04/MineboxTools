@@ -9,9 +9,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Caches the local player's donated museum item ids, fetched from their own Minebox profile.
- * Never polls in the background: refreshed only via {@link #refresh()} (world join, museum
- * donation screen closing — always attempted) or {@link #refreshManual()} (the menu button,
- * throttled so spam-clicking can't hammer the API).
+ * Never polls in the background: refreshed only via {@link #refresh()} (world join, and a
+ * delayed follow-up after the museum donation screen closes) or {@link #refreshManual()}
+ * (the menu button, throttled so spam-clicking can't hammer the API).
  */
 public final class MuseumDonationCache {
     private static final Logger LOGGER = ModLog.getLogger(MuseumDonationCache.class);

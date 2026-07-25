@@ -25,7 +25,7 @@ public final class MenuCommand {
                 .executes(context -> {
                     Minecraft client = Minecraft.getInstance();
                     if (client != null && client.player != null) {
-                        client.execute(() -> client.setScreen(new HudMenuScreen()));
+                        client.execute(() -> client.gui.setScreen(new HudMenuScreen()));
                     }
                     return Command.SINGLE_SUCCESS;
                 }));

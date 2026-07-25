@@ -40,7 +40,11 @@ public enum StatDefinition {
     VITALITY("mbx.stats.vitality", "mineboxtools.stat.vitality", 1, 0x4CAF50, "♥"),
     WISDOM("mbx.stats.wisdom", "mineboxtools.stat.wisdom", 1, 0x886EF6, "☽"),
     ATTACK_SPEED("mbx.stats.attack_speed", "mineboxtools.stat.attack_speed", 1, 0xD7BF71, "🗡"),
-    CHARISMA("mbx.stats.charisma", "mineboxtools.stat.charisma", 1, 0xD15FB4, "⚓");
+    CHARISMA("mbx.stats.charisma", "mineboxtools.stat.charisma", 1, 0xD15FB4, "⚓"),
+    AIR_RESISTANCE("mbx.stats.air_resistance", "mineboxtools.stat.air_resistance", 1, 0xB8E2F2, "☄"),
+    EARTH_RESISTANCE("mbx.stats.earth_resistance", "mineboxtools.stat.earth_resistance", 1, 0x9C6B30, "₪"),
+    WATER_RESISTANCE("mbx.stats.water_resistance", "mineboxtools.stat.water_resistance", 1, 0x4CA0DB, "🌊"),
+    FIRE_RESISTANCE("mbx.stats.fire_resistance", "mineboxtools.stat.fire_resistance", 1, 0xE0602B, "🔥");
 
     private static final Map<String, StatDefinition> BY_KEY = Arrays.stream(values())
             .collect(Collectors.toMap(StatDefinition::key, Function.identity()));

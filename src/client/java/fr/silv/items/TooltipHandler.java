@@ -41,6 +41,7 @@ public final class TooltipHandler {
     private static final int DETAIL_COLOR = 0xFFFFFF;
     private static final String SEE_MORE_KEY = "mbx.see_more";
     private static final String OPEN_ACTION_KEY = "mbx.actions.open";
+    private static final String DURABILITY_STAT_KEY = "mbx.durability";
 
     private TooltipHandler() {
     }
@@ -87,8 +88,15 @@ public final class TooltipHandler {
                 continue;
             }
 
-            int[] range = statRanges.get(stat.getStat().toLowerCase());
+            String statKey = stat.getStat().toLowerCase();
+            int[] range = statRanges.get(statKey);
             if (range == null) {
+                continue;
+            }
+
+            if (statKey.equals(DURABILITY_STAT_KEY) && line.getString().contains("/")) {
+                // Vanilla lore already renders "current/max" for repairable (owned/crafted) items —
+                // appending our own [max] here would just duplicate what's already shown.
                 continue;
             }
 

@@ -2,11 +2,9 @@ package fr.silv.mixin.client;
 
 import fr.silv.api.MuseumScreenRegistry;
 import fr.silv.utils.MineboxItemDataUtils;
-import fr.silv.utils.ModLog;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
 import net.minecraft.world.item.ItemStack;
-import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -29,7 +27,6 @@ import java.util.List;
  */
 @Mixin(ClientPacketListener.class)
 public abstract class MuseumScreenDetectionMixin {
-    private static final Logger LOGGER = ModLog.getLogger(MuseumScreenDetectionMixin.class);
     private static final String MENU_TYPE_PATH = "PublicBukkitValues.mythicmobs:type";
     private static final String BACK_BUTTON_TYPE = "back";
     private static final String DONATION_BORDER_TYPE = "orange_gui_empty";
@@ -46,8 +43,6 @@ public abstract class MuseumScreenDetectionMixin {
 
         boolean isMuseumDonationScreen = hasBackButtonAtSlotZero && donationBorderPanes >= MIN_DONATION_BORDER_PANES;
         MuseumScreenRegistry.markScreen(packet.containerId(), isMuseumDonationScreen);
-        LOGGER.info("[fingerprint] ContainerContent containerId={}, slot0=back:{}, orangePanes={}, isMuseumDonationScreen={}",
-                packet.containerId(), hasBackButtonAtSlotZero, donationBorderPanes, isMuseumDonationScreen);
     }
 
     private static boolean matchesMenuType(ItemStack stack, String expectedType) {

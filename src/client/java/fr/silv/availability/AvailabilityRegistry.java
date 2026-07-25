@@ -151,7 +151,10 @@ public final class AvailabilityRegistry {
                                         order(AvailabilitySlot.SHOP, 4)),
                         worldShop("mineboxtools.shop.herb", Icons.HerbShopICON, ModConfig.ShopFlag.HERB,
                                         herbShopOpenOnFullMoon(),
-                                        order(AvailabilitySlot.SHOP, 5)));
+                                        order(AvailabilitySlot.SHOP, 5)),
+                        worldShop("mineboxtools.shop.sushi", Icons.SushiShopICON, ModConfig.ShopFlag.SUSHI,
+                                        cocktailAndMonkeyShopOpen(),
+                                        order(AvailabilitySlot.SHOP, 6)));
         private static final Map<AvailabilitySection, List<AvailabilityEntry>> ENTRIES_BY_SECTION = buildEntriesBySection();
         private static final Map<AvailabilitySlot, List<AvailabilityEntry>> ENTRIES_BY_SLOT = buildEntriesBySlot();
 

@@ -420,6 +420,7 @@ public final class ModConfig {
         private Boolean paintingShopToggle;
         private Boolean italianRestaurantToggle;
         private Boolean herbShopToggle;
+        private Boolean sushiShopToggle;
         private Map<String, WidgetPos> widgetPositions;
 
         private ConfigState withDefaults() {
@@ -486,6 +487,7 @@ public final class ModConfig {
             applyLegacy(paintingShopToggle, ShopFlag.PAINTING);
             applyLegacy(italianRestaurantToggle, ShopFlag.ITALIAN_RESTAURANT);
             applyLegacy(herbShopToggle, ShopFlag.HERB);
+            applyLegacy(sushiShopToggle, ShopFlag.SUSHI);
 
             if (widgetPositions != null && hud.widgetPositions.isEmpty()) {
                 hud.widgetPositions.putAll(widgetPositions);
@@ -545,6 +547,7 @@ public final class ModConfig {
             paintingShopToggle = null;
             italianRestaurantToggle = null;
             herbShopToggle = null;
+            sushiShopToggle = null;
             widgetPositions = null;
         }
 
@@ -637,6 +640,7 @@ public final class ModConfig {
         public boolean painting = false;
         public boolean italianRestaurant = false;
         public boolean herb = false;
+        public boolean sushi = false;
     }
 
     public static final class Hud {
@@ -847,6 +851,7 @@ public final class ModConfig {
         COCKTAIL_BAR(section -> section.cocktailBar, (section, value) -> section.cocktailBar = value),
         PAINTING(section -> section.painting, (section, value) -> section.painting = value),
         ITALIAN_RESTAURANT(section -> section.italianRestaurant, (section, value) -> section.italianRestaurant = value),
+        SUSHI(section -> section.sushi, (section, value) -> section.sushi = value),
         HERB(section -> section.herb, (section, value) -> section.herb = value);
 
         private final BooleanGetter<Shops> getter;

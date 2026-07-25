@@ -57,7 +57,7 @@ public class StatWidget extends HudWidget {
     @Override
     public void render(GuiGraphicsExtractor context, Minecraft client) {
         ConfigOption displayMode = ModConfig.getStatDisplay();
-        if (displayMode == ConfigOption.OFF || client.options.hideGui) {
+        if (displayMode == ConfigOption.OFF || client.gui.hud.isHidden()) {
             return;
         }
 

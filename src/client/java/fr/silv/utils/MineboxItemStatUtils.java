@@ -19,6 +19,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import fr.silv.ModConfig;
+import fr.silv.items.DurabilityBarHandler;
 import fr.silv.model.MineboxStat;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
@@ -44,6 +45,9 @@ public final class MineboxItemStatUtils {
     private static final Pattern SIGNED_INTEGER_PATTERN = Pattern.compile("[+-]?\\d+");
     private static final String BONUS_KEY = "mbx.bonus";
     private static final String STAT_KEY_PREFIX = "mbx.stats.";
+    private static final String ELEMENT_KEY_PREFIX = "mbx.elements.";
+    private static final String RESISTANCE_KEY = "mbx.resistance";
+    private static final String RESISTANCE_SUFFIX = "_resistance";
 
     private MineboxItemStatUtils() {
     }
@@ -57,40 +61,46 @@ public final class MineboxItemStatUtils {
     public static void load() {
         STAT_RANGES.clear();
 
-        if (!Files.exists(ITEM_STATS_FILE)) {
-            LOGGER.warn("No item stats file found at {}. Use the mod menu to fetch item data.", ITEM_STATS_FILE);
-            return;
-        }
-
-        try (Reader reader = Files.newBufferedReader(ITEM_STATS_FILE, StandardCharsets.UTF_8)) {
-            LOGGER.info("Loading item stats ranges from {}...", ITEM_STATS_FILE);
-            JsonObject root = JsonParser.parseReader(reader).getAsJsonObject();
-
-            for (Map.Entry<String, JsonElement> itemEntry : root.entrySet()) {
-                String itemId = itemEntry.getKey();
-                JsonObject stats = itemEntry.getValue().getAsJsonObject();
-                Map<String, int[]> itemStats = new HashMap<>();
-
-                for (Map.Entry<String, JsonElement> stat : stats.entrySet()) {
-                    JsonElement value = stat.getValue();
-
-                    if (value.isJsonArray()) {
-                        JsonArray arr = value.getAsJsonArray();
-                        if (arr.size() == 2) {
-                            int[] range = new int[]{arr.get(0).getAsInt(), arr.get(1).getAsInt()};
-                            itemStats.put(stat.getKey(), range);
-                        }
-                    } else if (value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber()) {
-                        int val = value.getAsInt();
-                        itemStats.put(stat.getKey(), new int[]{val, val});
-                    }
-                }
-                STAT_RANGES.put(itemId, itemStats);
+        try {
+            if (!Files.exists(ITEM_STATS_FILE)) {
+                LOGGER.warn("No item stats file found at {}. Use the mod menu to fetch item data.", ITEM_STATS_FILE);
+                return;
             }
-            LOGGER.info("Item stats ranges loaded successfully ({} items).", STAT_RANGES.size());
-        } catch (Exception e) {
-            STAT_RANGES.clear();
-            LOGGER.error("Failed to load item stats ranges from {}. Re-fetch item data from the mod menu.", ITEM_STATS_FILE, e);
+
+            try (Reader reader = Files.newBufferedReader(ITEM_STATS_FILE, StandardCharsets.UTF_8)) {
+                LOGGER.info("Loading item stats ranges from {}...", ITEM_STATS_FILE);
+                JsonObject root = JsonParser.parseReader(reader).getAsJsonObject();
+
+                for (Map.Entry<String, JsonElement> itemEntry : root.entrySet()) {
+                    String itemId = itemEntry.getKey();
+                    JsonObject stats = itemEntry.getValue().getAsJsonObject();
+                    Map<String, int[]> itemStats = new HashMap<>();
+
+                    for (Map.Entry<String, JsonElement> stat : stats.entrySet()) {
+                        JsonElement value = stat.getValue();
+
+                        if (value.isJsonArray()) {
+                            JsonArray arr = value.getAsJsonArray();
+                            if (arr.size() == 2) {
+                                int[] range = new int[]{arr.get(0).getAsInt(), arr.get(1).getAsInt()};
+                                itemStats.put(stat.getKey(), range);
+                            }
+                        } else if (value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber()) {
+                            int val = value.getAsInt();
+                            itemStats.put(stat.getKey(), new int[]{val, val});
+                        }
+                    }
+                    STAT_RANGES.put(itemId, itemStats);
+                }
+                LOGGER.info("Item stats ranges loaded successfully ({} items).", STAT_RANGES.size());
+            } catch (Exception e) {
+                STAT_RANGES.clear();
+                LOGGER.error("Failed to load item stats ranges from {}. Re-fetch item data from the mod menu.", ITEM_STATS_FILE, e);
+            }
+        } finally {
+            // Reloading may change or clear previously-cached per-item lookups (e.g. after
+            // an "Update item data" fetch), so dependent caches must be invalidated too.
+            DurabilityBarHandler.clearStatsCache();
         }
     }
 
@@ -149,13 +159,8 @@ public final class MineboxItemStatUtils {
      * @return parsed stat value, or {@code null} when no valid stat is found
      */
     public static MineboxStat extractStatsFromLine(Component line, Set<String> validKeys) {
-        TranslatableContents content = findTranslatable(line, validKeys);
-        if (content == null) {
-            return null;
-        }
-
-        String key = content.getKey();
-        if (!validKeys.contains(key)) {
+        String key = resolveStatKey(line, validKeys);
+        if (key == null) {
             return null;
         }
 
@@ -186,13 +191,8 @@ public final class MineboxItemStatUtils {
      * @return combined stat value including bonus, or {@code null} when unavailable
      */
     public static MineboxStat extractStatsFromLineWithBonus(Component line, Set<String> validKeys) {
-        TranslatableContents content = findTranslatable(line, validKeys);
-        if (content == null) {
-            return null;
-        }
-
-        String key = content.getKey();
-        if (!validKeys.contains(key)) {
+        String key = resolveStatKey(line, validKeys);
+        if (key == null) {
             return null;
         }
 
@@ -246,16 +246,43 @@ public final class MineboxItemStatUtils {
         return result;
     }
 
-    private static TranslatableContents findTranslatable(Component text, Set<String> validKeys) {
-        if (text.getContents() instanceof TranslatableContents content && validKeys.contains(content.getKey())) {
-            return content;
-        }
-        for (Component sibling : text.getSiblings()) {
-            TranslatableContents result = findTranslatable(sibling, validKeys);
-            if (result != null) {
-                return result;
+    /**
+     * Resolves the stat key represented by a lore line. Most stats carry a single
+     * direct {@code mbx.stats.<key>} translatable segment. Elemental resistances
+     * instead render as separate {@code mbx.elements.<element>} + {@code mbx.resistance}
+     * segments with no unifying key, so those are recognized as a pair and mapped to
+     * the synthesized {@code mbx.stats.<element>_resistance} key.
+     *
+     * @param line      lore line to inspect
+     * @param validKeys supported stat translation keys
+     * @return resolved stat key, or {@code null} when the line matches none of them
+     */
+    private static String resolveStatKey(Component line, Set<String> validKeys) {
+        String element = null;
+        boolean hasResistanceMarker = false;
+
+        for (Component segment : flattenText(line)) {
+            if (!(segment.getContents() instanceof TranslatableContents content)) {
+                continue;
+            }
+            String key = content.getKey();
+            if (validKeys.contains(key)) {
+                return key;
+            }
+            if (key.startsWith(ELEMENT_KEY_PREFIX)) {
+                element = key.substring(ELEMENT_KEY_PREFIX.length());
+            } else if (RESISTANCE_KEY.equals(key)) {
+                hasResistanceMarker = true;
             }
         }
+
+        if (element != null && hasResistanceMarker) {
+            String composite = STAT_KEY_PREFIX + element + RESISTANCE_SUFFIX;
+            if (validKeys.contains(composite)) {
+                return composite;
+            }
+        }
+
         return null;
     }
 }

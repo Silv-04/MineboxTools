@@ -150,7 +150,7 @@ public final class LevelCommand {
     private static Component apiError(MineboxApiClient.LookupError lookupError, String username) {
         String key = switch (lookupError) {
             case NOT_FOUND        -> "mineboxtools.command.lookup.error.not_found";
-            case PROFILE_PRIVATE  -> "mineboxtools.command.lookup.error.private";
+            case API_ACCESS_DISABLED -> "mineboxtools.command.lookup.error.api_disabled";
             case RATE_LIMITED     -> "mineboxtools.command.lookup.error.rate_limited";
             case SERVER_ERROR     -> "mineboxtools.command.lookup.error.server";
             case NETWORK_ERROR    -> "mineboxtools.command.lookup.error.network";
