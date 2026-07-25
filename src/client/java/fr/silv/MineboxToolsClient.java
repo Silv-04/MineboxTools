@@ -8,7 +8,6 @@ import fr.silv.commands.LookupCommand;
 import fr.silv.commands.MenuCommand;
 import fr.silv.hud.widget.HudWidgetManager;
 import fr.silv.items.DurabilityBarHandler;
-import fr.silv.items.ItemHighlightHandler;
 import fr.silv.items.TooltipHandler;
 import fr.silv.utils.MineboxItemStatUtils;
 import fr.silv.utils.MineboxItemUtils;
@@ -21,7 +20,6 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import org.slf4j.Logger;
 
