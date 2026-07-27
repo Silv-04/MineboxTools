@@ -41,7 +41,7 @@ public final class EffectScanController {
     /** Player-inventory slots a menu appends after its own (27 main + 9 hotbar). */
     private static final int PLAYER_INVENTORY_SLOTS = 36;
     /** Localized effects-menu titles, matched as a normalized substring (past the icon glyphs). */
-    private static final Set<String> EFFECT_MENU_TITLES = Set.of("effets actifs", "active effects");
+    private static final Set<String> EFFECT_MENU_TITLES = Set.of("effets actifs", "current effect");
 
     private enum State { IDLE, PENDING, AWAITING_OPEN, AWAITING_CONTENT }
 

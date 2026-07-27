@@ -31,7 +31,7 @@ public class EffectsWidget extends HudWidget {
     private static final int SPRITE = 16;
     /** Ring centre-line radius: tight to the sprite, so the square's corners poke just outside it. */
     private static final int RING_RADIUS = 10;
-    private static final int RING_THICKNESS = 3;
+    private static final int RING_THICKNESS = 2;
     private static final int CELL_PADDING = 4;
     private static final int SEGMENTS = 64;
     /** Everything is authored full-size then scaled down once, for a crisp compact HUD. */
@@ -152,7 +152,8 @@ public class EffectsWidget extends HudWidget {
         // when nearly gone, shifting as it counts down.
         int color = unknown ? UNKNOWN_RING_COLOR : gradientColor(clamped);
         for (int i = 0; i < drawn; i++) {
-            double angle = -Math.PI / 2.0 + i * step; // start at 12 o'clock, sweep clockwise
+            // Grow anticlockwise from 12 o'clock so the arc depletes clockwise as time runs down.
+            double angle = -Math.PI / 2.0 - i * step;
             context.pose().pushMatrix();
             context.pose().translate(centerX, centerY);
             context.pose().rotate((float) angle);
