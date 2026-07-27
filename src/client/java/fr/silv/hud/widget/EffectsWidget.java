@@ -30,8 +30,8 @@ public class EffectsWidget extends HudWidget {
     private static final int COLUMNS = 6;
     private static final int SPRITE = 16;
     /** Ring centre-line radius: tight to the sprite, so the square's corners poke just outside it. */
-    private static final int RING_RADIUS = 10;
-    private static final float RING_THICKNESS = 1.5f;
+    private static final int RING_RADIUS = 11;
+    private static final float RING_THICKNESS = 1.4f;
     private static final int CELL_PADDING = 4;
     private static final int SEGMENTS = 64;
     /** Everything is authored full-size then scaled down once, for a crisp compact HUD. */
@@ -174,9 +174,9 @@ public class EffectsWidget extends HudWidget {
         return OptionalDouble.empty();
     }
 
-    /** Red (fraction 0) through to green (fraction 1), opaque. */
+    /** Red (fraction 0) through to green (fraction 1), muted rather than vivid. */
     private static int gradientColor(double fraction) {
         float hue = (float) (Math.max(0.0, Math.min(1.0, fraction)) * (120.0 / 360.0));
-        return 0xFF000000 | (Color.HSBtoRGB(hue, 0.9f, 0.95f) & 0xFFFFFF);
+        return 0xFF000000 | (Color.HSBtoRGB(hue, 0.5f, 0.85f) & 0xFFFFFF);
     }
 }
