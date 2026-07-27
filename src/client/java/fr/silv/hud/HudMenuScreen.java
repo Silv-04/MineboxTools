@@ -112,6 +112,12 @@ public class HudMenuScreen extends Screen {
                 value -> ModConfig.setEnabled(ModConfig.FeatureFlag.LOCATION, value));
         settingsList.addRow(locationToggle);
 
+        CycleButton<Boolean> effectsToggle = createBooleanToggle(
+                "mineboxtools.menu.effects",
+                ModConfig.isEnabled(ModConfig.FeatureFlag.EFFECTS),
+                value -> ModConfig.setEnabled(ModConfig.FeatureFlag.EFFECTS, value));
+        settingsList.addRow(effectsToggle);
+
         CycleButton<ModConfig.IconSize> iconSizeToggle = createEnumToggle(
                 "mineboxtools.menu.icon_size",
                 ModConfig.IconSize.values(), value -> Component.literal(Lang.get(value.getLabelKey())),
