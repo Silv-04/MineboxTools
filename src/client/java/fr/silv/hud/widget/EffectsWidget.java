@@ -29,11 +29,13 @@ import java.util.OptionalDouble;
 public class EffectsWidget extends HudWidget {
     private static final int COLUMNS = 6;
     private static final int SPRITE = 16;
-    /** Ring centre-line radius: past the sprite's corners (half-diagonal ~11px for a 16px sprite). */
-    private static final int RING_RADIUS = 15;
-    private static final int RING_THICKNESS = 2;
-    private static final int CELL_PADDING = 6;
+    /** Ring centre-line radius: tight to the sprite, so the square's corners poke just outside it. */
+    private static final int RING_RADIUS = 10;
+    private static final int RING_THICKNESS = 3;
+    private static final int CELL_PADDING = 4;
     private static final int SEGMENTS = 64;
+    /** Everything is authored full-size then scaled down once, for a crisp half-size HUD. */
+    private static final float WIDGET_SCALE = 0.5f;
     /** Padding between the panel edge and the icon grid, on every side. */
     private static final int PANEL_PADDING = 6;
     private static final int CORNER_RADIUS = 6;
@@ -45,11 +47,16 @@ public class EffectsWidget extends HudWidget {
         super("effects_widget",
                 ModConfig.getWidgetPosition("effects_widget")[0],
                 ModConfig.getWidgetPosition("effects_widget")[1],
-                cellSize() + 2 * PANEL_PADDING, cellSize() + 2 * PANEL_PADDING);
+                scaled(cellSize() + 2 * PANEL_PADDING), scaled(cellSize() + 2 * PANEL_PADDING));
     }
 
     private static int cellSize() {
         return 2 * (RING_RADIUS + RING_THICKNESS) + CELL_PADDING;
+    }
+
+    /** Authored pixels converted to on-screen pixels at the widget's display scale. */
+    private static int scaled(int authored) {
+        return Math.round(authored * WIDGET_SCALE);
     }
 
     @Override
@@ -68,25 +75,32 @@ public class EffectsWidget extends HudWidget {
         int cell = cellSize();
         int columns = Math.min(COLUMNS, Math.max(1, count));
         int rows = Math.max(1, (int) Math.ceil(count / (double) COLUMNS));
+        int authoredWidth = columns * cell + 2 * PANEL_PADDING;
+        int authoredHeight = rows * cell + 2 * PANEL_PADDING;
 
-        // Keep a one-cell minimum footprint even when empty, so the widget stays grabbable in the
-        // HUD config screen.
-        setSize(columns * cell + 2 * PANEL_PADDING, rows * cell + 2 * PANEL_PADDING);
+        // Bounds are the on-screen (scaled) size; a one-cell minimum keeps the widget grabbable in
+        // the HUD config screen even when empty.
+        setSize(scaled(authoredWidth), scaled(authoredHeight));
         keepInBounds(client.getWindow().getGuiScaledWidth(), client.getWindow().getGuiScaledHeight());
 
         if (count == 0) {
             return;
         }
 
-        roundedRect(context, getX(), getY(), getWidth(), getHeight(), CORNER_RADIUS, PANEL_COLOR);
+        // Author everything at full size in local coordinates, then scale the whole widget down once
+        // so the geometry stays crisp instead of being rounded to half-size pixels.
+        context.pose().pushMatrix();
+        context.pose().translate(getX(), getY());
+        context.pose().scale(WIDGET_SCALE, WIDGET_SCALE);
 
-        int baseX = getX() + PANEL_PADDING;
-        int baseY = getY() + PANEL_PADDING;
+        roundedRect(context, 0, 0, authoredWidth, authoredHeight, CORNER_RADIUS, PANEL_COLOR);
         for (int i = 0; i < count; i++) {
-            int cellX = baseX + (i % COLUMNS) * cell;
-            int cellY = baseY + (i / COLUMNS) * cell;
+            int cellX = PANEL_PADDING + (i % COLUMNS) * cell;
+            int cellY = PANEL_PADDING + (i / COLUMNS) * cell;
             drawEffect(context, active.get(i), cellX + cell / 2, cellY + cell / 2);
         }
+
+        context.pose().popMatrix();
     }
 
     /** Filled rounded rectangle drawn from {@code fill} spans - no texture, no extra dependency. */

@@ -41,12 +41,16 @@ public final class EffectScanController {
     private static final int SCAN_DELAY_TICKS = 50;
     private static final int OPEN_TIMEOUT_TICKS = 60;
     private static final int CONTENT_TIMEOUT_TICKS = 40;
+    /** While pending, wait out loading screens / open menus and retry rather than giving up. */
+    private static final int READY_RETRY_TICKS = 20;
+    private static final int MAX_READY_RETRIES = 40;
 
     private enum State { IDLE, PENDING, AWAITING_OPEN, AWAITING_CONTENT }
 
     private static State state = State.IDLE;
     private static int timer = 0;
     private static int capturedContainerId = -1;
+    private static int readyRetries = 0;
 
     private EffectScanController() {
     }
@@ -56,6 +60,7 @@ public final class EffectScanController {
         if (state == State.IDLE || state == State.PENDING) {
             state = State.PENDING;
             timer = SCAN_DELAY_TICKS;
+            readyRetries = MAX_READY_RETRIES;
         }
         // A scan already in flight will read the new effect too, so nothing to do otherwise.
     }
@@ -64,6 +69,7 @@ public final class EffectScanController {
     public static void forceScan() {
         state = State.PENDING;
         timer = 1;
+        readyRetries = MAX_READY_RETRIES;
     }
 
     /** Whether the {@code setScreen} mixin should swallow {@code screen} for an in-flight scan. */
@@ -90,7 +96,9 @@ public final class EffectScanController {
     public static void onClientTick(Minecraft client) {
         LocalPlayer player = client.player;
         if (player == null) {
-            if (state != State.IDLE) {
+            // Keep a pending scan alive across the brief null-player window on join; only an
+            // in-flight menu capture is lost when the player goes away.
+            if (state == State.AWAITING_OPEN || state == State.AWAITING_CONTENT) {
                 reset();
             }
             return;
@@ -112,9 +120,15 @@ public final class EffectScanController {
         if (--timer > 0) {
             return;
         }
-        // Only fire when the player isn't in a screen, so we don't fight or swallow their own menu.
-        if (client.getConnection() == null || client.gui.screen() != null) {
-            reset();
+        // Wait out loading screens and open menus - the join scan especially fires while terrain is
+        // still loading - and retry, rather than aborting on a transient screen. Only give up once
+        // the retry budget is spent.
+        if (client.getConnection() == null || client.player == null || client.gui.screen() != null) {
+            if (readyRetries-- > 0) {
+                timer = READY_RETRY_TICKS;
+            } else {
+                reset();
+            }
             return;
         }
         client.getConnection().sendCommand(EFFECT_COMMAND);

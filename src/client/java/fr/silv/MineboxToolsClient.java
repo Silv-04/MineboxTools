@@ -7,6 +7,7 @@ import fr.silv.commands.GuildCommand;
 import fr.silv.commands.LevelCommand;
 import fr.silv.commands.LookupCommand;
 import fr.silv.commands.MenuCommand;
+import fr.silv.effects.ConsumableChatWatcher;
 import fr.silv.effects.EffectCatalogService;
 import fr.silv.effects.EffectScanController;
 import fr.silv.hud.widget.HudWidgetManager;
@@ -65,6 +66,7 @@ public class MineboxToolsClient implements ClientModInitializer {
 
         EffectCatalogService.init();
         ClientTickEvents.END_CLIENT_TICK.register(EffectScanController::onClientTick);
+        ConsumableChatWatcher.register();
 
         ItemTooltipCallback.EVENT.register((stack, context, type, lines) -> {
             TooltipHandler.addStatRangesToTooltip(stack, context, type, lines);
