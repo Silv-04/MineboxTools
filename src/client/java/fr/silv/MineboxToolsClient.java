@@ -2,10 +2,13 @@ package fr.silv;
 
 import fr.silv.api.MuseumDonationCache;
 import fr.silv.api.MuseumScreenRegistry;
+import fr.silv.commands.EffectsCommand;
 import fr.silv.commands.GuildCommand;
 import fr.silv.commands.LevelCommand;
 import fr.silv.commands.LookupCommand;
 import fr.silv.commands.MenuCommand;
+import fr.silv.effects.EffectCatalogService;
+import fr.silv.effects.EffectScanController;
 import fr.silv.hud.widget.HudWidgetManager;
 import fr.silv.items.DurabilityBarHandler;
 import fr.silv.items.TooltipHandler;
@@ -17,6 +20,7 @@ import fr.silv.utils.ModLog;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
@@ -50,6 +54,7 @@ public class MineboxToolsClient implements ClientModInitializer {
             LookupCommand.register(dispatcher);
             GuildCommand.register(dispatcher);
             LevelCommand.register(dispatcher);
+            EffectsCommand.register(dispatcher);
         });
 
         MineboxItemStatUtils.load();
@@ -57,6 +62,9 @@ public class MineboxToolsClient implements ClientModInitializer {
         MuseumItemUtils.load();
         SkillLevelUtils.load();
         DurabilityBarHandler.register();
+
+        EffectCatalogService.init();
+        ClientTickEvents.END_CLIENT_TICK.register(EffectScanController::onClientTick);
 
         ItemTooltipCallback.EVENT.register((stack, context, type, lines) -> {
             TooltipHandler.addStatRangesToTooltip(stack, context, type, lines);
