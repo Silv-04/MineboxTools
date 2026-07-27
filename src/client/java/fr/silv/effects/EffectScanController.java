@@ -2,50 +2,46 @@ package fr.silv.effects;
 
 import fr.silv.utils.ModLog;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.gui.screens.inventory.InventoryScreen;
-import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ServerboundContainerClosePacket;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import org.slf4j.Logger;
 
+import java.text.Normalizer;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 /**
- * Runs a silent {@code /effect} scan: sends the command, swallows the menu it opens so nothing is
- * shown, reads the effects out of it, then closes it - leaving {@link ActiveEffectsStore} refreshed.
+ * Runs a silent {@code /effect} scan by intercepting the menu at the packet level: the effects menu
+ * is recognised by its title in the open-screen packet, cancelled there so no screen or menu is ever
+ * created, and its items are read straight from the follow-up content packet.
  *
- * <p>Driven off the client tick, because that keeps running while a menu is bound. The flow is a
- * small state machine:
- * <ol>
- *   <li>{@code PENDING} - a scan was requested; wait a beat so a burst of eats coalesces into one
- *       scan and the server has time to apply the just-eaten effect, then send {@code /effect};</li>
- *   <li>{@code AWAITING_OPEN} - the server's menu is intercepted at {@code setScreen} (see the mixin)
- *       and bound without being displayed;</li>
- *   <li>{@code AWAITING_CONTENT} - once the server fills the menu's slots, parse and close.</li>
- * </ol>
+ * <p>Because the effects menu is identified by title - not by "the next menu after we asked" - a menu
+ * the player opens themselves is never touched no matter how long a scan takes, so the open/content
+ * waits can be generous enough to survive a laggy world-join without ever flashing a menu on screen.
  *
- * <p>Suppression is armed only for our own scan and only for a plain container screen, so a menu the
- * player opens themselves - including a manual {@code /effect} - is never swallowed.
+ * <p>The tick drives the request side (send {@code /effect}, wait, time out); the interception hooks
+ * ({@link #shouldInterceptOpen}/{@link #onOpenIntercepted} and {@link #shouldInterceptContent}/
+ * {@link #onContentIntercepted}) are called from the client-packet mixin.
  */
 public final class EffectScanController {
     private static final Logger LOGGER = ModLog.getLogger(EffectScanController.class);
 
     private static final String EFFECT_COMMAND = "effect";
-    /**
-     * ~2.5s: the trigger fires at use-start (right-click), so the scan must outlast the eat/drink
-     * animation and the server applying the effect before it reads. Also coalesces a burst of uses.
-     */
+    /** ~2.5s: lets a burst of uses collapse into one scan and the server apply the new effect first. */
     private static final int SCAN_DELAY_TICKS = 50;
-    // Generous, so a laggy server's menu response is still caught and suppressed instead of flashing
-    // on screen (notably at world join, when the client is busy loading).
+    // Generous, so a laggy server's menu is still caught; safe to wait this long because only the
+    // effects menu (by title) is ever intercepted.
     private static final int OPEN_TIMEOUT_TICKS = 300;
     private static final int CONTENT_TIMEOUT_TICKS = 100;
     /** While pending, wait out loading screens / open menus and retry rather than giving up. */
     private static final int READY_RETRY_TICKS = 20;
     private static final int MAX_READY_RETRIES = 40;
+    /** Player-inventory slots a menu appends after its own (27 main + 9 hotbar). */
+    private static final int PLAYER_INVENTORY_SLOTS = 36;
+    /** Localized effects-menu titles, matched as a normalized substring (past the icon glyphs). */
+    private static final Set<String> EFFECT_MENU_TITLES = Set.of("effets actifs", "active effects");
 
     private enum State { IDLE, PENDING, AWAITING_OPEN, AWAITING_CONTENT }
 
@@ -64,7 +60,6 @@ public final class EffectScanController {
             timer = SCAN_DELAY_TICKS;
             readyRetries = MAX_READY_RETRIES;
         }
-        // A scan already in flight will read the new effect too, so nothing to do otherwise.
     }
 
     /** Requests a scan on the next tick, skipping the debounce; used by the test command. */
@@ -74,47 +69,50 @@ public final class EffectScanController {
         readyRetries = MAX_READY_RETRIES;
     }
 
-    /** Whether the {@code setScreen} mixin should swallow {@code screen} for an in-flight scan. */
-    public static boolean shouldSuppress(Screen screen) {
-        return state == State.AWAITING_OPEN
-                && screen instanceof AbstractContainerScreen<?>
-                && !(screen instanceof InventoryScreen);
+    /** Whether the open-screen packet for {@code title} is the effects menu we're waiting on. */
+    public static boolean shouldInterceptOpen(Component title, int containerId) {
+        return state == State.AWAITING_OPEN && titleMatches(title);
     }
 
-    /** Binds the swallowed menu so the server's content packet still populates it, without showing it. */
-    public static void onScreenSuppressed(AbstractContainerScreen<?> screen) {
-        LocalPlayer player = Minecraft.getInstance().player;
-        if (player == null) {
-            reset();
-            return;
-        }
-        AbstractContainerMenu menu = screen.getMenu();
-        player.containerMenu = menu;
-        capturedContainerId = menu.containerId;
+    /** Records the intercepted menu's id and waits for its contents; no screen or menu is created. */
+    public static void onOpenIntercepted(int containerId) {
+        capturedContainerId = containerId;
         state = State.AWAITING_CONTENT;
         timer = CONTENT_TIMEOUT_TICKS;
     }
 
-    public static void onClientTick(Minecraft client) {
-        LocalPlayer player = client.player;
-        if (player == null) {
-            // Keep a pending scan alive across the brief null-player window on join; only an
-            // in-flight menu capture is lost when the player goes away.
-            if (state == State.AWAITING_OPEN || state == State.AWAITING_CONTENT) {
-                reset();
-            }
-            return;
-        }
+    /** Whether this content packet belongs to the effects menu we intercepted. */
+    public static boolean shouldInterceptContent(int containerId) {
+        return state == State.AWAITING_CONTENT && containerId == capturedContainerId;
+    }
 
+    /** Reads the effects from the content packet, updates the store, and closes the menu server-side. */
+    public static void onContentIntercepted(List<ItemStack> items) {
+        // The list is the menu's own slots followed by the player inventory; drop the latter so held
+        // consumables can't be mistaken for active effects.
+        int containerSlots = Math.max(0, items.size() - PLAYER_INVENTORY_SLOTS);
+        List<ActiveConsumable> effects = EffectMenuParser.parse(items.subList(0, containerSlots));
+        ActiveEffectsStore.update(effects);
+        close(capturedContainerId);
+        reset();
+        LOGGER.debug("Silent effect scan captured {} active effect(s)", effects.size());
+    }
+
+    public static void onClientTick(Minecraft client) {
         switch (state) {
             case IDLE -> { }
             case PENDING -> tickPending(client);
             case AWAITING_OPEN -> {
-                if (--timer <= 0) {
-                    reset(); // the menu never opened
+                if (client.player == null || --timer <= 0) {
+                    reset();
                 }
             }
-            case AWAITING_CONTENT -> tickAwaitingContent(client, player);
+            case AWAITING_CONTENT -> {
+                if (client.player == null || --timer <= 0) {
+                    close(capturedContainerId);
+                    reset();
+                }
+            }
         }
     }
 
@@ -123,8 +121,7 @@ public final class EffectScanController {
             return;
         }
         // Wait out loading screens and open menus - the join scan especially fires while terrain is
-        // still loading - and retry, rather than aborting on a transient screen. Only give up once
-        // the retry budget is spent.
+        // still loading - and retry, rather than aborting on a transient screen.
         if (client.getConnection() == null || client.player == null || client.gui.screen() != null) {
             if (readyRetries-- > 0) {
                 timer = READY_RETRY_TICKS;
@@ -138,49 +135,27 @@ public final class EffectScanController {
         timer = OPEN_TIMEOUT_TICKS;
     }
 
-    private static void tickAwaitingContent(Minecraft client, LocalPlayer player) {
-        if (client.gui.screen() != null) {
-            // The player opened something; abandon the scan and hand the menu back.
-            closeBoundMenu(client, player);
-            reset();
-            return;
+    private static void close(int containerId) {
+        Minecraft client = Minecraft.getInstance();
+        if (client.getConnection() != null && containerId >= 0) {
+            client.getConnection().send(new ServerboundContainerClosePacket(containerId));
         }
-        if (player.containerMenu == null || player.containerMenu.containerId != capturedContainerId) {
-            reset(); // the menu we bound is gone
-            return;
-        }
-        if (hasContainerContent(player)) {
-            List<ActiveConsumable> effects = EffectMenuParser.parse(player.containerMenu, player.getInventory());
-            ActiveEffectsStore.update(effects);
-            closeBoundMenu(client, player);
-            reset();
-            LOGGER.debug("Silent effect scan captured {} active effect(s)", effects.size());
-        } else if (--timer <= 0) {
-            closeBoundMenu(client, player);
-            reset();
-        }
-    }
-
-    private static boolean hasContainerContent(LocalPlayer player) {
-        AbstractContainerMenu menu = player.containerMenu;
-        for (Slot slot : menu.slots) {
-            if (slot.container != player.getInventory() && !slot.getItem().isEmpty()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static void closeBoundMenu(Minecraft client, LocalPlayer player) {
-        if (client.getConnection() != null && capturedContainerId >= 0) {
-            client.getConnection().send(new ServerboundContainerClosePacket(capturedContainerId));
-        }
-        player.containerMenu = player.inventoryMenu;
     }
 
     private static void reset() {
         state = State.IDLE;
         timer = 0;
         capturedContainerId = -1;
+    }
+
+    private static boolean titleMatches(Component title) {
+        String normalized = normalize(title.getString());
+        return EFFECT_MENU_TITLES.stream().anyMatch(normalized::contains);
+    }
+
+    private static String normalize(String text) {
+        return Normalizer.normalize(text, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}+", "")
+                .toLowerCase(Locale.ROOT);
     }
 }

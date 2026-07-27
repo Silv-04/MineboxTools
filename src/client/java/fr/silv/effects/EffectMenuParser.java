@@ -5,9 +5,6 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ItemLore;
@@ -41,16 +38,15 @@ public final class EffectMenuParser {
     private EffectMenuParser() {
     }
 
-    /** Parses the container side of {@code menu} into the effects it lists. */
-    public static List<ActiveConsumable> parse(AbstractContainerMenu menu, Inventory playerInventory) {
+    /**
+     * Parses the effects-menu container items (the menu's own slots, not the player inventory) into
+     * the effects they list. Items with no gold duration line - fillers, and any held consumable that
+     * slips in - yield nothing, as do beacon buffs.
+     */
+    public static List<ActiveConsumable> parse(List<ItemStack> items) {
         List<ActiveConsumable> effects = new ArrayList<>();
         long now = System.currentTimeMillis();
-        for (Slot slot : menu.slots) {
-            // The menu shows the player's own inventory too; only the container side is effects.
-            if (slot.container == playerInventory) {
-                continue;
-            }
-            ItemStack stack = slot.getItem();
+        for (ItemStack stack : items) {
             // Beacon buffs (Balise) are shown in the menu but aren't consumables - blacklist them.
             if (stack.isEmpty() || stack.is(Items.BEACON)) {
                 continue;
