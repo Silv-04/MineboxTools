@@ -34,13 +34,13 @@ public class EffectsWidget extends HudWidget {
     private static final int RING_THICKNESS = 3;
     private static final int CELL_PADDING = 4;
     private static final int SEGMENTS = 64;
-    /** Everything is authored full-size then scaled down once, for a crisp half-size HUD. */
-    private static final float WIDGET_SCALE = 0.5f;
+    /** Everything is authored full-size then scaled down once, for a crisp compact HUD. */
+    private static final float WIDGET_SCALE = 0.75f;
     /** Padding between the panel edge and the icon grid, on every side. */
     private static final int PANEL_PADDING = 6;
     private static final int CORNER_RADIUS = 6;
-    /** Semi-opaque dark panel, for HUD contrast without hiding the world. */
-    private static final int PANEL_COLOR = 0xB0161616;
+    /** Faint dark panel for contrast - copied exactly from MineboxAdditions' HUD background. */
+    private static final int PANEL_COLOR = 0x40000000;
     private static final int UNKNOWN_RING_COLOR = 0xFF888888;
 
     public EffectsWidget() {

@@ -9,6 +9,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ItemLore;
 
 import java.util.ArrayList;
@@ -50,7 +51,8 @@ public final class EffectMenuParser {
                 continue;
             }
             ItemStack stack = slot.getItem();
-            if (stack.isEmpty()) {
+            // Beacon buffs (Balise) are shown in the menu but aren't consumables - blacklist them.
+            if (stack.isEmpty() || stack.is(Items.BEACON)) {
                 continue;
             }
             OptionalLong remaining = remainingSeconds(stack);

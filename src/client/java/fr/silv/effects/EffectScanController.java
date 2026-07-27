@@ -39,8 +39,10 @@ public final class EffectScanController {
      * animation and the server applying the effect before it reads. Also coalesces a burst of uses.
      */
     private static final int SCAN_DELAY_TICKS = 50;
-    private static final int OPEN_TIMEOUT_TICKS = 60;
-    private static final int CONTENT_TIMEOUT_TICKS = 40;
+    // Generous, so a laggy server's menu response is still caught and suppressed instead of flashing
+    // on screen (notably at world join, when the client is busy loading).
+    private static final int OPEN_TIMEOUT_TICKS = 300;
+    private static final int CONTENT_TIMEOUT_TICKS = 100;
     /** While pending, wait out loading screens / open menus and retry rather than giving up. */
     private static final int READY_RETRY_TICKS = 20;
     private static final int MAX_READY_RETRIES = 40;
