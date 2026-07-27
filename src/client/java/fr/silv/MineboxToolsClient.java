@@ -74,6 +74,11 @@ public class MineboxToolsClient implements ClientModInitializer {
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) ->
                 MuseumDonationCache.refresh());
 
+        // Seed the effects widget on join: effects already running (from before login) fire no
+        // consume event, so scan once the world is up.
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) ->
+                EffectScanController.requestScan());
+
         ScreenEvents.BEFORE_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
             if (screen instanceof AbstractContainerScreen<?> containerScreen) {
                 ScreenEvents.remove(screen).register(closedScreen -> {

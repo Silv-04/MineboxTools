@@ -32,14 +32,20 @@ public class EffectsWidget extends HudWidget {
     /** Ring centre-line radius: past the sprite's corners (half-diagonal ~11px for a 16px sprite). */
     private static final int RING_RADIUS = 15;
     private static final int RING_THICKNESS = 2;
-    private static final int CELL_PADDING = 4;
+    private static final int CELL_PADDING = 6;
     private static final int SEGMENTS = 64;
+    /** Padding between the panel edge and the icon grid, on every side. */
+    private static final int PANEL_PADDING = 6;
+    private static final int CORNER_RADIUS = 6;
+    /** Semi-opaque dark panel, for HUD contrast without hiding the world. */
+    private static final int PANEL_COLOR = 0xB0161616;
+    private static final int UNKNOWN_RING_COLOR = 0xFF888888;
 
     public EffectsWidget() {
         super("effects_widget",
                 ModConfig.getWidgetPosition("effects_widget")[0],
                 ModConfig.getWidgetPosition("effects_widget")[1],
-                cellSize(), cellSize());
+                cellSize() + 2 * PANEL_PADDING, cellSize() + 2 * PANEL_PADDING);
     }
 
     private static int cellSize() {
@@ -48,6 +54,9 @@ public class EffectsWidget extends HudWidget {
 
     @Override
     public void render(GuiGraphicsExtractor context, Minecraft client) {
+        if (!ModConfig.isEnabled(ModConfig.FeatureFlag.EFFECTS)) {
+            return;
+        }
         if (client.gui.hud.isHidden()) {
             return;
         }
@@ -62,19 +71,36 @@ public class EffectsWidget extends HudWidget {
 
         // Keep a one-cell minimum footprint even when empty, so the widget stays grabbable in the
         // HUD config screen.
-        setSize(columns * cell, rows * cell);
+        setSize(columns * cell + 2 * PANEL_PADDING, rows * cell + 2 * PANEL_PADDING);
         keepInBounds(client.getWindow().getGuiScaledWidth(), client.getWindow().getGuiScaledHeight());
 
         if (count == 0) {
             return;
         }
 
-        int baseX = getX();
-        int baseY = getY();
+        roundedRect(context, getX(), getY(), getWidth(), getHeight(), CORNER_RADIUS, PANEL_COLOR);
+
+        int baseX = getX() + PANEL_PADDING;
+        int baseY = getY() + PANEL_PADDING;
         for (int i = 0; i < count; i++) {
             int cellX = baseX + (i % COLUMNS) * cell;
             int cellY = baseY + (i / COLUMNS) * cell;
             drawEffect(context, active.get(i), cellX + cell / 2, cellY + cell / 2);
+        }
+    }
+
+    /** Filled rounded rectangle drawn from {@code fill} spans - no texture, no extra dependency. */
+    private static void roundedRect(GuiGraphicsExtractor context, int x, int y, int width, int height,
+                                    int radius, int color) {
+        int x2 = x + width;
+        int y2 = y + height;
+        int r = Math.min(radius, Math.min(width, height) / 2);
+        context.fill(x, y + r, x2, y2 - r, color); // middle band, full width
+        for (int i = 0; i < r; i++) {
+            int dist = r - i; // distance in rows from the corner's centre
+            int inset = r - (int) Math.round(Math.sqrt((double) r * r - (double) dist * dist));
+            context.fill(x + inset, y + i, x2 - inset, y + i + 1, color);       // top edge
+            context.fill(x + inset, y2 - 1 - i, x2 - inset, y2 - i, color);     // bottom edge
         }
     }
 
@@ -108,9 +134,11 @@ public class EffectsWidget extends HudWidget {
         // Overlap neighbours slightly so the ticks read as a continuous ring rather than dots.
         int halfLen = Math.max(2, (int) Math.ceil(step * RING_RADIUS / 2.0) + 1);
 
+        // One solid colour for the whole ring, from the remaining fraction: green when full, red
+        // when nearly gone, shifting as it counts down.
+        int color = unknown ? UNKNOWN_RING_COLOR : gradientColor(clamped);
         for (int i = 0; i < drawn; i++) {
             double angle = -Math.PI / 2.0 + i * step; // start at 12 o'clock, sweep clockwise
-            int color = unknown ? 0xFF888888 : gradientColor(i / (double) SEGMENTS);
             context.pose().pushMatrix();
             context.pose().translate(centerX, centerY);
             context.pose().rotate((float) angle);
