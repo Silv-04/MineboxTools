@@ -18,6 +18,7 @@ public class HudWidgetManager {
         WIDGETS.add(new DurabilityWidget());
         WIDGETS.add(new IconWidget());
         WIDGETS.add(new StatWidget());
+        WIDGETS.add(new EffectsWidget());
     }
 
     /**

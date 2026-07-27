@@ -59,7 +59,8 @@ public final class EffectMenuParser {
             }
             String name = stack.getHoverName().getString();
             String sourceType = sourceType(stack).orElse(null);
-            effects.add(new ActiveConsumable(sourceType, name, now + remaining.getAsLong() * 1000L));
+            effects.add(new ActiveConsumable(sourceType, name,
+                    now + remaining.getAsLong() * 1000L, stack.copy()));
         }
         return effects;
     }

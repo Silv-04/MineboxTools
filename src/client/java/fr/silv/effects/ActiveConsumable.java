@@ -1,5 +1,7 @@
 package fr.silv.effects;
 
+import net.minecraft.world.item.ItemStack;
+
 import java.util.Optional;
 
 /**
@@ -15,8 +17,11 @@ import java.util.Optional;
  * @param displayName         the menu item's display name, kept as a language-correct fallback label
  * @param expiresAtEpochMillis wall-clock instant the effect ends, computed from the menu's remaining
  *                            time at read time so the countdown can run locally without re-scanning
+ * @param menuStack           a copy of the effects-menu item, rendered as the HUD icon when the
+ *                            catalog carries no image for this effect
  */
-public record ActiveConsumable(String sourceType, String displayName, long expiresAtEpochMillis) {
+public record ActiveConsumable(String sourceType, String displayName, long expiresAtEpochMillis,
+                               ItemStack menuStack) {
 
     /** Milliseconds left until this effect ends, clamped at zero. */
     public long remainingMillis() {

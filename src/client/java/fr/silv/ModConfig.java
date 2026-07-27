@@ -36,7 +36,8 @@ public final class ModConfig {
     private static final Map<String, WidgetPos> DEFAULT_WIDGET_POSITIONS = Map.of(
             "durability_widget", new WidgetPos(10, 10),
             "icon_widget", new WidgetPos(10, 40),
-            "stat_widget", new WidgetPos(10, 80)
+            "stat_widget", new WidgetPos(10, 80),
+            "effects_widget", new WidgetPos(10, 110)
     );
 
     private static ConfigState state = new ConfigState();
