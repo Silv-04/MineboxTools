@@ -31,7 +31,7 @@ public class EffectsWidget extends HudWidget {
     private static final int SPRITE = 16;
     /** Ring centre-line radius: tight to the sprite, so the square's corners poke just outside it. */
     private static final int RING_RADIUS = 10;
-    private static final int RING_THICKNESS = 2;
+    private static final float RING_THICKNESS = 1.5f;
     private static final int CELL_PADDING = 4;
     private static final int SEGMENTS = 64;
     /** Everything is authored full-size then scaled down once, for a crisp compact HUD. */
@@ -51,7 +51,7 @@ public class EffectsWidget extends HudWidget {
     }
 
     private static int cellSize() {
-        return 2 * (RING_RADIUS + RING_THICKNESS) + CELL_PADDING;
+        return 2 * (RING_RADIUS + 2) + CELL_PADDING;
     }
 
     /** Authored pixels converted to on-screen pixels at the widget's display scale. */
@@ -157,7 +157,11 @@ public class EffectsWidget extends HudWidget {
             context.pose().pushMatrix();
             context.pose().translate(centerX, centerY);
             context.pose().rotate((float) angle);
-            context.fill(RING_RADIUS, -halfLen, RING_RADIUS + RING_THICKNESS, halfLen, color);
+            // Draw a unit-wide radial band and stretch it to the (fractional) thickness via the matrix,
+            // since fill() itself only takes integer widths.
+            context.pose().translate(RING_RADIUS, 0f);
+            context.pose().scale(RING_THICKNESS, 1f);
+            context.fill(0, -halfLen, 1, halfLen, color);
             context.pose().popMatrix();
         }
     }
